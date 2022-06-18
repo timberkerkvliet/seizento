@@ -1,28 +1,27 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Optional, List, Callable, Any
 
-
-@dataclass(frozen=True)
-class Identifier:
-    name: str
-
-    def __post_init__(self):
-        if not self.name.replace('_', '').replace('-', '').isalnum():
-            raise ValueError(f'Invalid identifier: {self.name}')
-
-    def __str__(self):
-        return self.name
+from seizento.identifier import Identifier, NodeIdentifier
 
 
 @dataclass(frozen=True)
 class Type(ABC):
     secret: bool
-    optional: bool
 
     @property
     @abstractmethod
     def default_value(self):
+        pass
+
+    @property
+    @abstractmethod
+    def is_functional(self) -> bool:
+        pass
+
+    @abstractmethod
+    def get_node(self, identifier: NodeIdentifier) -> Type:
         pass
 
 
@@ -42,11 +41,21 @@ class Struct(Type):
             )
 
     @property
-    def default_value(self) -> Dict:
+    def default_value(self) -> Optional[Dict]:
         return {
             field.name: field_type.default_value
             for field, field_type in self.fields.items()
         }
+
+    @property
+    def is_functional(self) -> bool:
+        return any(field_type.is_functional for field_type in self.fields.values())
+
+    def get_node(self, identifier: NodeIdentifier) -> Type:
+        if identifier.root not in self.fields:
+            raise KeyError
+
+        return self.fields[identifier.root].get_node(identifier.path_as_identifier)
 
 
 @dataclass(frozen=True)
@@ -58,8 +67,15 @@ class Array(Type):
             raise ValueError(f'The value type is non-secret')
 
     @property
-    def default_value(self) -> List:
+    def default_value(self) -> Optional[List]:
         return []
+
+    @property
+    def is_functional(self) -> bool:
+        return self.value_type.is_functional
+
+    def get_node(self, identifier: NodeIdentifier) -> Type:
+        return self.value_type.get_node(identifier)
 
 
 @dataclass(frozen=True)
@@ -71,8 +87,15 @@ class Dictionary(Type):
             raise ValueError(f'The value type is non-secret')
 
     @property
-    def default_value(self) -> Dict:
+    def default_value(self) -> Optional[Dict]:
         return {}
+
+    @property
+    def is_functional(self) -> bool:
+        return self.value_type.is_functional
+
+    def get_node(self, identifier: NodeIdentifier) -> Type:
+        return self.value_type.get_node(identifier)
 
 
 @dataclass(frozen=True)
@@ -88,38 +111,58 @@ class Function(Type):
         raise KeyError
 
     @property
-    def default_value(self) -> Callable[[str], Any]:
+    def default_value(self) -> Optional[Callable[[str], Any]]:
         return self._default_function
 
+    @property
+    def is_functional(self) -> bool:
+        return True
 
-@dataclass(frozen=True)
-class String(Type):
-    has_default: bool = True
-    default_value: Optional[str] = None
-
-
-@dataclass(frozen=True)
-class Integer(Type):
-    default_value: Optional[int] = None
+    def get_node(self, identifier: NodeIdentifier) -> Type:
+        return self.value_type.get_node(identifier)
 
 
 @dataclass(frozen=True)
-class Float(Type):
-    default_value: Optional[float] = None
+class Primitive(Type, ABC):
+    optional: bool
+
+    @property
+    @abstractmethod
+    def default_literal(self):
+        pass
+
+    @property
+    def default_value(self):
+        if self.default_literal is not None:
+            return self.default_literal
+        if self.optional:
+            return None
+
+        raise ValueError('No default value available')
+
+    @property
+    def is_functional(self) -> bool:
+        return False
+
+    def get_node(self, identifier: NodeIdentifier) -> Type:
+        raise KeyError
 
 
 @dataclass(frozen=True)
-class Boolean(Type):
-    default_value: Optional[bool] = None
+class String(Primitive):
+    default_literal: Optional[str] = None
 
 
-s = Struct(
-    secret=True,
-    optional=False,
-    fields={
-        Identifier('a_hold'): String(secret=True, optional=False),
-        Identifier('another-field'): Integer(secret=True, optional=True)
-    }
-)
+@dataclass(frozen=True)
+class Integer(Primitive):
+    default_literal: Optional[int] = None
 
-print(s.default_value)
+
+@dataclass(frozen=True)
+class Float(Primitive):
+    default_literal: Optional[float] = None
+
+
+@dataclass(frozen=True)
+class Boolean(Primitive):
+    default_literal: Optional[bool] = None

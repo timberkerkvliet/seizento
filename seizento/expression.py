@@ -1,47 +1,65 @@
 from __future__ import annotations
 import json
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Union, Dict
+from dataclasses import dataclass
+from typing import List, Tuple, Union, Dict, Set
+
+from seizento.identifier import Identifier, NodeIdentifier
+from seizento.type import Type, String
 
 
-class Arguments(ABC):
-    @abstractmethod
-    def get(self, parameter: str) -> str:
-        ...
+@dataclass(frozen=True)
+class EvaluationContext:
+    function_arguments: Dict[Identifier, str]
+    root_expressions: Dict[Identifier, Expression]
+
+
+@dataclass(frozen=True)
+class TypeContext:
+    root_types: Dict[Identifier, Type]
 
 
 class Expression(ABC):
     @abstractmethod
-    def evaluate(self, arguments: Arguments):
+    def evaluate(self, context: EvaluationContext):
         ...
 
     @abstractmethod
-    def serialize(self) -> str:
+    def type(self, context: TypeContext) -> Type:
+        ...
+
+    @abstractmethod
+    def get_node(self, data_node_identifier: NodeIdentifier) -> Expression:
+        ...
+
+    @abstractmethod
+    def get_root_node_names(self) -> Set[Identifier]:
         ...
 
 
-class ParameterReference(Expression):
-    def __init__(self, parameter: str):
+class FunctionParameterReference(Expression):
+    def __init__(self, parameter: Identifier):
         self._parameter = parameter
 
-    def evaluate(self, arguments: Arguments):
-        return arguments.get(parameter=self._parameter)
+    def evaluate(self, context: EvaluationContext) -> str:
+        return context.function_arguments[self._parameter]
 
-    def serialize(self) -> str:
-        return self._parameter
+    def type(self, context: TypeContext) -> String:
+        return String(optional=False, secret=False)
 
 
-class DataReference(Expression):
-    def __init__(self, root: str, path: List[Template]):
-        self._root = root
-        self._path = path
+class DataNodeReference(Expression):
+    def __init__(self, data_node_id: NodeIdentifier):
+        self._data_node_id = data_node_id
 
-    def evaluate(self, arguments: Arguments):
-        return arguments.get(parameter=self.serialize())
+    def evaluate(self, context: EvaluationContext):
+        return context \
+            .root_expressions[self._data_node_id.root] \
+            .get_node(self._data_node_id.path_as_identifier) \
+            .evaluate(context=context)
 
-    def serialize(self) -> str:
-        elements = [self._root] + [identifier.serialize(start='<', end='>') for identifier in self._path]
-        return '/'.join(elements)
+    def get_root_node_names(self) -> Set[Identifier]:
+        return {self._data_node_id.root}
 
 
 class Literal(Expression):
