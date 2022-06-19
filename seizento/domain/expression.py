@@ -2,10 +2,10 @@ from __future__ import annotations
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Tuple, Union, Dict, Set
+from typing import List, Union, Dict, Set
 
-from seizento.identifier import Identifier, NodeIdentifier
-from seizento.type import Type, String
+from seizento.domain.identifier import Identifier, Path
+from seizento.domain.type import Type, String
 
 
 @dataclass(frozen=True)
@@ -29,7 +29,7 @@ class Expression(ABC):
         ...
 
     @abstractmethod
-    def get_node(self, data_node_identifier: NodeIdentifier) -> Expression:
+    def get_node(self, data_node_identifier: Path) -> Expression:
         ...
 
     @abstractmethod
@@ -49,7 +49,7 @@ class FunctionParameterReference(Expression):
 
 
 class DataNodeReference(Expression):
-    def __init__(self, data_node_id: NodeIdentifier):
+    def __init__(self, data_node_id: Path):
         self._data_node_id = data_node_id
 
     def evaluate(self, context: EvaluationContext):

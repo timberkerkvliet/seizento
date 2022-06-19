@@ -3,13 +3,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Optional, List, Callable, Any
 
-from seizento.identifier import Identifier, NodeIdentifier
+from seizento.domain.identifier import Identifier
+from seizento.domain.path import Path, PathValue, PlaceHolder
 
 
 @dataclass(frozen=True)
 class Type(ABC):
-    secret: bool
-
     @property
     @abstractmethod
     def default_value(self):
@@ -21,24 +20,13 @@ class Type(ABC):
         pass
 
     @abstractmethod
-    def get_node(self, identifier: NodeIdentifier) -> Type:
+    def get_subtype(self, path: Path) -> Type:
         pass
 
 
 @dataclass(frozen=True)
 class Struct(Type):
     fields: Dict[Identifier, Type]
-
-    def __post_init__(self):
-        non_secret_field_names = {
-            field.name for field, field_type in self.fields.items()
-            if not field_type.secret
-        }
-        if self.secret and non_secret_field_names:
-            raise ValueError(
-                f'The following field(s) are non-secret:'
-                f'{non_secret_field_names}'
-            )
 
     @property
     def default_value(self) -> Optional[Dict]:
@@ -51,20 +39,25 @@ class Struct(Type):
     def is_functional(self) -> bool:
         return any(field_type.is_functional for field_type in self.fields.values())
 
-    def get_node(self, identifier: NodeIdentifier) -> Type:
-        if identifier.root not in self.fields:
+    def get_subtype(self, path: Path) -> Type:
+        if path.empty:
+            return self
+
+        component = path.first_component
+        if not isinstance(component, PathValue):
+            raise TypeError
+
+        identifier = Identifier(component.value)
+        if identifier not in self.fields:
             raise KeyError
 
-        return self.fields[identifier.root].get_node(identifier.path_as_identifier)
+        field_type = self.fields[identifier]
+        return field_type.get_subtype(path.remove_first_component())
 
 
 @dataclass(frozen=True)
 class Array(Type):
     value_type: Type
-
-    def __post_init__(self):
-        if self.secret and not self.value_type.secret:
-            raise ValueError(f'The value type is non-secret')
 
     @property
     def default_value(self) -> Optional[List]:
@@ -74,17 +67,20 @@ class Array(Type):
     def is_functional(self) -> bool:
         return self.value_type.is_functional
 
-    def get_node(self, identifier: NodeIdentifier) -> Type:
-        return self.value_type.get_node(identifier)
+    def get_subtype(self, path: Path) -> Type:
+        if path.empty:
+            return self
+
+        component = path.first_component
+        if not isinstance(component, PlaceHolder):
+            raise TypeError
+
+        return self.value_type.get_subtype(path.remove_first_component())
 
 
 @dataclass(frozen=True)
 class Dictionary(Type):
     value_type: Type
-
-    def __post_init__(self):
-        if self.secret and not self.value_type.secret:
-            raise ValueError(f'The value type is non-secret')
 
     @property
     def default_value(self) -> Optional[Dict]:
@@ -94,17 +90,20 @@ class Dictionary(Type):
     def is_functional(self) -> bool:
         return self.value_type.is_functional
 
-    def get_node(self, identifier: NodeIdentifier) -> Type:
-        return self.value_type.get_node(identifier)
+    def get_subtype(self, path: Path) -> Type:
+        if path.empty:
+            return self
+
+        component = path.first_component
+        if not isinstance(component, PlaceHolder):
+            raise TypeError
+
+        return self.value_type.get_subtype(path.remove_first_component())
 
 
 @dataclass(frozen=True)
 class Function(Type):
     value_type: Type
-
-    def __post_init__(self):
-        if self.secret and not self.value_type.secret:
-            raise ValueError(f'The value type is non-secret')
 
     @staticmethod
     def _default_function(arg: str):
@@ -118,8 +117,15 @@ class Function(Type):
     def is_functional(self) -> bool:
         return True
 
-    def get_node(self, identifier: NodeIdentifier) -> Type:
-        return self.value_type.get_node(identifier)
+    def get_subtype(self, path: Path) -> Type:
+        if path.empty:
+            return self
+
+        component = path.first_component
+        if not isinstance(component, PlaceHolder):
+            raise TypeError
+
+        return self.value_type.get_subtype(path.remove_first_component())
 
 
 @dataclass(frozen=True)
@@ -144,8 +150,17 @@ class Primitive(Type, ABC):
     def is_functional(self) -> bool:
         return False
 
-    def get_node(self, identifier: NodeIdentifier) -> Type:
-        raise KeyError
+    def get_subtype(self, path: Path) -> Type:
+        if path.empty:
+            return self
+
+        raise TypeError
+
+
+@dataclass(frozen=True)
+class EncryptedString(Primitive):
+    def default_literal(self):
+        return None
 
 
 @dataclass(frozen=True)

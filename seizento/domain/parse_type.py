@@ -1,6 +1,6 @@
 from typing import Dict
 
-from seizento.type import String, Type, Array, Function, Dictionary, Integer, Float, Boolean, Struct, Identifier
+from seizento.domain.type import String, Type, Array, Function, Dictionary, Integer, Float, Boolean, Struct, Identifier
 
 
 def parse_type(value: Dict, secret_default=False) -> Type:

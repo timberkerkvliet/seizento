@@ -22,3 +22,7 @@ Use `/parsed/{my-config}` to get the values for your configuration. Only `GET` o
 * Bool
 * Integer
 * Float
+
+
+## Secret security
+
