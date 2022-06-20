@@ -1,18 +1,25 @@
 ## Type resource
 
-`/type/{path}`
-
-Supports `GET` and `PUT` methods.
+`/type/{path}`: supports `GET`, `PUT` and `DELETE` methods.
 
 ## Expression resource
 
-`/expression/{path}`
-
-Supports `GET` and `PUT` methods.
+`/expression/{path}`: supports `GET` and `PUT` and `DELETE` methods.
 
 ## Evaluate resource
 
-`/evaluate/{path}`
+`/evaluate/{path}`: supports `GET` method.
+
+## User resource
+
+`/user/`: supports `POST` method.
+
+`/user/{user_id}`: supports `GET` and `PUT` and `DELETE` methods.
+
+## Login
+
+`/login`
+
 
 Supports only `GET` method.
 
