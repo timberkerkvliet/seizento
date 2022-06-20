@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from seizento.domain.expression import Expression
 from seizento.domain.path import Path
-from seizento.domain.type import Type
+from seizento.domain.types.type import Type
 
 
 class Repository(ABC):

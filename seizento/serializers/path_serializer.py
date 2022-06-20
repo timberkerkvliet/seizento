@@ -13,7 +13,9 @@ def parse_component(value: str) -> PathComponent:
 def parse_path(value: str) -> Path:
     parts = value.split('/')
 
-    return Path(components=[parse_component(part) for part in parts])
+    parts = [part for part in parts if len(part) > 0]
+
+    return Path(components=tuple([parse_component(part) for part in parts]))
 
 
 def serialize_component(component: PathComponent) -> str:
