@@ -14,16 +14,16 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         )
 
         response = await self.test_client.get('/type/')
-        self.assertDictEqual(response, {'name': 'STRING', 'default_value': None, 'optional': False})
+        self.assertDictEqual(response, {'name': 'STRING'})
 
     async def test_optional(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'STRING', 'optional': True}
+            {'name': 'STRING'}
         )
 
         response = await self.test_client.get('/type/')
-        self.assertDictEqual(response, {'name': 'STRING', 'default_value': None, 'optional': True})
+        self.assertDictEqual(response, {'name': 'STRING'})
 
     async def test_default_value(self):
         await self.test_client.set(
@@ -32,4 +32,4 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         )
 
         response = await self.test_client.get('/type/')
-        self.assertDictEqual(response, {'name': 'STRING', 'default_value': 'some-default', 'optional': False})
+        self.assertDictEqual(response, {'name': 'STRING'})

@@ -45,50 +45,15 @@ def serialize_root_of_type(value: Type):
             'name': 'FUNCTION'
         }
     if isinstance(value, String):
-        try:
-            default_value = value.default_value
-        except ValueError:
-            default_value = None
-
-        return {
-            'name': 'STRING',
-            'default_value': default_value,
-            'optional': value.is_optional
-        }
+        return {'name': 'STRING'}
     if isinstance(value, EncryptedString):
-        return {
-            'name': 'ENCRYPTED_STRING',
-            'optional': value.is_optional
-        }
+        return {'name': 'ENCRYPTED_STRING'}
     if isinstance(value, Integer):
-        try:
-            default_value = value.default_value
-        except ValueError:
-            default_value = None
-        return {
-            'name': 'INTEGER',
-            'default_value': default_value,
-            'optional': value.is_optional
-        }
+        return {'name': 'INTEGER'}
     if isinstance(value, Float):
-        try:
-            default_value = value.default_value
-        except ValueError:
-            default_value = None
-        return {
-            'name': 'FLOAT',
-            'default_value': default_value,
-            'optional': value.is_optional
-        }
+        return {'name': 'FLOAT'}
     if isinstance(value, Boolean):
-        try:
-            default_value = value.default_value
-        except ValueError:
-            default_value = None
-        return {
-            'name': 'BOOLEAN',
-            'default_value': default_value
-        }
+        return {'name': 'BOOLEAN'}
 
 
 def parse_type(value: Dict) -> Type:
@@ -97,24 +62,13 @@ def parse_type(value: Dict) -> Type:
     name = value['name']
 
     if name == 'STRING':
-        return String(
-            optional=value.get('optional', False),
-            default_value=value.get('default_value', None)
-        )
+        return String()
     if name == 'INTEGER':
-        return Integer(
-            optional=value.get('optional', False),
-            default_value=value.get('default_value', None)
-        )
+        return Integer()
     if name == 'FLOAT':
-        return Float(
-            optional=value.get('optional', False),
-            default_value=value.get('default_value', None)
-        )
+        return Float()
     if name == 'BOOLEAN':
-        return Boolean(
-            default_value=value.get('default_value', None)
-        )
+        return Boolean()
     if name in {'ARRAY', 'DICTIONARY', 'FUNCTION'}:
         value_type = value['subtypes']['~']
 

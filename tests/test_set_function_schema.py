@@ -3,7 +3,7 @@ from unittest import IsolatedAsyncioTestCase
 from tests.test_client import UnitTestClient
 
 
-class TestSetStringSchema(IsolatedAsyncioTestCase):
+class TestSetFunctionSchema(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
@@ -19,7 +19,7 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
             {
                 'name': 'FUNCTION',
                 'subtypes': {
-                    '~': {'name': 'INTEGER', 'optional': False, 'default_value': None}
+                    '~': {'name': 'INTEGER'}
                 }
             }
         )
@@ -36,6 +36,6 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'FUNCTION',
-                'subtypes': {'~': {'name': 'FLOAT', 'optional': False, 'default_value': None}}
+                'subtypes': {'~': {'name': 'FLOAT'}}
             }
         )

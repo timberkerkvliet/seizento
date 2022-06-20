@@ -34,8 +34,8 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
             {
                 'name': 'STRUCT',
                 'subtypes': {
-                    'c': {'name': 'FLOAT', 'default_value': None, 'optional': False},
-                    'd': {'name': 'BOOLEAN', 'default_value': None}
+                    'c': {'name': 'FLOAT'},
+                    'd': {'name': 'BOOLEAN'}
                 }
             }
         )
@@ -52,8 +52,8 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
             {
                 'name': 'STRUCT',
                 'subtypes': {
-                    'a': {'name': 'INTEGER', 'default_value': None, 'optional': False},
-                    'b': {'name': 'INTEGER', 'default_value': None, 'optional': False}
+                    'a': {'name': 'INTEGER'},
+                    'b': {'name': 'INTEGER'}
                 }
 
             }
