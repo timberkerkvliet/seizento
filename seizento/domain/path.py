@@ -46,15 +46,5 @@ class Path:
     def remove_first_component(self) -> Path:
         return Path(components=self.components[1:])
 
-
-def parse_component(value: str):
-    if value == '~':
-        return PlaceHolder()
-
-    return PathValue(value=unquote(value))
-
-
-def parse_path(value: str):
-    parts = value.split('/')
-
-    return Path(components=[parse_component(part) for part in parts])
+    def remove_last_component(self) -> Path:
+        return Path(components=self.components[:-1])
