@@ -1,62 +1,35 @@
 import uuid
+from typing import Dict
 
 from seizento.controllers.resource_controller import ResourceController
-from seizento.domain.expression import Expression
-from seizento.domain.path import Path
-from seizento.domain.types.type import Type
-
+from seizento.key_value_store import KeyValueStoreTransaction
 from seizento.repository import Repository
-from seizento.serializers.path_serializer import serialize_component
-from seizento.serializers.type_serializer import serialize_root_of_type, parse_type
 
 
-class FakeRepository(Repository):
+class FakeKeyValueStoreTransaction(KeyValueStoreTransaction):
     def __init__(self):
-        self._types = {}
-        self._expressions = {}
+        self._values: Dict[str, str] = {}
 
-    def get_serialized(self, path: Path):
-        sub_paths = [
-            x for x in self._types.keys()
-            if len(x) == len(path) + 1 and x.remove_last_component() == path
-        ]
+    async def __aenter__(self):
+        return self
 
-        if not sub_paths:
-            return self._types[path]
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        ...
 
+    async def get(self, key: str) -> str:
+        return self._values[key]
+
+    async def set(self, key: str, value: str) -> None:
+        self._values[key] = value
+
+    async def delete(self, key: str) -> None:
+        del self._values[key]
+
+    async def find(self, key_prefix: str) -> Dict[str, str]:
         return {
-            **self._types[path],
-            'subtypes': {
-                serialize_component(sub_path.last_component): self.get_serialized(sub_path)
-                for sub_path in sub_paths
-            }
+            key: value for key, value in self._values.items()
+            if key.startswith(key_prefix)
         }
-
-    async def get_type(self, path: Path) -> Type:
-        return parse_type(self.get_serialized(path=path))
-
-    async def set_type(self, path: Path, value: Type) -> None:
-        self._types[path] = serialize_root_of_type(value)
-
-        sub_paths = [
-            x for x in self._types.keys()
-            if len(x) == len(path) + 1 and x.remove_last_component() == path
-        ]
-
-        for sub_path in sub_paths:
-            del self._types[sub_path]
-
-        subtypes = value.get_subtypes()
-        if subtypes is None:
-            return
-        for component, subtype in subtypes.items():
-            await self.set_type(path=path.add_component(component), value=subtype)
-
-    async def get_expression(self, path: Path) -> Expression:
-        pass
-
-    async def set_expression(self, path: Path, value: Expression) -> None:
-        pass
 
 
 class UnitTestClient:
@@ -64,7 +37,7 @@ class UnitTestClient:
 
     def __init__(self):
         self.controller = ResourceController(
-            repository=FakeRepository(),
+            repository=Repository(FakeKeyValueStoreTransaction()),
             user_id=uuid.uuid4()
         )
 
