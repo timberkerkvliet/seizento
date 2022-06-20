@@ -10,7 +10,7 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
     async def test_set_function(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'FUNCTION', 'value_type': {'name': 'INTEGER'}}
+            {'name': 'FUNCTION', 'subtypes': {'~': {'name': 'INTEGER'}}}
         )
 
         response = await self.test_client.get('/type/')
@@ -18,25 +18,24 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'FUNCTION',
-                'value_type': {'name': 'INTEGER', 'optional': False, 'default_value': None}
+                'subtypes': {
+                    '~': {'name': 'INTEGER', 'optional': False, 'default_value': None}
+                }
             }
         )
 
     async def test_set_value_type(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'FUNCTION', 'value_type': {'name': 'INTEGER'}}
+            {'name': 'FUNCTION', 'subtypes': {'~': {'name': 'INTEGER'}}}
         )
-        await self.test_client.set(
-            '/type/~/',
-            {'name': 'FLOAT'}
-        )
+        await self.test_client.set('/type/~/', {'name': 'FLOAT'})
 
         response = await self.test_client.get('/type/')
         self.assertDictEqual(
             response,
             {
                 'name': 'FUNCTION',
-                'value_type': {'name': 'FLOAT', 'optional': False, 'default_value': None}
+                'subtypes': {'~': {'name': 'FLOAT', 'optional': False, 'default_value': None}}
             }
         )

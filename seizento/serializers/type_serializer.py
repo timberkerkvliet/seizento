@@ -116,10 +116,7 @@ def parse_type(value: Dict) -> Type:
             default_value=value.get('default_value', None)
         )
     if name in {'ARRAY', 'DICTIONARY', 'FUNCTION'}:
-        if '/~' not in value:
-            raise ValueError('Missing value type')
-
-        value_type = value['value_type']
+        value_type = value['subtypes']['~']
 
         if not isinstance(value_type, dict):
             raise ValueError('Value type is not an object')
