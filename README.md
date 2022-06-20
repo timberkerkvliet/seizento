@@ -1,16 +1,15 @@
-`/schemas/{my-config}`
+## Type resource
 
-Access the schema of your configuration
+`/type/{path}`
 
-`/expressions/{my-config}`
+## Expression resource
 
-Access expressions
+`/expression/{path}`
 
-Use `PUT` on `/literals/{my-config}`
+## Evaluate resource
 
-Access expressions
+`/evaluate/{path}`
 
-Use `/parsed/{my-config}` to get the values for your configuration. Only `GET` operation is supported.
 
 ## Data types
 
@@ -22,7 +21,3 @@ Use `/parsed/{my-config}` to get the values for your configuration. Only `GET` o
 * Bool
 * Integer
 * Float
-
-
-## Secret security
-
