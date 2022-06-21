@@ -40,24 +40,3 @@ class TestString(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/evaluation')
 
         self.assertIsNone(response)
-
-    @skip
-    async def test_set_and_evaluate_expression(self):
-        await self.test_client.set(
-            '/type/',
-            {
-                'name': 'STRUCT',
-                'children': {
-                    'my-string': {'name': 'STRING'},
-                    'other-string': {'name': 'STRING'}
-                }
-            }
-        )
-        await self.test_client.set('/expression/other-string', 'some value here')
-        await self.test_client.set(
-            '/expression/my-string',
-            '{other-string}'
-        )
-
-        response = await self.test_client.get('/my-string/')
-        self.assertEqual(response, 'a literal string')

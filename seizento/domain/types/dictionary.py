@@ -15,10 +15,3 @@ class Dictionary(Type):
     @property
     def default_value(self) -> Dict:
         return {}
-
-    @property
-    def is_functional(self) -> bool:
-        return self.value_type.is_functional
-
-    def get_subtypes(self) -> Dict[PathComponent, Type]:
-        return {PlaceHolder(): self.value_type}

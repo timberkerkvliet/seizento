@@ -11,13 +11,6 @@ class Primitive(Type):
     def default_value(self):
         return None
 
-    @property
-    def is_functional(self) -> bool:
-        return False
-
-    def get_subtypes(self):
-        return None
-
 
 @dataclass(frozen=True)
 class String(Primitive):

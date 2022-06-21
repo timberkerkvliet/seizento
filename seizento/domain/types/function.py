@@ -19,10 +19,3 @@ class Function(Type):
     @property
     def default_value(self) -> Callable[[str], Any]:
         return self._default_function
-
-    @property
-    def is_functional(self) -> bool:
-        return True
-
-    def get_subtypes(self) -> Dict[PathComponent, Type]:
-        return {PlaceHolder(): self.value_type}

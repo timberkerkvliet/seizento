@@ -20,19 +20,3 @@ class Struct(Type):
             field.name: field_type.default_value
             for field, field_type in self._fields.items()
         }
-
-    @property
-    def is_functional(self) -> bool:
-        return any(field_type.is_functional for field_type in self._fields.values())
-
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, Struct):
-            return False
-
-        return self.fields == other.fields
-
-    def get_subtypes(self) -> Dict[PathComponent, Type]:
-        return {
-            StringComponent(value=field.name): field_type
-            for field, field_type in self._fields.items()
-        }
