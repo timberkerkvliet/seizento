@@ -2,6 +2,7 @@ from typing import Dict, Any, Callable
 from uuid import UUID
 
 from seizento.controllers.evaluation_controller import EvaluationController
+from seizento.controllers.exceptions import BadRequest
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.type_controller import TypeController
 from seizento.repository import Repository
@@ -19,7 +20,11 @@ class ResourceController:
 
     @staticmethod
     def _get_controller(resource: str, repository: Repository):
-        resource_path = parse_path(resource)
+        try:
+            resource_path = parse_path(resource)
+        except Exception as e:
+            raise BadRequest from e
+
         resource_type = resource_path.first_component.value
         if resource_type == 'type':
             return TypeController(
@@ -36,6 +41,8 @@ class ResourceController:
                 repository=repository,
                 path=resource_path.remove_first()
             )
+
+        raise BadRequest
 
     async def get(self, resource: str) -> Dict:
         async with self._repository_factory() as repository:

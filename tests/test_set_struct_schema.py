@@ -92,3 +92,18 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
                 }
             }
         )
+
+    async def test_non_existing_field_type(self):
+        await self.test_client.delete('/type/something-else')
+
+        response = await self.test_client.get('/type/')
+        self.assertDictEqual(
+            response,
+            {
+                'name': 'STRUCT',
+                'children': {
+                    'a': {'name': 'STRING'},
+                    'b': {'name': 'INTEGER'}
+                }
+            }
+        )

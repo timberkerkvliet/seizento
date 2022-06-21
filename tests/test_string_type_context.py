@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import Forbidden
+from seizento.controllers.exceptions import Forbidden, BadRequest
 from tests.test_client import UnitTestClient
 
 
@@ -29,7 +29,7 @@ class TestStringTypeContext(IsolatedAsyncioTestCase):
         self.assertEqual(response, 'a literal string')
 
     async def test_set_wrong_literal(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(Forbidden):
             await self.test_client.set(
                 '/expression/',
                 {'literal': 9000}

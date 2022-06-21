@@ -13,7 +13,11 @@ def parse_component(value: str) -> PathComponent:
 def parse_path(value: str) -> Path:
     parts = value.split('/')
 
-    parts = [part for part in parts if len(part) > 0]
+    if len(parts) > 0 and parts[0] == '':
+        parts = parts[1:]
+
+    if len(parts) > 0 and parts[-1] == '':
+        parts = parts[:-1]
 
     return Path(components=tuple([parse_component(part) for part in parts]))
 

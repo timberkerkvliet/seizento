@@ -32,21 +32,18 @@ class DataTree:
         )
 
     def set_subtree(self, path: Path, subtree: DataTree) -> DataTree:
-        try:
-            return DataTree(
-                values={
-                    **{
-                        tree_path: v for tree_path, v in self.values.items()
-                        if not tree_path.extends(path)
-                    },
-                    **{
-                        path + tree_path: value
-                        for tree_path, value in subtree.values.items()
-                    }
+        return DataTree(
+            values={
+                **{
+                    tree_path: v for tree_path, v in self.values.items()
+                    if not tree_path.extends(path)
+                },
+                **{
+                    path + tree_path: value
+                    for tree_path, value in subtree.values.items()
                 }
-            )
-        except InvalidDataTree as e:
-            raise KeyError from e
+            }
+        )
 
     @property
     def root_data(self):

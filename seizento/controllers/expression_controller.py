@@ -1,5 +1,6 @@
 from typing import Dict
 
+from seizento.controllers.exceptions import Forbidden
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.data_tree_serializer import serialize_data_tree, parse_data_tree
@@ -30,7 +31,7 @@ class ExpressionController:
         expression_type = new_expression.get_type()
 
         if current_type != expression_type:
-            raise Exception
+            raise Forbidden
 
         await self._repository.set_expression(
             path=self._path,

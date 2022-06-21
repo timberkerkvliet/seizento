@@ -12,6 +12,10 @@ class PathComponent:
 class StringComponent(PathComponent):
     value: str
 
+    def __post_init__(self):
+        if len(self.value) == 0:
+            raise ValueError
+
 
 @dataclass(frozen=True)
 class PlaceHolder(PathComponent):

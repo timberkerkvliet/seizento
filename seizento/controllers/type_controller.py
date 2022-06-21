@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from seizento.controllers.exceptions import NotFound, Forbidden
+from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.domain.types.array import Array
 from seizento.domain.types.dictionary import Dictionary
 from seizento.domain.types.function import Function
@@ -52,9 +52,14 @@ class TypeController:
                 and not isinstance(parent_type, (Array, Dictionary, Function)):
             raise Forbidden
 
+        try:
+            parsed = parse_type(parse_data_tree(data))
+        except Exception as e:
+            raise BadRequest from e
+
         await self._repository.set_type(
             path=self._path,
-            value=parse_type(parse_data_tree(data))
+            value=parsed
         )
 
     async def delete(self) -> None:
