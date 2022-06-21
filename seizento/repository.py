@@ -34,13 +34,13 @@ class Repository:
         await self._transaction.__aexit__(*args)
 
     async def get_type(self, path: Path) -> Type:
-        data_tree = await self._transaction.get_tree(path=path.insert(StringComponent('type')))
+        data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('type')))
 
         return parse_type(data_tree)
 
     async def set_type(self, path: Path, value: Type) -> None:
         await self._transaction.set_tree(
-            path=path.insert(StringComponent('type')),
+            path=path.insert_first(StringComponent('type')),
             tree=serialize_type(value)
         )
 

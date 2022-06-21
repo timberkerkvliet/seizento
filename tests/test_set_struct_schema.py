@@ -10,7 +10,7 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
             '/type/',
             {
                 'name': 'STRUCT',
-                'subtypes': {
+                'children': {
                     'a': {'name': 'STRING'},
                     'b': {'name': 'INTEGER'}
                 }
@@ -22,7 +22,7 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
             '/type/',
             {
                 'name': 'STRUCT',
-                'subtypes': {
+                'children': {
                     'c': {'name': 'FLOAT'},
                     'd': {'name': 'BOOLEAN'}
                 }
@@ -33,7 +33,7 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'STRUCT',
-                'subtypes': {
+                'children': {
                     'c': {'name': 'FLOAT'},
                     'd': {'name': 'BOOLEAN'}
                 }
@@ -51,7 +51,7 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'STRUCT',
-                'subtypes': {
+                'children': {
                     'a': {'name': 'INTEGER'},
                     'b': {'name': 'INTEGER'}
                 }

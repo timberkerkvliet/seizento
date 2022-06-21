@@ -6,11 +6,15 @@ from seizento.data_tree import DataTree
 
 
 def serialize_data_tree(value: DataTree) -> Dict:
+    subtrees = value.subtrees
+    if len(subtrees) == 0:
+        return value.root_data
+
     return {
         **value.root_data,
         'children': {
             serialize_component(path_component): serialize_data_tree(subtree)
-            for path_component, subtree in value.subtrees.items()
+            for path_component, subtree in subtrees.items()
         }
 
     }

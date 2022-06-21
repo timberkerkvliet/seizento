@@ -11,6 +11,14 @@ from seizento.path import Path, PathComponent
 class DataTree:
     values: Dict[Path, Dict]
 
+    def __post_init__(self):
+        for path in self.values.keys():
+            if path.empty:
+                continue
+
+            if not path.remove_last() in self.values.keys():
+                raise ValueError('Missing parts')
+
     def delete_subtree(self, path: Path) -> DataTree:
         return DataTree(
             values={
@@ -20,10 +28,13 @@ class DataTree:
         )
 
     def set_subtree(self, path: Path, subtree: DataTree) -> DataTree:
-        result = self.delete_subtree(path=path)
         return DataTree(
             values={
-                **result.values,
+                **{subpath: {} for subpath in path.path_sequence},
+                **{
+                    tree_path: v for tree_path, v in self.values.items()
+                    if not tree_path.extends(path)
+                },
                 **{
                     path + tree_path: value
                     for tree_path, value in subtree.values.items()
@@ -40,20 +51,32 @@ class DataTree:
         return root_values[0]
 
     @property
-    def subtrees(self) -> Dict[PathComponent, DataTree]:
-        result = {}
+    def values_per_component(self) -> Dict[PathComponent, Dict[Path, Dict]]:
+        categorized: Dict[PathComponent, Dict[Path, Dict]] = {}
         for path, value in self.values.items():
             if path.empty:
                 continue
 
             component = path.first_component
 
-            if component not in result:
-                result[component] = DataTree(values={})
+            if component not in categorized:
+                categorized[component] = {}
 
-            result[component] = result[component].add(path=path.remove_first(), value=value)
+            categorized[component][path] = value
 
-        return result
+        return categorized
+
+    @property
+    def subtrees(self) -> Dict[PathComponent, DataTree]:
+        return {
+            component: DataTree(
+                values={
+                    path.remove_first(): data
+                    for path, data in values.items()
+                }
+            )
+            for component, values in self.values_per_component.items()
+        }
 
     def get_subtree(self, path: Path) -> DataTree:
         result = self

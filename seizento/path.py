@@ -13,6 +13,7 @@ class StringComponent(PathComponent):
     value: str
 
 
+@dataclass(frozen=True)
 class PlaceHolder(PathComponent):
     pass
 
@@ -48,14 +49,25 @@ class Path:
     def remove_last(self) -> Path:
         return Path(components=self.components[:-1])
 
-    def insert(self, component: PathComponent) -> Path:
+    def insert_first(self, component: PathComponent) -> Path:
         return Path(components=(component,) + self.components)
+
+    def append(self, component: PathComponent) -> Path:
+        return Path(components=self.components + (component,))
 
     def extends(self, other: Path) -> bool:
         if len(self) < len(other):
             return False
 
         return self.components[:len(other)] == other.components
+
+    @property
+    def path_sequence(self):
+        result = [EMPTY_PATH]
+        for component in self.components:
+            result.append(result[-1].append(component))
+
+        return result
 
     def __add__(self, other):
         if not isinstance(other, Path):

@@ -10,7 +10,7 @@ class TestSetFunctionSchema(IsolatedAsyncioTestCase):
     async def test_set_function(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'FUNCTION', 'subtypes': {'~': {'name': 'INTEGER'}}}
+            {'name': 'FUNCTION', 'children': {'~': {'name': 'INTEGER'}}}
         )
 
         response = await self.test_client.get('/type/')
@@ -18,7 +18,7 @@ class TestSetFunctionSchema(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'FUNCTION',
-                'subtypes': {
+                'children': {
                     '~': {'name': 'INTEGER'}
                 }
             }
@@ -27,7 +27,7 @@ class TestSetFunctionSchema(IsolatedAsyncioTestCase):
     async def test_set_value_type(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'FUNCTION', 'subtypes': {'~': {'name': 'INTEGER'}}}
+            {'name': 'FUNCTION', 'children': {'~': {'name': 'INTEGER'}}}
         )
         await self.test_client.set('/type/~/', {'name': 'FLOAT'})
 
@@ -36,6 +36,6 @@ class TestSetFunctionSchema(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'FUNCTION',
-                'subtypes': {'~': {'name': 'FLOAT'}}
+                'children': {'~': {'name': 'FLOAT'}}
             }
         )

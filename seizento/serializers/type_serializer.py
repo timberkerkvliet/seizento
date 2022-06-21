@@ -87,7 +87,7 @@ def parse_type(value: DataTree) -> Type:
 
         return Struct(
             fields={
-                Identifier(component.name): parse_type(subtree)
+                Identifier(component.value): parse_type(subtree)
                 for component, subtree in subtrees.items()
             }
         )
