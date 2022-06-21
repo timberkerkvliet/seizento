@@ -9,8 +9,22 @@ from seizento.domain.types.function import Function
 from seizento.domain.types.primitives import String, Boolean, Integer, Float
 
 
+NAMES = {
+    Struct: 'STRUCT',
+    Dictionary: 'DICTIONARY',
+    Array: 'ARRAY',
+    Function: 'FUNCTION',
+    String: 'STRING',
+    Integer: 'INTEGER',
+    Float: 'FLOAT',
+    Boolean: 'BOOLEAN'
+}
+
+
 def serialize_type(value: Type) -> Any:
-    result = serialize_root_data(value)
+    result = {
+        'name': NAMES[type(value)]
+    }
 
     if isinstance(value, Struct):
         fields = {
@@ -26,52 +40,33 @@ def serialize_type(value: Type) -> Any:
     return result
 
 
-def serialize_root_data(value: Type):
-    if isinstance(value, Struct):
-        return {'name': 'STRUCT'}
-    if isinstance(value, Dictionary):
-        return {'name': 'DICTIONARY'}
-    if isinstance(value, Array):
-        return {'name': 'ARRAY'}
-    if isinstance(value, Function):
-        return {'name': 'FUNCTION'}
-    if isinstance(value, String):
-        return {'name': 'STRING'}
-    if isinstance(value, Integer):
-        return {'name': 'INTEGER'}
-    if isinstance(value, Float):
-        return {'name': 'FLOAT'}
-    if isinstance(value, Boolean):
-        return {'name': 'BOOLEAN'}
-
-
 def parse_type(value: Any) -> Type:
     name = value['name']
 
-    if name == 'STRING':
+    if name == NAMES[String]:
         return String()
-    if name == 'INTEGER':
+    if name == NAMES[Integer]:
         return Integer()
-    if name == 'FLOAT':
+    if name == NAMES[Float]:
         return Float()
-    if name == 'BOOLEAN':
+    if name == NAMES[Boolean]:
         return Boolean()
-    if name in {'ARRAY', 'DICTIONARY', 'FUNCTION'}:
+    if name in {NAMES[Array], NAMES[Dictionary], NAMES[Function]}:
         value_type = value['value_type']
 
-        if name == 'ARRAY':
+        if name == NAMES[Array]:
             return Array(
                 value_type=parse_type(value_type)
             )
-        if name == 'DICTIONARY':
+        if name == NAMES[Dictionary]:
             return Dictionary(
                 value_type=parse_type(value_type)
             )
-        if name == 'FUNCTION':
+        if name == NAMES[Function]:
             return Function(
                 value_type=parse_type(value_type)
             )
-    if name == 'STRUCT':
+    if name == NAMES[Struct]:
         if 'fields' not in value:
             return Struct(fields={})
 
