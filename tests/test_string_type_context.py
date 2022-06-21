@@ -1,9 +1,10 @@
 from unittest import IsolatedAsyncioTestCase
 
+from seizento.controllers.exceptions import Forbidden
 from tests.test_client import UnitTestClient
 
 
-class TestSetStringLiteral(IsolatedAsyncioTestCase):
+class TestStringTypeContext(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
         await self.test_client.set(
@@ -32,4 +33,18 @@ class TestSetStringLiteral(IsolatedAsyncioTestCase):
             await self.test_client.set(
                 '/expression/',
                 {'literal': 9000}
+            )
+
+    async def test_cannot_set_child(self):
+        with self.assertRaises(Forbidden):
+            await self.test_client.set(
+                '/type/a',
+                {'name': 'INTEGER'}
+            )
+
+    async def test_cannot_set_placeholder_child(self):
+        with self.assertRaises(Forbidden):
+            await self.test_client.set(
+                '/type/~',
+                {'name': 'INTEGER'}
             )

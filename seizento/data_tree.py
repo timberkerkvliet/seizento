@@ -7,6 +7,10 @@ from typing import Dict
 from seizento.path import Path, PathComponent
 
 
+class InvalidDataTree(Exception):
+    pass
+
+
 @dataclass(frozen=True)
 class DataTree:
     values: Dict[Path, Dict]
@@ -17,7 +21,7 @@ class DataTree:
                 continue
 
             if not path.remove_last() in self.values.keys():
-                raise ValueError('Missing parts')
+                raise InvalidDataTree
 
     def delete_subtree(self, path: Path) -> DataTree:
         return DataTree(
@@ -28,19 +32,21 @@ class DataTree:
         )
 
     def set_subtree(self, path: Path, subtree: DataTree) -> DataTree:
-        return DataTree(
-            values={
-                **{subpath: {} for subpath in path.path_sequence},
-                **{
-                    tree_path: v for tree_path, v in self.values.items()
-                    if not tree_path.extends(path)
-                },
-                **{
-                    path + tree_path: value
-                    for tree_path, value in subtree.values.items()
+        try:
+            return DataTree(
+                values={
+                    **{
+                        tree_path: v for tree_path, v in self.values.items()
+                        if not tree_path.extends(path)
+                    },
+                    **{
+                        path + tree_path: value
+                        for tree_path, value in subtree.values.items()
+                    }
                 }
-            }
-        )
+            )
+        except InvalidDataTree as e:
+            raise KeyError from e
 
     @property
     def root_data(self):
