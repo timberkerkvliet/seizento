@@ -16,6 +16,12 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        expression = await self._repository.get_expression(self._path)
+        try:
+            expression = await self._repository.get_expression(self._path)
+            return expression.evaluate()
+        except KeyError:
+            pass
 
-        return expression.evaluate()
+        target_type = await self._repository.get_type(self._path)
+
+        return target_type.default_value

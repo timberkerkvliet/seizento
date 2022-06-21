@@ -34,6 +34,13 @@ class TestString(IsolatedAsyncioTestCase):
                 9000
             )
 
+    async def test_get_null_as_default(self):
+        await self.test_client.set('/type/', {'name': 'STRING'})
+
+        response = await self.test_client.get('/evaluation')
+
+        self.assertIsNone(response)
+
     @skip
     async def test_set_and_evaluate_expression(self):
         await self.test_client.set(
@@ -46,7 +53,11 @@ class TestString(IsolatedAsyncioTestCase):
                 }
             }
         )
+        await self.test_client.set('/expression/other-string', 'some value here')
         await self.test_client.set(
             '/expression/my-string',
             '{other-string}'
         )
+
+        response = await self.test_client.get('/my-string/')
+        self.assertEqual(response, 'a literal string')
