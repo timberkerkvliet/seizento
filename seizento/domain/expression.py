@@ -1,12 +1,11 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 from typing import List, Union, Dict, Set
 
 from seizento.domain.identifier import Identifier
 from seizento.path import Path
 from seizento.domain.types.type import Type
-from seizento.domain.types.primitives import String
 
 
 @dataclass(frozen=True)
@@ -21,21 +20,7 @@ class TypeContext:
 
 
 class Expression(ABC):
-    @abstractmethod
-    def evaluate(self, context: EvaluationContext):
-        ...
-
-    @abstractmethod
-    def type(self, context: TypeContext) -> Type:
-        ...
-
-    @abstractmethod
-    def get_node(self, data_node_identifier: Path) -> Expression:
-        ...
-
-    @abstractmethod
-    def get_root_node_names(self) -> Set[Identifier]:
-        ...
+    pass
 
 
 class FunctionParameterReference(Expression):
@@ -45,19 +30,10 @@ class FunctionParameterReference(Expression):
     def evaluate(self, context: EvaluationContext) -> str:
         return context.function_arguments[self._parameter]
 
-    def type(self, context: TypeContext) -> String:
-        return String(optional=False, secret=False)
-
 
 class DataNodeReference(Expression):
     def __init__(self, data_node_id: Path):
         self._data_node_id = data_node_id
-
-    def evaluate(self, context: EvaluationContext):
-        return context \
-            .root_expressions[self._data_node_id.root] \
-            .get_node(self._data_node_id.path_as_identifier) \
-            .evaluate(context=context)
 
     def get_root_node_names(self) -> Set[Identifier]:
         return {self._data_node_id.root}
@@ -94,13 +70,4 @@ class Template(Expression):
     def as_concatenation(self) -> Concatenation:
         return Concatenation(
             tokens=[StringCast(token) for token in self._tokens]
-        )
-
-    def evaluate(self, arguments: Arguments) -> str:
-        return self.as_concatenation().evaluate(arguments)
-
-    def serialize(self, start='{', end='}') -> str:
-        return ''.join(
-            token.serialize() if isinstance(token, Literal) else start + token.serialize() + end
-            for token in self._tokens
         )

@@ -10,16 +10,6 @@
 
 `/evaluate/{path}`: supports `GET` method.
 
-## User resource
-
-`/user/`: supports `POST` method.
-
-`/user/{user_id}`: supports `GET` and `PUT` and `DELETE` methods.
-
-## Login
-
-`/login`
-
 
 Supports only `GET` method.
 
