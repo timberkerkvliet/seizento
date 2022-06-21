@@ -23,13 +23,10 @@ class TestArray(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, [])
 
-    @skip
-    async def test_set_per_index(self):
+    async def test_reset_index(self):
         await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
-        await self.test_client.set('/expression/0', 1)
-        await self.test_client.set('/expression/1', 2)
-        await self.test_client.set('/expression/2', 3)
-        await self.test_client.set('/expression/3', 4)
+        await self.test_client.set('/expression/', [1])
+        await self.test_client.set('/expression/0', 2)
 
         response = await self.test_client.get('/expression/')
-        self.assertEqual(response, [1, 2, 3, 4])
+        self.assertEqual(response, [2])

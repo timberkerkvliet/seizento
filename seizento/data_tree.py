@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from typing import Dict, Any
 
-from seizento.path import Path, PathComponent
+from seizento.path import Path, PathComponent, PlaceHolder
 
 
 class InvalidDataTree(Exception):
@@ -84,6 +84,12 @@ class DataTree:
     def get_subtree(self, path: Path) -> DataTree:
         result = self
         for component in path:
-            result = result.subtrees[component]
+            subtrees = result.subtrees
+            if component in subtrees:
+                result = subtrees[component]
+            elif PlaceHolder() in subtrees:
+                result = subtrees[PlaceHolder()]
+            else:
+                raise KeyError
 
         return result
