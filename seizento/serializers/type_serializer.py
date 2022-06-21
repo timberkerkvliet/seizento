@@ -1,49 +1,46 @@
-from typing import Dict
-
 from seizento.domain.identifier import Identifier
-from seizento.domain.path import PathComponent
+from seizento.path import Path, StringComponent, PlaceHolder
 from seizento.domain.types.type import Type
 from seizento.domain.types.struct import Struct
 from seizento.domain.types.array import Array
 from seizento.domain.types.dictionary import Dictionary
 from seizento.domain.types.function import Function
 from seizento.domain.types.primitives import String, EncryptedString, Boolean, Integer, Float
-from seizento.serializers.path_serializer import serialize_component
+from seizento.data_tree import DataTree
 
 
-def serialize_subtypes(subtypes: Dict[PathComponent, Type]):
-    return {
-        serialize_component(component): serialize_type(subtype)
-        for component, subtype in subtypes.items()
-    }
+def serialize_type(value: Type) -> DataTree:
+    result = DataTree(
+        values={
+            Path(components=tuple()): serialize_root_data(value)
+        }
+    )
 
+    if isinstance(value, Struct):
+        for field, field_type in value.fields.items():
+            result = result.add_tree(
+                path=Path(components=(StringComponent(field.name),)),
+                data_tree=serialize_type(field_type)
+            )
 
-def serialize_type(value: Type):
-    result = serialize_root_of_type(value)
-    subtypes = value.get_subtypes()
-    if subtypes is not None:
-        result['subtypes'] = serialize_subtypes(subtypes)
+    if isinstance(value, (Array, Function, Dictionary)):
+        result = result.add_tree(
+            path=Path(components=(PlaceHolder(),)),
+            data_tree=serialize_type(value.value_type)
+        )
 
     return result
 
 
-def serialize_root_of_type(value: Type):
+def serialize_root_data(value: Type):
     if isinstance(value, Struct):
-        return {
-            'name': 'STRUCT'
-        }
+        return {'name': 'STRUCT'}
     if isinstance(value, Dictionary):
-        return {
-            'name': 'DICTIONARY'
-        }
+        return {'name': 'DICTIONARY'}
     if isinstance(value, Array):
-        return {
-            'name': 'ARRAY'
-        }
+        return {'name': 'ARRAY'}
     if isinstance(value, Function):
-        return {
-            'name': 'FUNCTION'
-        }
+        return {'name': 'FUNCTION'}
     if isinstance(value, String):
         return {'name': 'STRING'}
     if isinstance(value, EncryptedString):
@@ -56,10 +53,11 @@ def serialize_root_of_type(value: Type):
         return {'name': 'BOOLEAN'}
 
 
-def parse_type(value: Dict) -> Type:
-    if 'name' not in value:
+def parse_type(value: DataTree) -> Type:
+    root_data = value.root_data
+    if 'name' not in root_data:
         raise ValueError('Name property expected')
-    name = value['name']
+    name = root_data['name']
 
     if name == 'STRING':
         return String()
@@ -70,10 +68,7 @@ def parse_type(value: Dict) -> Type:
     if name == 'BOOLEAN':
         return Boolean()
     if name in {'ARRAY', 'DICTIONARY', 'FUNCTION'}:
-        value_type = value['subtypes']['~']
-
-        if not isinstance(value_type, dict):
-            raise ValueError('Value type is not an object')
+        value_type = value.get_subtree(Path(components=(PlaceHolder(),)))
 
         if name == 'ARRAY':
             return Array(
@@ -88,14 +83,11 @@ def parse_type(value: Dict) -> Type:
                 value_type=parse_type(value_type)
             )
     if name == 'STRUCT':
-        fields = value['subtypes']
-
-        if not isinstance(fields, dict):
-            raise ValueError('Fields is not an object')
+        subtrees = value.subtrees
 
         return Struct(
             fields={
-                Identifier(field): parse_type(field_type)
-                for field, field_type in fields.items()
+                Identifier(component.name): parse_type(subtree)
+                for component, subtree in subtrees.items()
             }
         )

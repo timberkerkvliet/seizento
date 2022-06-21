@@ -1,28 +1,20 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Tuple
-from urllib.parse import quote, unquote
+from typing import Tuple
 
 
-class PathComponent(ABC):
-    @abstractmethod
-    def serialize(self) -> str:
-        """Serializes to """
+class PathComponent:
+    pass
 
 
 @dataclass(frozen=True)
-class PathValue(PathComponent):
+class StringComponent(PathComponent):
     value: str
-
-    def serialize(self) -> str:
-        return quote(self.value)
 
 
 class PlaceHolder(PathComponent):
-    def serialize(self) -> str:
-        return '~'
+    pass
 
 
 @dataclass(frozen=True)
@@ -31,6 +23,9 @@ class Path:
 
     def __len__(self) -> int:
         return len(self.components)
+
+    def __iter__(self):
+        return iter(self.components)
 
     @property
     def empty(self) -> bool:
@@ -44,11 +39,23 @@ class Path:
     def last_component(self) -> PathComponent:
         return self.components[-1]
 
-    def remove_first_component(self) -> Path:
+    def remove_from_start(self, n: int) -> Path:
+        return Path(components=self.components[n:])
+
+    def remove_first(self) -> Path:
         return Path(components=self.components[1:])
 
-    def remove_last_component(self) -> Path:
+    def remove_last(self) -> Path:
         return Path(components=self.components[:-1])
 
-    def add_component(self, component: PathComponent) -> Path:
+    def append(self, component: PathComponent) -> Path:
         return Path(components=self.components + (component,))
+
+    def __add__(self, other):
+        if not isinstance(other, Path):
+            raise TypeError
+
+        return Path(components=self.components + other.components)
+
+
+EMPTY_PATH = Path(components=tuple())

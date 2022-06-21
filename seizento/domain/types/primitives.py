@@ -1,6 +1,5 @@
-from typing import TypeVar, Generic, Optional, Dict
+from typing import TypeVar
 
-from seizento.domain.path import PathComponent
 from seizento.domain.types.type import Type
 
 T = TypeVar('T')

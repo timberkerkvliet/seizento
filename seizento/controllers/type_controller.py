@@ -1,9 +1,8 @@
 from typing import Dict
 
-from seizento.domain.path import Path
+from seizento.path import Path
 from seizento.repository import Repository
-from seizento.serializers.type_serializer import serialize_root_of_type, parse_type, serialize_subtypes, \
-    serialize_type
+from seizento.serializers.type_serializer import parse_type, serialize_type
 
 
 class TypeController:

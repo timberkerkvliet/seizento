@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Dict, Optional
 
 from seizento.domain.identifier import Identifier
-from seizento.domain.path import PathValue, PathComponent
+from seizento.path import StringComponent, PathComponent
 from seizento.domain.types.type import Type
 
 
@@ -33,6 +33,6 @@ class Struct(Type):
 
     def get_subtypes(self) -> Dict[PathComponent, Type]:
         return {
-            PathValue(value=field.name): field_type
+            StringComponent(value=field.name): field_type
             for field, field_type in self._fields.items()
         }

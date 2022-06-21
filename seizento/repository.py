@@ -1,16 +1,31 @@
 import json
-from abc import ABC
+from abc import abstractmethod
+from contextlib import AbstractAsyncContextManager
 
 from seizento.domain.expression import Expression
-from seizento.domain.path import Path
+from seizento.path import Path
 from seizento.domain.types.type import Type
-from seizento.key_value_store import PathValueStoreTransaction
 from seizento.serializers.path_serializer import serialize_path, serialize_component
-from seizento.serializers.type_serializer import serialize_root_of_type, parse_type
+from seizento.serializers.type_serializer import serialize_root_data, parse_type
+from seizento.data_tree import DataTree
+
+
+class TreeDataStoreTransaction(AbstractAsyncContextManager):
+    @abstractmethod
+    async def get_tree(self, path: Path) -> DataTree:
+        ...
+
+    @abstractmethod
+    async def set_tree(self, path: Path, values: DataTree) -> None:
+        ...
+
+    @abstractmethod
+    async def delete_tree(self, path: Path) -> None:
+        ...
 
 
 class Repository:
-    def __init__(self, transaction: PathValueStoreTransaction):
+    def __init__(self, transaction: TreeDataStoreTransaction):
         self._transaction = transaction
 
     async def __aenter__(self):
@@ -50,7 +65,7 @@ class Repository:
 
         await self._key_value_store_transaction.set(
             key=key,
-            value=json.dumps(serialize_root_of_type(value))
+            value=json.dumps(serialize_root_data(value))
         )
 
         sub_paths = await self._key_value_store_transaction.find(key_prefix=key)
@@ -62,7 +77,7 @@ class Repository:
         if subtypes is None:
             return
         for component, subtype in subtypes.items():
-            await self.set_type(path=path.add_component(component), value=subtype)
+            await self.set_type(path=path.append(component), value=subtype)
 
     async def get_expression(self, path: Path) -> Expression:
         pass

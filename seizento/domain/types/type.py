@@ -1,10 +1,8 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Dict, Optional, List, Callable, Any
+from typing import Dict, Optional
 
-
-from seizento.domain.path import Path, PlaceHolder, PathComponent
+from seizento.path import PathComponent
 
 
 class Type(ABC):

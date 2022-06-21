@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import List, Union, Dict, Set
 
 from seizento.domain.identifier import Identifier
-from seizento.domain.path import Path
+from seizento.path import Path
 from seizento.domain.types.type import Type
 from seizento.domain.types.primitives import String
 

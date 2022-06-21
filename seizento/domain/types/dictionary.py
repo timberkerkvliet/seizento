@@ -1,6 +1,6 @@
 from typing import Dict
 
-from seizento.domain.path import PathComponent, PlaceHolder
+from seizento.path import PathComponent, PlaceHolder
 from seizento.domain.types.type import Type
 
 
