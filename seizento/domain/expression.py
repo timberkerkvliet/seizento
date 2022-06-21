@@ -50,27 +50,12 @@ class PrimitiveLiteral(Expression):
         return self.value
 
 
-class StringCast(Expression):
-    def __init__(self, argument: Expression):
-        self._argument = argument
+@dataclass(frozen=True)
+class PathReference(Expression):
+    path: Path
 
-    def serialize(self) -> str:
-        return f'string({self._argument.serialize()})'
+    def get_type(self) -> Type:
+        ...
 
-
-class Concatenation(Expression):
-    def __init__(self, tokens: List[Expression]) -> None:
-        self._tokens = tokens
-
-    def serialize(self) -> str:
-        return ' + '.join(token.serialize() for token in self._tokens)
-
-
-class Template(Expression):
-    def __init__(self, tokens: List[Expression]) -> None:
-        self._tokens = tokens
-
-    def as_concatenation(self) -> Concatenation:
-        return Concatenation(
-            tokens=[StringCast(token) for token in self._tokens]
-        )
+    def evaluate(self) -> Any:
+        ...

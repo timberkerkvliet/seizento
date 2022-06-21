@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Any
 
 from seizento.path import Path, EMPTY_PATH
 from seizento.serializers.path_serializer import serialize_component, parse_component
@@ -20,7 +20,10 @@ def serialize_data_tree(value: DataTree) -> Dict:
     }
 
 
-def parse_data_tree(value: Dict) -> DataTree:
+def parse_data_tree(value: Any) -> DataTree:
+    if not isinstance(value, dict):
+        return DataTree(values={EMPTY_PATH: value})
+    
     data = {k: v for k, v in value.items() if k != 'children'}
     children = value.get('children') or {}
     result = DataTree(

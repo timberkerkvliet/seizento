@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typing import Dict
+from typing import Dict, Any
 
 from seizento.path import Path, PathComponent
 
@@ -13,7 +13,7 @@ class InvalidDataTree(Exception):
 
 @dataclass(frozen=True)
 class DataTree:
-    values: Dict[Path, Dict]
+    values: Dict[Path, Any]
 
     def __post_init__(self):
         for path in self.values.keys():
