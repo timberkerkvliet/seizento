@@ -12,7 +12,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/type/',
             {
                 'name': 'STRUCT',
-                'children': {
+                'fields': {
                     'a': {'name': 'STRING'},
                     'b': {'name': 'INTEGER'}
                 }
@@ -24,7 +24,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'STRUCT',
-                'children': {
+                'fields': {
                     'a': {'name': 'STRING'},
                     'b': {'name': 'INTEGER'}
                 }
@@ -36,14 +36,14 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/type/',
             {
                 'name': 'STRUCT',
-                'children': {'a': {'name': 'FLOAT'}}
+                'fields': {'a': {'name': 'FLOAT'}}
             }
         )
         await self.test_client.set(
             '/type/',
             {
                 'name': 'STRUCT',
-                'children': {'b': {'name': 'INTEGER'}}
+                'fields': {'b': {'name': 'INTEGER'}}
             }
         )
         response = await self.test_client.get('/type/')
@@ -51,7 +51,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'STRUCT',
-                'children': {
+                'fields': {
                     'b': {'name': 'INTEGER'}
                 }
             }
@@ -62,7 +62,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/type/',
             {
                 'name': 'STRUCT',
-                'children': {'a': {'name': 'FLOAT'}, 'b': {'name': 'STRING'}}
+                'fields': {'a': {'name': 'FLOAT'}, 'b': {'name': 'STRING'}}
             }
         )
         await self.test_client.set(
@@ -75,7 +75,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'STRUCT',
-                'children': {
+                'fields': {
                     'a': {'name': 'INTEGER'},
                     'b': {'name': 'STRING'}
                 }
@@ -99,7 +99,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'STRUCT',
-                'children': {
+                'fields': {
                     'c': {'name': 'INTEGER'},
                     'd': {'name': 'STRING'}
                 }
@@ -108,7 +108,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         )
 
     async def test_delete_field_type(self):
-        await self.test_client.set('type/', {'name': 'STRUCT', 'children': {'a': {'name': 'STRING'}}})
+        await self.test_client.set('type/', {'name': 'STRUCT', 'fields': {'a': {'name': 'STRING'}}})
         await self.test_client.delete('/type/a')
 
         response = await self.test_client.get('/type/')

@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
 
+from seizento.data_tree_maps.type_map import type_to_tree, tree_to_type
 from seizento.domain.expression import Expression
 from seizento.path import Path, StringComponent
 from seizento.domain.types.type import Type
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
-from seizento.serializers.type_serializer import parse_type, serialize_type
 from seizento.data_tree import DataTree
 
 
@@ -37,12 +37,12 @@ class Repository:
     async def get_type(self, path: Path) -> Type:
         data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('type')))
 
-        return parse_type(data_tree)
+        return tree_to_type(data_tree)
 
     async def set_type(self, path: Path, value: Type) -> None:
         await self._transaction.set_tree(
             path=path.insert_first(StringComponent('type')),
-            tree=serialize_type(value)
+            tree=type_to_tree(value)
         )
 
     async def delete_type(self, path: Path) -> None:

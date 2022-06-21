@@ -8,7 +8,6 @@ from seizento.domain.types.struct import Struct
 from seizento.domain.types.type import Type
 from seizento.path import Path, StringComponent, PlaceHolder
 from seizento.repository import Repository
-from seizento.serializers.data_tree_serializer import serialize_data_tree, parse_data_tree
 from seizento.serializers.type_serializer import parse_type, serialize_type
 
 
@@ -38,7 +37,7 @@ class TypeController:
     async def get(self) -> Dict:
         target_type = await self._get_target_type()
 
-        return serialize_data_tree(serialize_type(target_type))
+        return serialize_type(target_type)
 
     async def set(self, data: Dict) -> None:
         parent_type = await self._get_parent_type()
@@ -53,7 +52,7 @@ class TypeController:
             raise Forbidden
 
         try:
-            parsed = parse_type(parse_data_tree(data))
+            parsed = parse_type(data)
         except Exception as e:
             raise BadRequest from e
 

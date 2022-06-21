@@ -9,7 +9,7 @@ class TestArray(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_and_get_literal(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'children': {'~': {'name': 'INTEGER'}}})
+        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
         await self.test_client.set(
             '/expression/',
             [1, 2, 3, 4]

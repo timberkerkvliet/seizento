@@ -11,7 +11,7 @@ class TestFunction(IsolatedAsyncioTestCase):
     async def test_set_function(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'FUNCTION', 'children': {'~': {'name': 'INTEGER'}}}
+            {'name': 'FUNCTION', 'value_type': {'name': 'INTEGER'}}
         )
 
         response = await self.test_client.get('/type/')
@@ -19,16 +19,14 @@ class TestFunction(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'FUNCTION',
-                'children': {
-                    '~': {'name': 'INTEGER'}
-                }
+                'value_type': {'name': 'INTEGER'}
             }
         )
 
     async def test_set_value_type(self):
         await self.test_client.set(
             '/type/',
-            {'name': 'FUNCTION', 'children': {'~': {'name': 'INTEGER'}}}
+            {'name': 'FUNCTION', 'value_type': {'name': 'INTEGER'}}
         )
         await self.test_client.set('/type/~/', {'name': 'FLOAT'})
 
@@ -37,20 +35,13 @@ class TestFunction(IsolatedAsyncioTestCase):
             response,
             {
                 'name': 'FUNCTION',
-                'children': {'~': {'name': 'FLOAT'}}
+                'value_type': {'name': 'FLOAT'}
             }
         )
 
-    async def test_set_function_without_children(self):
+    async def test_set_function_without_value_type(self):
         with self.assertRaises(BadRequest):
             await self.test_client.set(
                 '/type/',
                 {'name': 'FUNCTION'}
-            )
-
-    async def test_set_function_without_placeholder(self):
-        with self.assertRaises(BadRequest):
-            await self.test_client.set(
-                '/type/',
-                {'name': 'FUNCTION', 'children': {'a': {'name': 'INTEGER'}}}
             )

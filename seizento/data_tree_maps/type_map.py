@@ -1,27 +1,33 @@
-from typing import Any
-
 from seizento.domain.identifier import Identifier
+from seizento.path import Path, StringComponent, PlaceHolder
 from seizento.domain.types.type import Type
 from seizento.domain.types.struct import Struct
 from seizento.domain.types.array import Array
 from seizento.domain.types.dictionary import Dictionary
 from seizento.domain.types.function import Function
 from seizento.domain.types.primitives import String, EncryptedString, Boolean, Integer, Float
+from seizento.data_tree import DataTree
 
 
-def serialize_type(value: Type) -> Any:
-    result = serialize_root_data(value)
+def type_to_tree(value: Type) -> DataTree:
+    result = DataTree(
+        values={
+            Path(components=tuple()): serialize_root_data(value)
+        }
+    )
 
     if isinstance(value, Struct):
-        fields = {
-            field.name: serialize_type(field_type)
-            for field, field_type in value.fields.items()
-        }
-        if len(fields) > 0:
-            result['fields'] = fields
+        for field, field_type in value.fields.items():
+            result = result.set_subtree(
+                path=Path(components=(StringComponent(field.name),)),
+                subtree=type_to_tree(field_type)
+            )
 
     if isinstance(value, (Array, Function, Dictionary)):
-        result['value_type'] = serialize_type(value.value_type)
+        result = result.set_subtree(
+            path=Path(components=(PlaceHolder(),)),
+            subtree=type_to_tree(value.value_type)
+        )
 
     return result
 
@@ -47,8 +53,11 @@ def serialize_root_data(value: Type):
         return {'name': 'BOOLEAN'}
 
 
-def parse_type(value: Any) -> Type:
-    name = value['name']
+def tree_to_type(value: DataTree) -> Type:
+    root_data = value.root_data
+    if 'name' not in root_data:
+        raise ValueError('Name property expected')
+    name = root_data['name']
 
     if name == 'STRING':
         return String()
@@ -59,27 +68,26 @@ def parse_type(value: Any) -> Type:
     if name == 'BOOLEAN':
         return Boolean()
     if name in {'ARRAY', 'DICTIONARY', 'FUNCTION'}:
-        value_type = value['value_type']
+        value_type = value.get_subtree(Path(components=(PlaceHolder(),)))
 
         if name == 'ARRAY':
             return Array(
-                value_type=parse_type(value_type)
+                value_type=tree_to_type(value_type)
             )
         if name == 'DICTIONARY':
             return Dictionary(
-                value_type=parse_type(value_type)
+                value_type=tree_to_type(value_type)
             )
         if name == 'FUNCTION':
             return Function(
-                value_type=parse_type(value_type)
+                value_type=tree_to_type(value_type)
             )
     if name == 'STRUCT':
-        if 'fields' not in value:
-            return Struct(fields={})
+        subtrees = value.subtrees
 
         return Struct(
             fields={
-                Identifier(field): parse_type(subtype)
-                for field, subtype in value['fields'].items()
+                Identifier(component.value): tree_to_type(subtree)
+                for component, subtree in subtrees.items()
             }
         )
