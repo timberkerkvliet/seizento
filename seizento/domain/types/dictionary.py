@@ -1,6 +1,5 @@
 from typing import Dict
 
-from seizento.path import PathComponent, PlaceHolder
 from seizento.domain.types.type import Type
 
 
@@ -15,3 +14,6 @@ class Dictionary(Type):
     @property
     def default_value(self) -> Dict:
         return {}
+
+    def is_subtype(self, other: Type) -> bool:
+        return self == other

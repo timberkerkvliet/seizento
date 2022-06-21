@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import List, Union, Dict, Set, Any, Tuple
 
 from seizento.domain.identifier import Identifier
-from seizento.domain.types.array import Array
+from seizento.domain.types.array import Array, EmptyArray
 from seizento.domain.types.primitives import String, Integer
 from seizento.path import Path
 from seizento.domain.types.type import Type
@@ -56,6 +56,9 @@ class ArrayLiteral(Expression):
     values: Tuple[Expression, ...]
 
     def get_type(self) -> Type:
+        if len(self.values) == 0:
+            return EmptyArray()
+
         return Array(value_type=self.values[0].get_type())
 
     def evaluate(self) -> Any:

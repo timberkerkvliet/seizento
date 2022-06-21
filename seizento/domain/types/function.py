@@ -1,6 +1,5 @@
-from typing import Callable, Any, Dict
+from typing import Callable, Any
 
-from seizento.path import PathComponent, PlaceHolder
 from seizento.domain.types.type import Type
 
 
@@ -19,3 +18,6 @@ class Function(Type):
     @property
     def default_value(self) -> Callable[[str], Any]:
         return self._default_function
+
+    def is_subtype(self, other: Type) -> bool:
+        return self == other

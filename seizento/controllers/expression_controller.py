@@ -29,7 +29,7 @@ class ExpressionController:
         current_type = await self._repository.get_type(path=self._path)
         expression_type = new_expression.get_type()
 
-        if current_type != expression_type:
+        if not expression_type.is_subtype(current_type):
             raise Forbidden
 
         await self._repository.set_expression(

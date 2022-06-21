@@ -11,6 +11,9 @@ class Primitive(Type):
     def default_value(self):
         return None
 
+    def is_subtype(self, other: Type) -> bool:
+        return self == other
+
 
 @dataclass(frozen=True)
 class String(Primitive):
