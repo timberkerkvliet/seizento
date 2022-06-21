@@ -22,10 +22,10 @@ class ExpressionController:
     async def get(self) -> Dict:
         expression = await self._get_expression()
 
-        return serialize_data_tree(serialize_expression(expression))
+        return serialize_expression(expression)
 
     async def set(self, data: Dict) -> None:
-        new_expression = parse_expression(parse_data_tree(data))
+        new_expression = parse_expression(data)
 
         current_type = await self._repository.get_type(path=self._path)
         expression_type = new_expression.get_type()

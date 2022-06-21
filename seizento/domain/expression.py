@@ -1,9 +1,10 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Union, Dict, Set, Any
+from typing import List, Union, Dict, Set, Any, Tuple
 
 from seizento.domain.identifier import Identifier
+from seizento.domain.types.array import Array
 from seizento.domain.types.primitives import String, Integer
 from seizento.path import Path
 from seizento.domain.types.type import Type
@@ -51,11 +52,11 @@ class PrimitiveLiteral(Expression):
 
 
 @dataclass(frozen=True)
-class PathReference(Expression):
-    path: Path
+class ArrayLiteral(Expression):
+    values: Tuple[Expression, ...]
 
     def get_type(self) -> Type:
-        ...
+        return Array(value_type=self.values[0].get_type())
 
     def evaluate(self) -> Any:
-        ...
+        return [value.evaluate() for value in self.values]

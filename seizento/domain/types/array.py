@@ -1,16 +1,13 @@
+from dataclasses import dataclass
 from typing import Dict, List
 
 from seizento.path import PathComponent, PlaceHolder
 from seizento.domain.types.type import Type
 
 
+@dataclass(frozen=True)
 class Array(Type):
-    def __init__(self, value_type: Type):
-        self._value_type = value_type
-
-    @property
-    def value_type(self):
-        return self._value_type
+    value_type: Type
 
     @property
     def default_value(self) -> List:

@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from seizento.path import Path, EMPTY_PATH
+from seizento.path import Path, EMPTY_PATH, StringComponent
 from seizento.serializers.path_serializer import serialize_component, parse_component
 from seizento.data_tree import DataTree
 
@@ -21,7 +21,18 @@ def serialize_data_tree(value: DataTree) -> Dict:
 
 
 def parse_data_tree(value: Any) -> DataTree:
-    if not isinstance(value, dict):
+    if isinstance(value, list):
+        return DataTree(
+            values={
+                EMPTY_PATH: {'type': 'ARRAY'},
+                **{
+                    Path(components=(StringComponent(str(k)),)): parse_data_tree(child)
+                    for k, child in enumerate(value)
+                }
+            }
+        )
+
+    if isinstance(value, (int, bool, float, str)):
         return DataTree(values={EMPTY_PATH: value})
     
     data = {k: v for k, v in value.items() if k != 'children'}

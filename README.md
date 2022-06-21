@@ -6,9 +6,9 @@
 
 `/expression/{path}`: supports `GET` and `PUT` and `DELETE` methods.
 
-## Evaluate resource
+## Evaluation resource
 
-`/evaluate/{path}`: supports `GET` method.
+`/evaluation/{path}`: supports `GET` method.
 
 
 Supports only `GET` method.
