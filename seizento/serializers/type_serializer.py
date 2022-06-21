@@ -18,15 +18,15 @@ def serialize_type(value: Type) -> DataTree:
 
     if isinstance(value, Struct):
         for field, field_type in value.fields.items():
-            result = result.add_tree(
+            result = result.set_subtree(
                 path=Path(components=(StringComponent(field.name),)),
-                data_tree=serialize_type(field_type)
+                subtree=serialize_type(field_type)
             )
 
     if isinstance(value, (Array, Function, Dictionary)):
-        result = result.add_tree(
+        result = result.set_subtree(
             path=Path(components=(PlaceHolder(),)),
-            data_tree=serialize_type(value.value_type)
+            subtree=serialize_type(value.value_type)
         )
 
     return result

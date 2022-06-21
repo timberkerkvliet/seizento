@@ -2,22 +2,28 @@ import uuid
 
 from seizento.controllers.resource_controller import ResourceController
 from seizento.path import Path
-from seizento.data_tree import PathValueStoreTransaction, DataTree
-from seizento.repository import Repository
+from seizento.data_tree import DataTree
+from seizento.repository import Repository, DataTreeStoreTransaction
 
 
-class FakePathyValueStoreTransaction(PathValueStoreTransaction):
+class FakeDataTreeStoreTransaction(DataTreeStoreTransaction):
     def __init__(self):
-        self._root_values = DataTree(values={})
+        self._tree = DataTree(values={})
+
+    async def __aenter__(self):
+        pass
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
 
     async def get_tree(self, path: Path) -> DataTree:
-        pass
+        return self._tree.get_subtree(path=path)
 
-    async def set_tree(self, path: Path, values: DataTree) -> None:
-        pass
+    async def set_tree(self, path: Path, tree: DataTree) -> None:
+        self._tree.set_subtree(path=path, subtree=tree)
 
     async def delete_tree(self, path: Path) -> None:
-        pass
+        self._tree.delete_subtree(path=path)
 
 
 class UnitTestClient:
@@ -25,7 +31,7 @@ class UnitTestClient:
 
     def __init__(self):
         self.controller = ResourceController(
-            repository=Repository(FakeKeyValueStoreTransaction()),
+            repository_factory=lambda: Repository(FakeDataTreeStoreTransaction()),
             user_id=uuid.uuid4()
         )
 

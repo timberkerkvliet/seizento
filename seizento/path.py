@@ -48,8 +48,14 @@ class Path:
     def remove_last(self) -> Path:
         return Path(components=self.components[:-1])
 
-    def append(self, component: PathComponent) -> Path:
-        return Path(components=self.components + (component,))
+    def insert(self, component: PathComponent) -> Path:
+        return Path(components=(component,) + self.components)
+
+    def extends(self, other: Path) -> bool:
+        if len(self) < len(other):
+            return False
+
+        return self.components[:len(other)] == other.components
 
     def __add__(self, other):
         if not isinstance(other, Path):

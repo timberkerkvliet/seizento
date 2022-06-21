@@ -24,9 +24,9 @@ def parse_data_tree(value: Dict) -> DataTree:
     )
 
     for component, child_value in children.items():
-        result = result.add_tree(
+        result = result.set_subtree(
             path=Path(components=(parse_component(component),)),
-            data_tree=parse_data_tree(child_value)
+            subtree=parse_data_tree(child_value)
         )
 
     return result

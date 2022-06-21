@@ -11,13 +11,22 @@ from seizento.path import Path, PathComponent
 class DataTree:
     values: Dict[Path, Dict]
 
-    def add_tree(self, path: Path, data_tree: DataTree):
+    def delete_subtree(self, path: Path) -> DataTree:
         return DataTree(
             values={
-                **self.values,
+                tree_path: v for tree_path, v in self.values.items()
+                if tree_path.extends(path)
+            }
+        )
+
+    def set_subtree(self, path: Path, subtree: DataTree) -> DataTree:
+        result = self.delete_subtree(path=path)
+        return DataTree(
+            values={
+                **result.values,
                 **{
                     path + tree_path: value
-                    for tree_path, value in data_tree.values.items()
+                    for tree_path, value in subtree.values.items()
                 }
             }
         )

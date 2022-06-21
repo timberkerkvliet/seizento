@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Callable
 from uuid import UUID
 
 from seizento.controllers.type_controller import TypeController
@@ -15,33 +15,35 @@ def parse_resource(value: str) -> List[str]:
 class ResourceController:
     def __init__(
         self,
-        repository: Repository,
+        repository_factory: Callable[[], Repository],
         user_id: UUID
     ):
-        self._repository = repository
+        self._repository_factory = repository_factory
         self._user_id = user_id
 
     async def get(self, resource: str) -> Dict:
-        parts = parse_resource(resource)
+        async with self._repository_factory() as repository:
+            parts = parse_resource(resource)
 
-        if parts[0] == 'type':
-            controller = TypeController(
-                repository=self._repository,
-                path=parse_path('/'.join(parts[1:]))
-            )
-            return await controller.get()
+            if parts[0] == 'type':
+                controller = TypeController(
+                    repository=repository,
+                    path=parse_path('/'.join(parts[1:]))
+                )
+                return await controller.get()
 
-        raise NotImplementedError
+            raise NotImplementedError
 
     async def set(self, resource: str, data: Any) -> None:
-        parts = parse_resource(resource)
+        async with self._repository_factory() as repository:
+            parts = parse_resource(resource)
 
-        if parts[0] == 'type':
-            controller = TypeController(
-                repository=self._repository,
-                path=parse_path('/'.join(parts[1:]))
-            )
-            return await controller.set(data=data)
+            if parts[0] == 'type':
+                controller = TypeController(
+                    repository=repository,
+                    path=parse_path('/'.join(parts[1:]))
+                )
+                return await controller.set(data=data)
 
     async def delete(self, resource: str) -> None:
         raise NotImplementedError
