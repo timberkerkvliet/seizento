@@ -23,12 +23,13 @@ class ResourceController:
 
     async def get(self, resource: str) -> Dict:
         async with self._repository_factory() as repository:
-            parts = parse_resource(resource)
+            resource_path = parse_path(resource)
+            resource_type = resource_path.first_component.value
 
-            if parts[0] == 'type':
+            if resource_type == 'type':
                 controller = TypeController(
                     repository=repository,
-                    path=parse_path('/'.join(parts[1:]))
+                    path=resource_path.remove_first()
                 )
                 return await controller.get()
 
@@ -36,12 +37,13 @@ class ResourceController:
 
     async def set(self, resource: str, data: Any) -> None:
         async with self._repository_factory() as repository:
-            parts = parse_resource(resource)
+            resource_path = parse_path(resource)
+            resource_type = resource_path.first_component.value
 
-            if parts[0] == 'type':
+            if resource_type == 'type':
                 controller = TypeController(
                     repository=repository,
-                    path=parse_path('/'.join(parts[1:]))
+                    path=resource_path.remove_first()
                 )
                 return await controller.set(data=data)
 
