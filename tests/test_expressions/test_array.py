@@ -32,6 +32,14 @@ class TestArray(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, [2])
 
+    async def test_add_index(self):
+        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/expression/', [1])
+        await self.test_client.set('/expression/1', 2)
+
+        response = await self.test_client.get('/expression/')
+        self.assertEqual(response, [1, 2])
+
     async def test_set_wrong_type(self):
         await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
 
