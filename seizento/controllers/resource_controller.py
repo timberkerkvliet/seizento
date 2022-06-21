@@ -1,6 +1,7 @@
 from typing import Dict, Any, Callable
 from uuid import UUID
 
+from seizento.controllers.evaluation_controller import EvaluationController
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.type_controller import TypeController
 from seizento.repository import Repository
@@ -30,6 +31,11 @@ class ResourceController:
                 repository=repository,
                 path=resource_path.remove_first()
             )
+        if resource_type == 'evaluation':
+            return EvaluationController(
+                repository=repository,
+                path=resource_path.remove_first()
+            )
 
     async def get(self, resource: str) -> Dict:
         async with self._repository_factory() as repository:
@@ -44,4 +50,7 @@ class ResourceController:
             await controller.set(data=data)
 
     async def delete(self, resource: str) -> None:
-        raise NotImplementedError
+        async with self._repository_factory() as repository:
+            controller = self._get_controller(resource=resource, repository=repository)
+
+            await controller.delete()

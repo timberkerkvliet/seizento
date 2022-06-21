@@ -23,7 +23,7 @@ class DataTree:
         return DataTree(
             values={
                 tree_path: v for tree_path, v in self.values.items()
-                if tree_path.extends(path)
+                if not tree_path.extends(path)
             }
         )
 

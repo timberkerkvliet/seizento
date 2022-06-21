@@ -58,3 +58,37 @@ class TestSetStructSchema(IsolatedAsyncioTestCase):
 
             }
         )
+
+    async def test_add_field_type(self):
+        await self.test_client.set(
+            '/type/c',
+            {'name': 'INTEGER'}
+        )
+
+        response = await self.test_client.get('/type/')
+        self.assertDictEqual(
+            response,
+            {
+                'name': 'STRUCT',
+                'children': {
+                    'a': {'name': 'STRING'},
+                    'b': {'name': 'INTEGER'},
+                    'c': {'name': 'INTEGER'}
+                }
+
+            }
+        )
+
+    async def test_delete_field_type(self):
+        await self.test_client.delete('/type/b')
+
+        response = await self.test_client.get('/type/')
+        self.assertDictEqual(
+            response,
+            {
+                'name': 'STRUCT',
+                'children': {
+                    'a': {'name': 'STRING'}
+                }
+            }
+        )

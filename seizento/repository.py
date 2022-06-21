@@ -45,6 +45,11 @@ class Repository:
             tree=serialize_type(value)
         )
 
+    async def delete_type(self, path: Path) -> None:
+        await self._transaction.delete_tree(
+            path=path.insert_first(StringComponent('type'),)
+        )
+
     async def get_expression(self, path: Path) -> Expression:
         data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('expression')))
 
