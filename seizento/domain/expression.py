@@ -32,14 +32,8 @@ class Expression(ABC):
 
 
 @dataclass(frozen=True)
-class EncryptedString:
-    metadata: str
-    value: str
-
-
-@dataclass(frozen=True)
 class PrimitiveLiteral(Expression):
-    value: Union[str, EncryptedString, int, float, bool]
+    value: Union[str, int, float, bool]
 
     def get_type(self) -> Type:
         if isinstance(self.value, str):

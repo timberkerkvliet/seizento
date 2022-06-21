@@ -6,7 +6,7 @@ from seizento.domain.types.struct import Struct
 from seizento.domain.types.array import Array
 from seizento.domain.types.dictionary import Dictionary
 from seizento.domain.types.function import Function
-from seizento.domain.types.primitives import String, EncryptedString, Boolean, Integer, Float
+from seizento.domain.types.primitives import String, Boolean, Integer, Float
 
 
 def serialize_type(value: Type) -> Any:
@@ -37,8 +37,6 @@ def serialize_root_data(value: Type):
         return {'name': 'FUNCTION'}
     if isinstance(value, String):
         return {'name': 'STRING'}
-    if isinstance(value, EncryptedString):
-        return {'name': 'ENCRYPTED_STRING'}
     if isinstance(value, Integer):
         return {'name': 'INTEGER'}
     if isinstance(value, Float):

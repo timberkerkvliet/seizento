@@ -20,7 +20,6 @@ Supports only `GET` method.
 * Dictionary: elements identified by a key, all available keys are known
 * Function: parametrized type
 * String
-* Encrypted string: string with metadata about the encryption
 * Bool
 * Integer
 * Float

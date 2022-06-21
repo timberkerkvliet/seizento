@@ -21,11 +21,6 @@ class String(Primitive):
 
 
 @dataclass(frozen=True)
-class EncryptedString(Primitive):
-    pass
-
-
-@dataclass(frozen=True)
 class Boolean(Primitive):
     pass
 
