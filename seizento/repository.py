@@ -4,6 +4,7 @@ from contextlib import AbstractAsyncContextManager
 from seizento.domain.expression import Expression
 from seizento.path import Path, StringComponent
 from seizento.domain.types.type import Type
+from seizento.serializers.expression_serializer import parse_expression, serialize_expression
 from seizento.serializers.type_serializer import parse_type, serialize_type
 from seizento.data_tree import DataTree
 
@@ -45,7 +46,12 @@ class Repository:
         )
 
     async def get_expression(self, path: Path) -> Expression:
-        pass
+        data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('expression')))
+
+        return parse_expression(data_tree)
 
     async def set_expression(self, path: Path, value: Expression) -> None:
-        pass
+        await self._transaction.set_tree(
+            path=path.insert_first(StringComponent('expression')),
+            tree=serialize_expression(value)
+        )

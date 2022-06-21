@@ -14,7 +14,14 @@ class TestSetStringLiteral(IsolatedAsyncioTestCase):
     async def test_set_and_get_expression(self):
         await self.test_client.set(
             '/expression/',
-            'a literal string'
+            {'literal': 'a literal string'}
         )
         response = await self.test_client.get('/expression/')
-        self.assertEqual(response, 'a literal string')
+        self.assertEqual(response, {'literal': 'a literal string'})
+
+    async def test_set_wrong_literal(self):
+        with self.assertRaises(Exception):
+            await self.test_client.set(
+                '/expression/',
+                {'literal': 9000}
+            )

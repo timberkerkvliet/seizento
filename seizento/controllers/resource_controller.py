@@ -1,6 +1,7 @@
 from typing import Dict, Any, Callable
 from uuid import UUID
 
+from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.type_controller import TypeController
 from seizento.repository import Repository
 from seizento.serializers.path_serializer import parse_path
@@ -21,6 +22,11 @@ class ResourceController:
         resource_type = resource_path.first_component.value
         if resource_type == 'type':
             return TypeController(
+                repository=repository,
+                path=resource_path.remove_first()
+            )
+        if resource_type == 'expression':
+            return ExpressionController(
                 repository=repository,
                 path=resource_path.remove_first()
             )

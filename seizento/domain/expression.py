@@ -1,9 +1,10 @@
 from __future__ import annotations
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Union, Dict, Set
 
 from seizento.domain.identifier import Identifier
+from seizento.domain.types.primitives import String, Integer
 from seizento.path import Path
 from seizento.domain.types.type import Type
 
@@ -20,7 +21,9 @@ class TypeContext:
 
 
 class Expression(ABC):
-    pass
+    @abstractmethod
+    def get_type(self) -> Type:
+        pass
 
 
 class FunctionParameterReference(Expression):
@@ -39,12 +42,21 @@ class DataNodeReference(Expression):
         return {self._data_node_id.root}
 
 
-class Literal(Expression):
-    def __init__(self, value: Union[str, int, float, bool]) -> None:
-        self._value = value
+@dataclass(frozen=True)
+class EncryptedString:
+    metadata: str
+    value: str
 
-    def serialize(self) -> str:
-        return str(self._value)
+
+@dataclass(frozen=True)
+class PrimitiveLiteral(Expression):
+    value: Union[str, EncryptedString, int, float, bool]
+
+    def get_type(self) -> Type:
+        if isinstance(self.value, str):
+            return String()
+        if isinstance(self.value, int):
+            return Integer()
 
 
 class StringCast(Expression):
