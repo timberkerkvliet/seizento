@@ -26,4 +26,7 @@ class Array(Type):
         return []
 
     def is_subtype(self, other: Type) -> bool:
-        return self == other
+        if not isinstance(other, Array):
+            return False
+
+        return self.value_type.is_subtype(other.value_type)

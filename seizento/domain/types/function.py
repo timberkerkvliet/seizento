@@ -20,4 +20,8 @@ class Function(Type):
         return self._default_function
 
     def is_subtype(self, other: Type) -> bool:
-        return self == other
+        if not isinstance(other, Function):
+            return False
+
+        return self.value_type.is_subtype(other.value_type)
+
