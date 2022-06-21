@@ -20,10 +20,10 @@ class FakeDataTreeStoreTransaction(DataTreeStoreTransaction):
         return self._tree.get_subtree(path=path)
 
     async def set_tree(self, path: Path, tree: DataTree) -> None:
-        self._tree.set_subtree(path=path, subtree=tree)
+        self._tree = self._tree.set_subtree(path=path, subtree=tree)
 
     async def delete_tree(self, path: Path) -> None:
-        self._tree.delete_subtree(path=path)
+        self._tree = self._tree.delete_subtree(path=path)
 
 
 class UnitTestClient:
