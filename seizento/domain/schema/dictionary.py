@@ -1,10 +1,10 @@
 from typing import Dict
 
-from seizento.domain.types.type import Type
+from seizento.domain.schema.schema import Schema
 
 
-class Dictionary(Type):
-    def __init__(self, value_type: Type):
+class Dictionary(Schema):
+    def __init__(self, value_type: Schema):
         self._value_type = value_type
 
     @property
@@ -15,9 +15,9 @@ class Dictionary(Type):
     def default_value(self) -> Dict:
         return {}
 
-    def is_subtype(self, other: Type) -> bool:
+    def is_subschema(self, other: Schema) -> bool:
         if not isinstance(other, Dictionary):
             return False
 
-        return self.value_type.is_subtype(other.value_type)
+        return self.value_type.is_subschema(other.value_type)
 

@@ -1,12 +1,12 @@
 from typing import Any
 
 from seizento.domain.identifier import Identifier
-from seizento.domain.types.type import Type
-from seizento.domain.types.struct import Struct
-from seizento.domain.types.array import Array
-from seizento.domain.types.dictionary import Dictionary
-from seizento.domain.types.function import Function
-from seizento.domain.types.primitives import String, Boolean, Integer, Float
+from seizento.domain.schema.schema import Schema
+from seizento.domain.schema.struct import Struct
+from seizento.domain.schema.array import Array
+from seizento.domain.schema.dictionary import Dictionary
+from seizento.domain.schema.function import Function
+from seizento.domain.schema.primitives import String, Boolean, Integer, Float
 
 
 NAMES = {
@@ -21,26 +21,26 @@ NAMES = {
 }
 
 
-def serialize_type(value: Type) -> Any:
+def serialize_schema(value: Schema) -> Any:
     result = {
         'name': NAMES[type(value)]
     }
 
     if isinstance(value, Struct):
         fields = {
-            field.name: serialize_type(field_type)
+            field.name: serialize_schema(field_type)
             for field, field_type in value.fields.items()
         }
         if len(fields) > 0:
             result['fields'] = fields
 
     if isinstance(value, (Array, Function, Dictionary)):
-        result['value_type'] = serialize_type(value.value_type)
+        result['value_type'] = serialize_schema(value.value_type)
 
     return result
 
 
-def parse_type(value: Any) -> Type:
+def parse_schema(value: Any) -> Schema:
     name = value['name']
 
     if name == NAMES[String]:
@@ -56,15 +56,15 @@ def parse_type(value: Any) -> Type:
 
         if name == NAMES[Array]:
             return Array(
-                value_type=parse_type(value_type)
+                value_type=parse_schema(value_type)
             )
         if name == NAMES[Dictionary]:
             return Dictionary(
-                value_type=parse_type(value_type)
+                value_type=parse_schema(value_type)
             )
         if name == NAMES[Function]:
             return Function(
-                value_type=parse_type(value_type)
+                value_type=parse_schema(value_type)
             )
     if name == NAMES[Struct]:
         if 'fields' not in value:
@@ -72,7 +72,7 @@ def parse_type(value: Any) -> Type:
 
         return Struct(
             fields={
-                Identifier(field): parse_type(subtype)
+                Identifier(field): parse_schema(subtype)
                 for field, subtype in value['fields'].items()
             }
         )

@@ -1,15 +1,15 @@
 from seizento.domain.identifier import Identifier
 from seizento.path import Path, StringComponent, PlaceHolder
-from seizento.domain.types.type import Type
-from seizento.domain.types.struct import Struct
-from seizento.domain.types.array import Array
-from seizento.domain.types.dictionary import Dictionary
-from seizento.domain.types.function import Function
-from seizento.domain.types.primitives import String, Boolean, Integer, Float
+from seizento.domain.schema.schema import Schema
+from seizento.domain.schema.struct import Struct
+from seizento.domain.schema.array import Array
+from seizento.domain.schema.dictionary import Dictionary
+from seizento.domain.schema.function import Function
+from seizento.domain.schema.primitives import String, Boolean, Integer, Float
 from seizento.data_tree import DataTree
 
 
-def type_to_tree(value: Type) -> DataTree:
+def schema_to_tree(value: Schema) -> DataTree:
     result = DataTree(
         values={
             Path(components=tuple()): serialize_root_data(value)
@@ -20,19 +20,19 @@ def type_to_tree(value: Type) -> DataTree:
         for field, field_type in value.fields.items():
             result = result.set_subtree(
                 path=Path(components=(StringComponent(field.name),)),
-                subtree=type_to_tree(field_type)
+                subtree=schema_to_tree(field_type)
             )
 
     if isinstance(value, (Array, Function, Dictionary)):
         result = result.set_subtree(
             path=Path(components=(PlaceHolder(),)),
-            subtree=type_to_tree(value.value_type)
+            subtree=schema_to_tree(value.value_type)
         )
 
     return result
 
 
-def serialize_root_data(value: Type):
+def serialize_root_data(value: Schema):
     if isinstance(value, Struct):
         return {'name': 'STRUCT'}
     if isinstance(value, Dictionary):
@@ -51,7 +51,7 @@ def serialize_root_data(value: Type):
         return {'name': 'BOOLEAN'}
 
 
-def tree_to_type(value: DataTree) -> Type:
+def tree_to_schema(value: DataTree) -> Schema:
     root_data = value.root_data
     if 'name' not in root_data:
         raise ValueError('Name property expected')
@@ -70,22 +70,22 @@ def tree_to_type(value: DataTree) -> Type:
 
         if name == 'ARRAY':
             return Array(
-                value_type=tree_to_type(value_type)
+                value_type=tree_to_schema(value_type)
             )
         if name == 'DICTIONARY':
             return Dictionary(
-                value_type=tree_to_type(value_type)
+                value_type=tree_to_schema(value_type)
             )
         if name == 'FUNCTION':
             return Function(
-                value_type=tree_to_type(value_type)
+                value_type=tree_to_schema(value_type)
             )
     if name == 'STRUCT':
         subtrees = value.subtrees
 
         return Struct(
             fields={
-                Identifier(component.value): tree_to_type(subtree)
+                Identifier(component.value): tree_to_schema(subtree)
                 for component, subtree in subtrees.items()
             }
         )

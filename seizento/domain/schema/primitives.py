@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 from typing import TypeVar
 
-from seizento.domain.types.type import Type
+from seizento.domain.schema.schema import Schema
 
 T = TypeVar('T')
 
 
-class Primitive(Type):
+class Primitive(Schema):
     @property
     def default_value(self):
         return None
 
-    def is_subtype(self, other: Type) -> bool:
+    def is_subschema(self, other: Schema) -> bool:
         return self == other
 
 

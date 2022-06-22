@@ -1,25 +1,55 @@
-## Type resource
+## What does seizento do?
 
-`/type/{path}`: supports `GET`, `PUT` and `DELETE` methods.
+### It stores JSON data validated against a schema
 
-## Expression resource
+First, a schema must be set, by sending a PUT request to `/schema/products`:
 
-`/expression/{path}`: supports `GET` and `PUT` and `DELETE` methods.
+```
+{
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "name": {"type": "string"},
+        "on_stock: {"type: "bool"}
+    }
+}
+```
 
-## Evaluation resource
+And then, data for this schema can be set with a PUT request to `/expression/product`
 
-`/evaluation/{path}`: supports `GET` method.
+```
+{
+    "id": 1,
+    "name": "My product",
+    "on_stock": True
+}
+```
 
+### It transforms JSON data
 
-Supports only `GET` method.
+Now suppose that we set a different schema at `/schema/stock`
 
-## Data types
+```
+{
+    "type": "object",
+    "additionalProperties": {
+        {"type": "integer"}
+    }
+}
+```
 
-* Array: unordered list of elements with a fixed schema
-* Struct: composite of different schemas, all identified by a name
-* Dictionary: elements identified by a key, all available keys are known
-* Function: parametrized type
-* String
-* Bool
-* Integer
-* Float
+Then we can set the value with a PUT request to `/expression/stock`
+
+```
+{
+    '{product/name}': '{product/stock}'
+}
+```
+
+And by sending a GET request to `/evaluation/stock` we get it evaluated:
+
+```
+{
+    "My Product": True
+}
+```

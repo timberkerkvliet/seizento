@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 from typing import List
 
-from seizento.domain.types.type import Type
+from seizento.domain.schema.schema import Schema
 
 
 @dataclass(frozen=True)
-class EmptyArray(Type):
+class EmptyArray(Schema):
     @property
     def default_value(self) -> List:
         return []
 
-    def is_subtype(self, other: Type) -> bool:
+    def is_subschema(self, other: Schema) -> bool:
         if isinstance(other, (EmptyArray, Array)):
             return True
 
@@ -18,15 +18,15 @@ class EmptyArray(Type):
 
 
 @dataclass(frozen=True)
-class Array(Type):
-    value_type: Type
+class Array(Schema):
+    value_type: Schema
 
     @property
     def default_value(self) -> List:
         return []
 
-    def is_subtype(self, other: Type) -> bool:
+    def is_subschema(self, other: Schema) -> bool:
         if not isinstance(other, Array):
             return False
 
-        return self.value_type.is_subtype(other.value_type)
+        return self.value_type.is_subschema(other.value_type)

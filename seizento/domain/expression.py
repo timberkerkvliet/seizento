@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from typing import List, Union, Dict, Set, Any, Tuple
 
 from seizento.domain.identifier import Identifier
-from seizento.domain.types.array import Array, EmptyArray
-from seizento.domain.types.primitives import String, Integer
+from seizento.domain.schema.array import Array, EmptyArray
+from seizento.domain.schema.dictionary import Dictionary
+from seizento.domain.schema.primitives import String, Integer
 from seizento.path import Path
-from seizento.domain.types.type import Type
+from seizento.domain.schema.schema import Schema
 
 
 @dataclass(frozen=True)
@@ -18,12 +19,12 @@ class EvaluationContext:
 
 @dataclass(frozen=True)
 class TypeContext:
-    root_types: Dict[Identifier, Type]
+    root_types: Dict[Identifier, Schema]
 
 
 class Expression(ABC):
     @abstractmethod
-    def get_type(self) -> Type:
+    def get_type(self) -> Schema:
         pass
 
     @abstractmethod
@@ -35,7 +36,7 @@ class Expression(ABC):
 class PrimitiveLiteral(Expression):
     value: Union[str, int, float, bool]
 
-    def get_type(self) -> Type:
+    def get_type(self) -> Schema:
         if isinstance(self.value, str):
             return String()
         if isinstance(self.value, int):
@@ -49,7 +50,7 @@ class PrimitiveLiteral(Expression):
 class ArrayLiteral(Expression):
     values: Tuple[Expression, ...]
 
-    def get_type(self) -> Type:
+    def get_type(self) -> Schema:
         if len(self.values) == 0:
             return EmptyArray()
 
@@ -57,3 +58,17 @@ class ArrayLiteral(Expression):
 
     def evaluate(self) -> Any:
         return [value.evaluate() for value in self.values]
+
+
+@dataclass(frozen=True)
+class DictionaryLiteral(Expression):
+    values: Dict[str, Expression]
+
+    def get_type(self) -> Schema:
+        if len(self.values) == 0:
+            return EmptyArray()
+
+        return Dictionary(value_type=set(self.values.values()).pop().get_type())
+
+    def evaluate(self) -> Any:
+        return {key: value.evaluate() for key, value in self.values.items()}

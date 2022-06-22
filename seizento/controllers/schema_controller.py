@@ -1,17 +1,17 @@
 from typing import Dict, Optional
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
-from seizento.domain.types.array import Array
-from seizento.domain.types.dictionary import Dictionary
-from seizento.domain.types.function import Function
-from seizento.domain.types.struct import Struct
-from seizento.domain.types.type import Type
+from seizento.domain.schema.array import Array
+from seizento.domain.schema.dictionary import Dictionary
+from seizento.domain.schema.function import Function
+from seizento.domain.schema.struct import Struct
+from seizento.domain.schema.schema import Schema
 from seizento.path import Path, StringComponent, PlaceHolder
 from seizento.repository import Repository
-from seizento.serializers.type_serializer import parse_type, serialize_type
+from seizento.serializers.schema_serializer import parse_schema, serialize_schema
 
 
-class TypeController:
+class SchemaController:
     def __init__(
         self,
         repository: Repository,
@@ -26,7 +26,7 @@ class TypeController:
         except KeyError as e:
             raise NotFound from e
 
-    async def _get_parent_type(self) -> Optional[Type]:
+    async def _get_parent_type(self) -> Optional[Schema]:
         if self._path.empty:
             return None
         try:
@@ -37,7 +37,7 @@ class TypeController:
     async def get(self) -> Dict:
         target_type = await self._get_target_type()
 
-        return serialize_type(target_type)
+        return serialize_schema(target_type)
 
     async def set(self, data: Dict) -> None:
         parent_type = await self._get_parent_type()
@@ -52,7 +52,7 @@ class TypeController:
             raise Forbidden
 
         try:
-            parsed = parse_type(data)
+            parsed = parse_schema(data)
         except Exception as e:
             raise BadRequest from e
 
