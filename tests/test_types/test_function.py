@@ -11,31 +11,31 @@ class TestFunction(IsolatedAsyncioTestCase):
     async def test_set_function(self):
         await self.test_client.set(
             '/schema/',
-            {'name': 'FUNCTION', 'value_type': {'name': 'INTEGER'}}
+            {'type': 'FUNCTION', 'value_type': {'type': 'INTEGER'}}
         )
 
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {
-                'name': 'FUNCTION',
-                'value_type': {'name': 'INTEGER'}
+                'type': 'FUNCTION',
+                'value_type': {'type': 'INTEGER'}
             }
         )
 
     async def test_set_value_type(self):
         await self.test_client.set(
             '/schema/',
-            {'name': 'FUNCTION', 'value_type': {'name': 'INTEGER'}}
+            {'type': 'FUNCTION', 'value_type': {'type': 'INTEGER'}}
         )
-        await self.test_client.set('/schema/~/', {'name': 'FLOAT'})
+        await self.test_client.set('/schema/~/', {'type': 'FLOAT'})
 
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {
-                'name': 'FUNCTION',
-                'value_type': {'name': 'FLOAT'}
+                'type': 'FUNCTION',
+                'value_type': {'type': 'FLOAT'}
             }
         )
 
@@ -43,5 +43,5 @@ class TestFunction(IsolatedAsyncioTestCase):
         with self.assertRaises(BadRequest):
             await self.test_client.set(
                 '/schema/',
-                {'name': 'FUNCTION'}
+                {'type': 'FUNCTION'}
             )

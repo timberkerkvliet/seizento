@@ -13,10 +13,10 @@ class TestStruct(IsolatedAsyncioTestCase):
         await self.test_client.set(
             '/schema/',
             {
-                'name': 'STRUCT',
+                'type': 'STRUCT',
                 'fields': {
-                    'a': {'name': 'INTEGER'},
-                    'b': {'name': 'STRING'}
+                    'a': {'type': 'INTEGER'},
+                    'b': {'type': 'STRING'}
                 }
             }
         )

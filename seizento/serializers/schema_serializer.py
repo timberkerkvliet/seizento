@@ -23,7 +23,7 @@ NAMES = {
 
 def serialize_schema(value: Schema) -> Any:
     result = {
-        'name': NAMES[type(value)]
+        'type': NAMES[type(value)]
     }
 
     if isinstance(value, Struct):
@@ -41,7 +41,7 @@ def serialize_schema(value: Schema) -> Any:
 
 
 def parse_schema(value: Any) -> Schema:
-    name = value['name']
+    name = value['type']
 
     if name == NAMES[String]:
         return String()
