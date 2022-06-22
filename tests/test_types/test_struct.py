@@ -12,7 +12,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/schema/',
             {
                 'type': 'STRUCT',
-                'fields': {
+                'additionalProperties': {
                     'a': {'type': 'STRING'},
                     'b': {'type': 'INTEGER'}
                 }
@@ -24,7 +24,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'type': 'STRUCT',
-                'fields': {
+                'additionalProperties': {
                     'a': {'type': 'STRING'},
                     'b': {'type': 'INTEGER'}
                 }
@@ -36,14 +36,14 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/schema/',
             {
                 'type': 'STRUCT',
-                'fields': {'a': {'type': 'FLOAT'}}
+                'additionalProperties': {'a': {'type': 'FLOAT'}}
             }
         )
         await self.test_client.set(
             '/schema/',
             {
                 'type': 'STRUCT',
-                'fields': {'b': {'type': 'INTEGER'}}
+                'additionalProperties': {'b': {'type': 'INTEGER'}}
             }
         )
         response = await self.test_client.get('/schema/')
@@ -51,7 +51,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'type': 'STRUCT',
-                'fields': {
+                'additionalProperties': {
                     'b': {'type': 'INTEGER'}
                 }
             }
@@ -62,7 +62,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/schema/',
             {
                 'type': 'STRUCT',
-                'fields': {'a': {'type': 'FLOAT'}, 'b': {'type': 'STRING'}}
+                'additionalProperties': {'a': {'type': 'FLOAT'}, 'b': {'type': 'STRING'}}
             }
         )
         await self.test_client.set(
@@ -75,7 +75,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'type': 'STRUCT',
-                'fields': {
+                'additionalProperties': {
                     'a': {'type': 'INTEGER'},
                     'b': {'type': 'STRING'}
                 }
@@ -99,7 +99,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             response,
             {
                 'type': 'STRUCT',
-                'fields': {
+                'additionalProperties': {
                     'c': {'type': 'INTEGER'},
                     'd': {'type': 'STRING'}
                 }
@@ -108,7 +108,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         )
 
     async def test_delete_field_type(self):
-        await self.test_client.set('schema/', {'type': 'STRUCT', 'fields': {'a': {'type': 'STRING'}}})
+        await self.test_client.set('schema/', {'type': 'STRUCT', 'additionalProperties': {'a': {'type': 'STRING'}}})
         await self.test_client.delete('/schema/a')
 
         response = await self.test_client.get('/schema/')

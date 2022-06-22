@@ -32,7 +32,7 @@ def serialize_schema(value: Schema) -> Any:
             for field, field_type in value.fields.items()
         }
         if len(fields) > 0:
-            result['fields'] = fields
+            result['additionalProperties'] = fields
 
     if isinstance(value, (Array, Function, Dictionary)):
         result['value_type'] = serialize_schema(value.value_type)
@@ -67,12 +67,12 @@ def parse_schema(value: Any) -> Schema:
                 value_type=parse_schema(value_type)
             )
     if name == NAMES[Struct]:
-        if 'fields' not in value:
+        if 'additionalProperties' not in value:
             return Struct(fields={})
 
         return Struct(
             fields={
                 Identifier(field): parse_schema(subtype)
-                for field, subtype in value['fields'].items()
+                for field, subtype in value['additionalProperties'].items()
             }
         )

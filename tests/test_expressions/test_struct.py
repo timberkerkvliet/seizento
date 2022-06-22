@@ -14,7 +14,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/schema/',
             {
                 'type': 'STRUCT',
-                'fields': {
+                'additionalProperties': {
                     'a': {'type': 'INTEGER'},
                     'b': {'type': 'STRING'}
                 }
