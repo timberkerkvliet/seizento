@@ -9,7 +9,7 @@ class TestStruct(IsolatedAsyncioTestCase):
 
     async def test_set_struct(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {
                 'name': 'STRUCT',
                 'fields': {
@@ -19,7 +19,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             }
         )
 
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {
@@ -33,20 +33,20 @@ class TestStruct(IsolatedAsyncioTestCase):
 
     async def test_reset_struct(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {
                 'name': 'STRUCT',
                 'fields': {'a': {'name': 'FLOAT'}}
             }
         )
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {
                 'name': 'STRUCT',
                 'fields': {'b': {'name': 'INTEGER'}}
             }
         )
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {
@@ -59,18 +59,18 @@ class TestStruct(IsolatedAsyncioTestCase):
 
     async def test_set_field_type(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {
                 'name': 'STRUCT',
                 'fields': {'a': {'name': 'FLOAT'}, 'b': {'name': 'STRING'}}
             }
         )
         await self.test_client.set(
-            '/type/a',
+            '/schema/a',
             {'name': 'INTEGER'}
         )
 
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {
@@ -84,17 +84,17 @@ class TestStruct(IsolatedAsyncioTestCase):
         )
 
     async def test_add_field_types(self):
-        await self.test_client.set('type/', {'name': 'STRUCT'})
+        await self.test_client.set('schema/', {'name': 'STRUCT'})
         await self.test_client.set(
-            '/type/c',
+            '/schema/c',
             {'name': 'INTEGER'}
         )
         await self.test_client.set(
-            '/type/d',
+            '/schema/d',
             {'name': 'STRING'}
         )
 
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {
@@ -108,20 +108,20 @@ class TestStruct(IsolatedAsyncioTestCase):
         )
 
     async def test_delete_field_type(self):
-        await self.test_client.set('type/', {'name': 'STRUCT', 'fields': {'a': {'name': 'STRING'}}})
-        await self.test_client.delete('/type/a')
+        await self.test_client.set('schema/', {'name': 'STRUCT', 'fields': {'a': {'name': 'STRING'}}})
+        await self.test_client.delete('/schema/a')
 
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {'name': 'STRUCT'}
         )
 
     async def test_non_existing_field_type(self):
-        await self.test_client.set('/type', {'name': 'STRUCT'})
-        await self.test_client.delete('/type/a')
+        await self.test_client.set('/schema', {'name': 'STRUCT'})
+        await self.test_client.delete('/schema/a')
 
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {'name': 'STRUCT'}

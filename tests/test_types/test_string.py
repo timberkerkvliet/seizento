@@ -10,33 +10,33 @@ class TestString(IsolatedAsyncioTestCase):
 
     async def test_set_string(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {'name': 'STRING'}
         )
 
-        response = await self.test_client.get('/type/')
+        response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, {'name': 'STRING'})
 
     async def test_cannot_set_child(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {'name': 'STRING'}
         )
 
         with self.assertRaises(Forbidden):
             await self.test_client.set(
-                '/type/a',
+                '/schema/a',
                 {'name': 'INTEGER'}
             )
 
     async def test_cannot_set_placeholder_child(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {'name': 'STRING'}
         )
 
         with self.assertRaises(Forbidden):
             await self.test_client.set(
-                '/type/~',
+                '/schema/~',
                 {'name': 'INTEGER'}
             )

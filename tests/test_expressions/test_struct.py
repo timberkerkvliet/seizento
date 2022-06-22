@@ -11,7 +11,7 @@ class TestStruct(IsolatedAsyncioTestCase):
     @skip
     async def test_set_and_get_literal(self):
         await self.test_client.set(
-            '/type/',
+            '/schema/',
             {
                 'name': 'STRUCT',
                 'fields': {

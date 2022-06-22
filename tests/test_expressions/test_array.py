@@ -9,7 +9,7 @@ class TestArray(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_and_get_literal(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/schema/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
         await self.test_client.set(
             '/expression/',
             [1, 2, 3, 4]
@@ -18,14 +18,14 @@ class TestArray(IsolatedAsyncioTestCase):
         self.assertEqual(response, [1, 2, 3, 4])
 
     async def test_set_and_empty_literal(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/schema/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
         await self.test_client.set('/expression/', [])
 
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, [])
 
     async def test_reset_index(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/schema/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
         await self.test_client.set('/expression/', [1])
         await self.test_client.set('/expression/0', 2)
 
@@ -33,7 +33,7 @@ class TestArray(IsolatedAsyncioTestCase):
         self.assertEqual(response, [2])
 
     async def test_add_index(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/schema/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
         await self.test_client.set('/expression/', [1])
         await self.test_client.set('/expression/1', 2)
 
@@ -41,13 +41,13 @@ class TestArray(IsolatedAsyncioTestCase):
         self.assertEqual(response, [1, 2])
 
     async def test_set_wrong_type(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/schema/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/', 1)
 
     async def test_set_wrong_value_type(self):
-        await self.test_client.set('/type/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
+        await self.test_client.set('/schema/', {'name': 'ARRAY', 'value_type': {'name': 'INTEGER'}})
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/', ['a', 'b'])
