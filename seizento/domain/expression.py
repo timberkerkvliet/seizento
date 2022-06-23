@@ -7,7 +7,7 @@ from seizento.domain.identifier import Identifier
 from seizento.domain.schema.array import Array, EmptyArray
 from seizento.domain.schema.dictionary import Dictionary
 from seizento.domain.schema.primitives import String, Integer
-from seizento.domain.schema.struct import Struct
+from seizento.domain.schema.struct import Struct, EmptyStruct
 from seizento.path import Path
 from seizento.domain.schema.schema import Schema
 
@@ -67,12 +67,7 @@ class ObjectLiteral(Expression):
 
     def get_type(self) -> Schema:
         if len(self.values) == 0:
-            return EmptyArray()
-
-        value_types = {expression.get_type() for expression in self.values.values()}
-
-        if len(value_types) == 1:
-            return Dictionary(value_type=value_types.pop())
+            return EmptyStruct()
 
         return Struct(
             fields={Identifier(x): y.get_type() for x, y in self.values.items()}

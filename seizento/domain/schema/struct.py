@@ -4,7 +4,21 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from seizento.domain.identifier import Identifier
+from seizento.domain.schema.dictionary import Dictionary
 from seizento.domain.schema.schema import Schema
+
+
+@dataclass(frozen=True)
+class EmptyStruct(Schema):
+    @property
+    def default_value(self):
+        return {}
+
+    def is_subschema(self, other: Schema) -> bool:
+        if isinstance(other, (EmptyStruct, Struct)):
+            return True
+
+        return False
 
 
 @dataclass(frozen=True)
@@ -18,11 +32,22 @@ class Struct(Schema):
             for field, field_type in self.fields.items()
         }
 
+    def single_value_type(self) -> Optional[Schema]:
+        schemas = set(self.fields.values())
+
+        if len(schemas) != 0:
+            return None
+
+        return schemas.pop()
+
     def is_subschema(self, other: Schema) -> bool:
+        if isinstance(other, Dictionary):
+            return self.single_value_type() == other.value_type
+
         if not isinstance(other, Struct):
             return False
 
-        if set(self.fields.keys()) != set(other.fields.keys()):
+        if not set(self.fields.keys()).issubset(set(other.fields.keys())):
             return False
 
         return all(
