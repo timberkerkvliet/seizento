@@ -1,39 +1,49 @@
 ## What does seizento do?
 
-### It stores JSON data validated against a schema
+### It stores JSON data conforming to a defined schema
 
-First, a schema must be set, by sending a PUT request to `/schema/products`:
+Suppose that by a GET request to `/schema/products` we find that the defined schema is:
 
 ```
 {
-    "type": "object",
-    "properties": {
-        "id": {"type": "integer"},
-        "name": {"type": "string"},
-        "on_stock: {"type: "bool"}
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": {"type": "integer"},
+            "name": {"type": "string"},
+            "on_stock: {"type: "boolean"}
+        }
+}
+```
+
+Then data for this schema can be set with a PUT request to `/expression/product`
+
+```
+[
+    {
+        "id": 1,
+        "name": "Boring product",
+        "on_stock": true
+    },
+    {
+        "id": 2,
+        "name": "Fancy product",
+        "on_stock": false
     }
-}
+]
 ```
 
-And then, data for this schema can be set with a PUT request to `/expression/product`
+### It enables JSON projections
 
-```
-{
-    "id": 1,
-    "name": "My product",
-    "on_stock": True
-}
-```
-
-### It transforms JSON data
-
-Now suppose that we set a different schema at `/schema/stock`
+Now suppose that someone else needs the data in the form of a map from product names to stock.
+Suppose that by a GET request to  `/schema/stock` we find that a schema is defined as follows:
 
 ```
 {
     "type": "object",
     "additionalProperties": {
-        {"type": "integer"}
+        {"type": "boolean"}
     }
 }
 ```
@@ -41,8 +51,8 @@ Now suppose that we set a different schema at `/schema/stock`
 Then we can set the value with a PUT request to `/expression/stock`
 
 ```
-{
-    '{product/name}': '{product/stock}'
+{  
+    "{products/<k>/name}": "{products/<k>/stock}"
 }
 ```
 
@@ -50,6 +60,7 @@ And by sending a GET request to `/evaluation/stock` we get it evaluated:
 
 ```
 {
-    "My Product": True
+    "Boring product": true
+    "Fancy product": false
 }
 ```

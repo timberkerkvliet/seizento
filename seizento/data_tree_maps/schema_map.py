@@ -9,10 +9,21 @@ from seizento.domain.schema.primitives import String, Boolean, Integer, Float
 from seizento.data_tree import DataTree
 
 
+NAMES = {
+    Struct: 'STRUCT',
+    Dictionary: 'DICTIONARY',
+    Array: 'ARRAY',
+    String: 'STRING',
+    Integer: 'INTEGER',
+    Float: 'FLOAT',
+    Boolean: 'BOOLEAN'
+}
+
+
 def schema_to_tree(value: Schema) -> DataTree:
     result = DataTree(
         values={
-            Path(components=tuple()): serialize_root_data(value)
+            Path(components=tuple()): {'type': NAMES[type(value)]}
         }
     )
 
@@ -23,7 +34,7 @@ def schema_to_tree(value: Schema) -> DataTree:
                 subtree=schema_to_tree(field_type)
             )
 
-    if isinstance(value, (Array, Function, Dictionary)):
+    if isinstance(value, (Array, Dictionary)):
         result = result.set_subtree(
             path=Path(components=(PlaceHolder(),)),
             subtree=schema_to_tree(value.value_type)
@@ -32,30 +43,10 @@ def schema_to_tree(value: Schema) -> DataTree:
     return result
 
 
-def serialize_root_data(value: Schema):
-    if isinstance(value, Struct):
-        return {'name': 'STRUCT'}
-    if isinstance(value, Dictionary):
-        return {'name': 'DICTIONARY'}
-    if isinstance(value, Array):
-        return {'name': 'ARRAY'}
-    if isinstance(value, Function):
-        return {'name': 'FUNCTION'}
-    if isinstance(value, String):
-        return {'name': 'STRING'}
-    if isinstance(value, Integer):
-        return {'name': 'INTEGER'}
-    if isinstance(value, Float):
-        return {'name': 'FLOAT'}
-    if isinstance(value, Boolean):
-        return {'name': 'BOOLEAN'}
-
-
 def tree_to_schema(value: DataTree) -> Schema:
     root_data = value.root_data
-    if 'name' not in root_data:
-        raise ValueError('Name property expected')
-    name = root_data['name']
+
+    name = root_data['type']
 
     if name == 'STRING':
         return String()
@@ -65,7 +56,7 @@ def tree_to_schema(value: DataTree) -> Schema:
         return Float()
     if name == 'BOOLEAN':
         return Boolean()
-    if name in {'ARRAY', 'DICTIONARY', 'FUNCTION'}:
+    if name in {'ARRAY', 'DICTIONARY'}:
         value_type = value.get_subtree(Path(components=(PlaceHolder(),)))
 
         if name == 'ARRAY':
@@ -76,10 +67,7 @@ def tree_to_schema(value: DataTree) -> Schema:
             return Dictionary(
                 value_type=tree_to_schema(value_type)
             )
-        if name == 'FUNCTION':
-            return Function(
-                value_type=tree_to_schema(value_type)
-            )
+
     if name == 'STRUCT':
         subtrees = value.subtrees
 

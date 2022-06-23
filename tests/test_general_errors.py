@@ -11,7 +11,7 @@ class TestGeneralErrors(IsolatedAsyncioTestCase):
     async def test_set_non_existing(self):
         with self.assertRaises(NotFound):
             await self.test_client.set(
-                '/schema/a', {'type': 'INTEGER'}
+                '/schema/a', {'type': 'integer'}
             )
 
     async def test_rubbish_path(self):
