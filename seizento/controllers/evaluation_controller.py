@@ -1,6 +1,7 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import NotFound
+from seizento.controllers.expression_tools import find_nearest_expression
 from seizento.path import Path
 from seizento.repository import Repository
 
@@ -15,18 +16,7 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        path = self._path
-        indices = []
-        while True:
-            expression = await self._repository.get_expression(self._path)
-            if expression is not None:
-                break
-            else:
-                if path.empty:
-                    raise NotFound
-                indices.append(path.last_component.value)
-                path = path.remove_last()
-                continue
+        expression, indices = await find_nearest_expression(repository=self._repository, path=self._path)
 
         result = expression.evaluate()
 
