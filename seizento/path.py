@@ -59,7 +59,7 @@ class Path:
     def append(self, component: PathComponent) -> Path:
         return Path(components=self.components + (component,))
 
-    def extends(self, other: Path) -> bool:
+    def __ge__(self, other: Path) -> bool:
         if len(self) < len(other):
             return False
 
