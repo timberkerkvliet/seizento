@@ -8,15 +8,14 @@ class TestStruct(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    @skip
     async def test_set_and_get_literal(self):
         await self.test_client.set(
             '/schema/',
             {
-                'type': 'STRUCT',
-                'additionalProperties': {
-                    'a': {'type': 'INTEGER'},
-                    'b': {'type': 'STRING'}
+                'type': 'object',
+                'properties': {
+                    'a': {'type': 'integer'},
+                    'b': {'type': 'string'}
                 }
             }
         )

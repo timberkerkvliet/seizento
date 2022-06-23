@@ -1,5 +1,6 @@
 from typing import Dict
 
+from seizento.controllers.exceptions import NotFound
 from seizento.path import Path
 from seizento.repository import Repository
 
@@ -14,12 +15,25 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        try:
-            expression = await self._repository.get_expression(self._path)
-            return expression.evaluate()
-        except KeyError:
-            pass
+        path = self._path
+        indices = []
+        while True:
+            try:
+                expression = await self._repository.get_expression(self._path)
+                break
+            except KeyError:
+                if path.empty:
+                    raise NotFound
+                indices.append(path.last_component.value)
+                path = path.remove_last()
+                continue
 
-        target_type = await self._repository.get_type(self._path)
+        result = expression.evaluate()
 
-        return target_type.default_value
+        for index in indices:
+            try:
+                result = result[index]
+            except Exception:
+                raise NotFound
+
+        return result

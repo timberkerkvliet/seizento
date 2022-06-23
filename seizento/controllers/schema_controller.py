@@ -3,7 +3,7 @@ from typing import Dict, Optional
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.domain.schema.array import Array
 from seizento.domain.schema.dictionary import Dictionary
-from seizento.domain.schema.function import Function
+
 from seizento.domain.schema.struct import Struct
 from seizento.domain.schema.schema import Schema
 from seizento.path import Path, StringComponent, PlaceHolder
@@ -48,7 +48,7 @@ class SchemaController:
 
         if parent_type is not None \
                 and isinstance(self._path.last_component, PlaceHolder) \
-                and not isinstance(parent_type, (Array, Dictionary, Function)):
+                and not isinstance(parent_type, (Array, Dictionary)):
             raise Forbidden
 
         try:
