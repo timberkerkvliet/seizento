@@ -16,9 +16,14 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        expression, indices = await find_nearest_expression(repository=self._repository, path=self._path)
+        nearest_expression = await find_nearest_expression(repository=self._repository, path=self._path)
 
-        result = expression.evaluate()
+        if nearest_expression is None:
+            raise NotFound
+
+        result = nearest_expression.expression.evaluate()
+
+        indices = [component.name for component in self._path.components[len(nearest_expression.path):]]
 
         for index in indices:
             try:
