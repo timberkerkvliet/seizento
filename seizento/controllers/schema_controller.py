@@ -27,9 +27,9 @@ class SchemaController:
 
         return result
 
-    async def _get_parent_type(self) -> Optional[Schema]:
+    async def _get_parent_type(self) -> Schema:
         if self._path.empty:
-            return None
+            raise NotFound
 
         result = await self._repository.get_type(path=self._path.remove_last())
         if result is None:
@@ -43,16 +43,16 @@ class SchemaController:
         return serialize_schema(target_type)
 
     async def set(self, data: Dict) -> None:
-        parent_type = await self._get_parent_type()
-        if parent_type is not None \
-            and isinstance(self._path.last_component, StringComponent) \
-                and not isinstance(parent_type, Struct):
-            raise Forbidden
+        if not self._path.empty:
+            parent_type = await self._get_parent_type()
 
-        if parent_type is not None \
-                and isinstance(self._path.last_component, PlaceHolder) \
-                and not isinstance(parent_type, (Array, Dictionary)):
-            raise Forbidden
+            if isinstance(self._path.last_component, StringComponent) \
+                    and not isinstance(parent_type, Struct):
+                raise Forbidden
+
+            if isinstance(self._path.last_component, PlaceHolder) \
+                    and not isinstance(parent_type, (Array, Dictionary)):
+                raise Forbidden
 
         try:
             new_schema = parse_schema(data)
