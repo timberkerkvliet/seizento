@@ -27,3 +27,25 @@ class TestSchemaChange(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/schema/', {'type': 'integer'})
+
+    async def test_allowed_change(self):
+        await self.test_client.set(
+            '/schema/',
+            {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
+        )
+        await self.test_client.set('/expression/',  {'a': 900})
+
+        new_schema = {
+            'type': 'object',
+            'properties': {
+                'a': {'type': 'integer'},
+                'b': {'type': 'integer'}
+            }
+        }
+
+        await self.test_client.set('/schema/', new_schema)
+
+        response = await self.test_client.get('/schema')
+
+        self.assertDictEqual(response, new_schema)
+
