@@ -56,12 +56,9 @@ class SchemaController:
         except Exception as e:
             raise BadRequest from e
 
-        try:
-            expression = await self._repository.get_expression(path=self._path)
-            if not expression.get_type().is_subschema(new_schema):
-                raise Forbidden
-        except KeyError:
-            pass
+        expression = await self._repository.get_expression(path=self._path)
+        if expression is not None and not expression.get_type().is_subschema(new_schema):
+            raise Forbidden
 
         await self._repository.set_type(
             path=self._path,

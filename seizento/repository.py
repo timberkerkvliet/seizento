@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
+from typing import Optional
 
 from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
 from seizento.domain.expression import Expression
@@ -50,8 +51,11 @@ class Repository:
             path=path.insert_first(StringComponent('type'),)
         )
 
-    async def get_expression(self, path: Path) -> Expression:
-        data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('expression')))
+    async def get_expression(self, path: Path) -> Optional[Expression]:
+        try:
+            data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('expression')))
+        except KeyError:
+            return None
 
         return tree_to_expression(data_tree)
 

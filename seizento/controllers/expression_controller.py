@@ -1,6 +1,6 @@
 from typing import Dict
 
-from seizento.controllers.exceptions import Forbidden
+from seizento.controllers.exceptions import Forbidden, NotFound
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
@@ -20,6 +20,9 @@ class ExpressionController:
 
     async def get(self) -> Dict:
         expression = await self._get_expression()
+
+        if expression is None:
+            raise NotFound
 
         return serialize_expression(expression)
 

@@ -18,10 +18,10 @@ class EvaluationController:
         path = self._path
         indices = []
         while True:
-            try:
-                expression = await self._repository.get_expression(self._path)
+            expression = await self._repository.get_expression(self._path)
+            if expression is not None:
                 break
-            except KeyError:
+            else:
                 if path.empty:
                     raise NotFound
                 indices.append(path.last_component.value)
