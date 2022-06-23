@@ -35,8 +35,11 @@ class Repository:
     async def __aexit__(self, *args):
         await self._transaction.__aexit__(*args)
 
-    async def get_type(self, path: Path) -> Schema:
-        data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('type')))
+    async def get_type(self, path: Path) -> Optional[Schema]:
+        try:
+            data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('type')))
+        except KeyError:
+            return None
 
         return tree_to_schema(data_tree)
 

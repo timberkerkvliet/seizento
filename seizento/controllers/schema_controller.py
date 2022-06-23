@@ -22,7 +22,11 @@ class SchemaController:
 
     async def _get_target_type(self):
         try:
-            return await self._repository.get_type(path=self._path)
+            result = await self._repository.get_type(path=self._path)
+            if result is None:
+                raise KeyError
+
+            return result
         except KeyError as e:
             raise NotFound from e
 
@@ -30,7 +34,11 @@ class SchemaController:
         if self._path.empty:
             return None
         try:
-            return await self._repository.get_type(path=self._path.remove_last())
+            result = await self._repository.get_type(path=self._path.remove_last())
+            if result is None:
+                raise KeyError
+
+            return result
         except KeyError as e:
             raise NotFound from e
 

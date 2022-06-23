@@ -30,6 +30,9 @@ class ExpressionController:
         new_expression = parse_expression(data)
 
         current_type = await self._repository.get_type(path=self._path)
+        if current_type is None:
+            raise KeyError
+
         expression_type = new_expression.get_type()
 
         if not expression_type.is_subschema(current_type):
