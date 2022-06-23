@@ -52,13 +52,20 @@ class SchemaController:
             raise Forbidden
 
         try:
-            parsed = parse_schema(data)
+            new_schema = parse_schema(data)
         except Exception as e:
             raise BadRequest from e
 
+        try:
+            expression = await self._repository.get_expression(path=self._path)
+            if not expression.get_type().is_subschema(new_schema):
+                raise Forbidden
+        except KeyError:
+            pass
+
         await self._repository.set_type(
             path=self._path,
-            value=parsed
+            value=new_schema
         )
 
     async def delete(self) -> None:

@@ -20,3 +20,10 @@ class TestSchemaChange(IsolatedAsyncioTestCase):
 
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'integer'})
+
+    async def test_change_to_integer_after_string_expression_has_set(self):
+        await self.test_client.set('/schema/', {'type': 'string'})
+        await self.test_client.set('/expression/', 'hey')
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/schema/', {'type': 'integer'})
