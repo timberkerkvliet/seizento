@@ -30,14 +30,12 @@ class SchemaController:
     async def _get_parent_type(self) -> Optional[Schema]:
         if self._path.empty:
             return None
-        try:
-            result = await self._repository.get_type(path=self._path.remove_last())
-            if result is None:
-                raise KeyError
 
-            return result
-        except KeyError as e:
-            raise NotFound from e
+        result = await self._repository.get_type(path=self._path.remove_last())
+        if result is None:
+            raise NotFound
+
+        return result
 
     async def get(self) -> Dict:
         target_type = await self._get_target_type()
