@@ -20,15 +20,12 @@ class SchemaController:
         self._repository = repository
         self._path = path
 
-    async def _get_target_type(self):
-        try:
-            result = await self._repository.get_type(path=self._path)
-            if result is None:
-                raise KeyError
+    async def _get_target_type(self) -> Schema:
+        result = await self._repository.get_type(path=self._path)
+        if result is None:
+            raise NotFound
 
-            return result
-        except KeyError as e:
-            raise NotFound from e
+        return result
 
     async def _get_parent_type(self) -> Optional[Schema]:
         if self._path.empty:
