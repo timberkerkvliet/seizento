@@ -86,3 +86,24 @@ class TestStruct(IsolatedAsyncioTestCase):
         response = await self.test_client.get('expression/a')
 
         self.assertEqual(response, 9)
+
+    async def test_nested_struct(self):
+        await self.test_client.set(
+            '/schema/',
+            {
+                'type': 'object',
+                'properties': {
+                    'a': {
+                        'type': 'object',
+                        'properties': {
+                            'b': {'type': 'integer'}
+                        }
+                    }
+                }
+            }
+        )
+        await self.test_client.set('/expression', {'a': {'b': 99}})
+
+        response = await self.test_client.get('/expression/a/b')
+
+        self.assertEqual(response, 99)
