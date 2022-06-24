@@ -1,7 +1,6 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Union, Dict, Set, Any, Tuple
+from typing import Union, Dict, Set, Any
 
 from seizento.domain.schema.primitives import String, Integer
 from seizento.expression.expression import Expression
