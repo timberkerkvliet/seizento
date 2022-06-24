@@ -1,9 +1,23 @@
-from typing import Dict
+from typing import Dict, Any
 
 from seizento.controllers.exceptions import NotFound
 from seizento.controllers.expression_tools import find_nearest_expression
+from seizento.domain.expression import Expression
 from seizento.path import Path
 from seizento.repository import Repository
+
+
+async def evaluate(expression: Expression, repository: Repository) -> Any:
+    references = expression.get_path_references()
+    values = {
+        reference: await evaluate(
+            expression=await repository.get_expression(reference),
+            repository=repository
+        )
+        for reference in references
+    }
+
+    return expression.evaluate(values)
 
 
 class EvaluationController:
@@ -21,22 +35,14 @@ class EvaluationController:
         if nearest_expression is None:
             raise NotFound
 
-        expression = nearest_expression.expression
-
-        references = expression.get_path_references()
-        values = {
-            reference: (await self._repository.get_expression(reference)).evaluate({})
-            for reference in references
-        }
-
-        result = nearest_expression.expression.evaluate(values)
+        evaluation = await evaluate(expression=nearest_expression.expression, repository=self._repository)
 
         indices = [component.name for component in self._path.components[len(nearest_expression.path):]]
 
         for index in indices:
             try:
-                result = result[index]
+                evaluation = evaluation[index]
             except Exception:
                 raise NotFound
 
-        return result
+        return evaluation
