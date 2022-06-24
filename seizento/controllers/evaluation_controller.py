@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, Any, Optional
 
 from seizento.controllers.exceptions import NotFound
-from seizento.domain.expression import Expression
+from seizento.expression.expression import Expression
 from seizento.path import Path
 from seizento.repository import Repository
 

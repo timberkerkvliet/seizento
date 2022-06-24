@@ -1,0 +1,27 @@
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import List, Union, Dict, Set, Any, Tuple
+
+from seizento.domain.schema.primitives import String, Integer
+from seizento.expression.expression import Expression
+from seizento.path import Path
+from seizento.domain.schema.schema import Schema
+
+
+@dataclass(frozen=True)
+class PrimitiveLiteral(Expression):
+    value: Union[str, int, float, bool]
+
+    def get_type(self, schemas: Dict[Path, Schema]) -> Schema:
+        if isinstance(self.value, str):
+            return String()
+        if isinstance(self.value, int):
+            return Integer()
+
+    def evaluate(self, values: Dict[Path, Any]) -> Any:
+        return self.value
+
+    def get_path_references(self) -> Set[Path]:
+        return set()
+

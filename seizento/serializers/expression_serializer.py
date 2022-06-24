@@ -1,6 +1,10 @@
 from typing import Any
 
-from seizento.domain.expression import Expression, PrimitiveLiteral, ArrayLiteral, ObjectLiteral, PathReference
+from seizento.expression.expression import Expression
+from seizento.expression.primitive_literal import PrimitiveLiteral
+from seizento.expression.array_literal import ArrayLiteral
+from seizento.expression.struct_literal import ObjectLiteral
+from seizento.expression.path_reference import PathReference
 from seizento.path import Path, StringComponent
 from seizento.serializers.path_serializer import parse_path
 
