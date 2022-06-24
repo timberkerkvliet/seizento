@@ -2,6 +2,7 @@ from typing import Any
 
 from seizento.domain.expression import Expression, PrimitiveLiteral, ArrayLiteral, ObjectLiteral, PathReference
 from seizento.path import Path, StringComponent
+from seizento.serializers.path_serializer import parse_path
 
 
 def serialize_expression(value: Expression) -> Any:
@@ -28,8 +29,8 @@ def parse_expression(value: Any) -> Expression:
         return PrimitiveLiteral(value)
 
     if isinstance(value, str):
-        if value == '{/0}':
-            return PathReference(reference=Path(components=(StringComponent('0'),)))
+        if value[0] == '{' and value[-1] == '}':
+            return PathReference(reference=parse_path(value[1:-1]))
 
         return PrimitiveLiteral(value)
 
