@@ -5,7 +5,7 @@ from typing import Optional
 from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
 from seizento.expression.expression import Expression
 from seizento.path import Path, StringComponent
-from seizento.domain.schema.schema import Schema
+from seizento.schema.schema import Schema
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
 from seizento.data_tree import DataTree
 

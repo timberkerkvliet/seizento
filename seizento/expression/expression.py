@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Set, Any
 
 from seizento.path import Path
-from seizento.domain.schema.schema import Schema
+from seizento.schema.schema import Schema
 
 
 class Expression(ABC):

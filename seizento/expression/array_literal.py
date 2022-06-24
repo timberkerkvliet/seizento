@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Set, Any, Tuple
 
-from seizento.domain.schema.array import Array, EmptyArray
+from seizento.schema.array import Array, EmptyArray
 from seizento.expression.expression import Expression
 from seizento.path import Path
-from seizento.domain.schema.schema import Schema
+from seizento.schema.schema import Schema
 
 
 @dataclass(frozen=True)

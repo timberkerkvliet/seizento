@@ -1,11 +1,11 @@
-from typing import Dict, Optional
+from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
-from seizento.domain.schema.array import Array
-from seizento.domain.schema.dictionary import Dictionary
+from seizento.schema.array import Array
+from seizento.schema.dictionary import Dictionary
 
-from seizento.domain.schema.struct import Struct
-from seizento.domain.schema.schema import Schema
+from seizento.schema.struct import Struct
+from seizento.schema.schema import Schema
 from seizento.path import Path, StringComponent, PlaceHolder
 from seizento.repository import Repository
 from seizento.serializers.schema_serializer import parse_schema, serialize_schema

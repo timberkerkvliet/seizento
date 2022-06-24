@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from seizento.domain.schema.schema import Schema
+from seizento.schema.schema import Schema
 
 
 @dataclass(frozen=True)

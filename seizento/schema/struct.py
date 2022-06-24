@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from seizento.domain.identifier import Identifier
-from seizento.domain.schema.dictionary import Dictionary
-from seizento.domain.schema.schema import Schema
+from seizento.schema.dictionary import Dictionary
+from seizento.schema.schema import Schema
 
 
 @dataclass(frozen=True)

@@ -2,10 +2,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Union, Dict, Set, Any
 
-from seizento.domain.schema.primitives import String, Integer
+from seizento.schema.primitives import String, Integer
 from seizento.expression.expression import Expression
 from seizento.path import Path
-from seizento.domain.schema.schema import Schema
+from seizento.schema.schema import Schema
 
 
 @dataclass(frozen=True)

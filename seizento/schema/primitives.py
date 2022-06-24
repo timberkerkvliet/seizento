@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TypeVar
 
-from seizento.domain.schema.schema import Schema
+from seizento.schema.schema import Schema
 
 T = TypeVar('T')
 

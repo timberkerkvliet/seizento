@@ -1,11 +1,10 @@
 from seizento.domain.identifier import Identifier
 from seizento.path import Path, StringComponent, PlaceHolder
-from seizento.domain.schema.schema import Schema
-from seizento.domain.schema.struct import Struct
-from seizento.domain.schema.array import Array
-from seizento.domain.schema.dictionary import Dictionary
-from seizento.domain.schema.function import Function
-from seizento.domain.schema.primitives import String, Boolean, Integer, Float
+from seizento.schema.schema import Schema
+from seizento.schema.struct import Struct
+from seizento.schema.array import Array
+from seizento.schema.dictionary import Dictionary
+from seizento.schema.primitives import String, Boolean, Integer, Float
 from seizento.data_tree import DataTree
 
 
