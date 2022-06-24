@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Optional
 
-from seizento.domain.identifier import Identifier
+from seizento.identifier import Identifier
 from seizento.schema.dictionary import Dictionary
 from seizento.schema.schema import Schema
 

@@ -1,6 +1,6 @@
 from typing import Any
 
-from seizento.domain.identifier import Identifier
+from seizento.identifier import Identifier
 from seizento.schema.schema import Schema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array

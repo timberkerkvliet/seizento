@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Set, Any
 
-from seizento.domain.identifier import Identifier
+from seizento.identifier import Identifier
 from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression
 from seizento.path import Path

@@ -1,4 +1,4 @@
-from seizento.domain.identifier import Identifier
+from seizento.identifier import Identifier
 from seizento.path import Path, StringComponent, PlaceHolder
 from seizento.schema.schema import Schema
 from seizento.schema.struct import Struct
