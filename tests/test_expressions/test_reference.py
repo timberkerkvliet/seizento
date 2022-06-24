@@ -44,8 +44,13 @@ class TestReference(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set('/expression', {'a': {'x': 'copy this'}})
-        await self.test_client.set('/expression/b', '{/a}')
+        await self.test_client.set(
+            '/expression',
+            {
+                'a': {'x': 'copy this'},
+                'b': '{/a}'
+            }
+        )
 
         response = await self.test_client.get('/evaluation/b')
 
