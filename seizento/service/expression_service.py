@@ -30,23 +30,15 @@ async def find_nearest_expression(repository: Repository, path: Path) -> Optiona
         continue
 
 
-async def evaluate_expression(path: Path, repository: Repository) -> Any:
+async def evaluate_expression_at_path(path: Path, repository: Repository) -> Any:
     nearest_expression = await find_nearest_expression(repository=repository, path=path)
 
     if nearest_expression is None:
         raise NotFound
 
-    references = nearest_expression.expression.get_path_references()
-    values = {
-        reference: await evaluate_expression(
-            path=reference,
-            repository=repository
-        ) for reference in references
-    }
-
-    evaluation = nearest_expression.expression.evaluate(values)
-
     indices = [component.name for component in path.components[len(nearest_expression.path):]]
+
+    evaluation = await evaluate_expression(expression=nearest_expression.expression, repository=repository)
 
     for index in indices:
         try:
@@ -56,3 +48,14 @@ async def evaluate_expression(path: Path, repository: Repository) -> Any:
 
     return evaluation
 
+
+async def evaluate_expression(expression: Expression, repository: Repository) -> Any:
+    references = expression.get_path_references()
+    values = {
+        reference: await evaluate_expression_at_path(
+            path=reference,
+            repository=repository
+        ) for reference in references
+    }
+
+    return expression.evaluate(values)

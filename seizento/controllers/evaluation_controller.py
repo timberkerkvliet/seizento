@@ -2,7 +2,7 @@ from typing import Dict
 
 from seizento.path import Path
 from seizento.repository import Repository
-from seizento.service.expression_service import evaluate_expression
+from seizento.service.expression_service import evaluate_expression_at_path
 
 
 class EvaluationController:
@@ -15,4 +15,4 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        return await evaluate_expression(path=self._path, repository=self._repository)
+        return await evaluate_expression_at_path(path=self._path, repository=self._repository)
