@@ -14,7 +14,6 @@ class NearestExpressionResult:
 
 async def find_nearest_expression(repository: Repository, path: Path) -> Optional[NearestExpressionResult]:
     current_path = path
-    indices = []
     while True:
         expression = await repository.get_expression(current_path)
         if expression is not None:
@@ -25,6 +24,6 @@ async def find_nearest_expression(repository: Repository, path: Path) -> Optiona
 
         if path.empty:
             return None
-        indices.append(path.last_component.value)
+
         path = path.remove_last()
         continue
