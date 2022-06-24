@@ -7,17 +7,31 @@ from seizento.path import Path
 from seizento.repository import Repository
 
 
-async def evaluate(expression: Expression, repository: Repository) -> Any:
-    references = expression.get_path_references()
+async def evaluate(path: Path, repository: Repository) -> Any:
+    nearest_expression = await find_nearest_expression(repository=repository, path=path)
+
+    if nearest_expression is None:
+        raise NotFound
+
+    references = nearest_expression.expression.get_path_references()
     values = {
         reference: await evaluate(
-            expression=await repository.get_expression(reference),
+            path=reference,
             repository=repository
-        )
-        for reference in references
+        ) for reference in references
     }
 
-    return expression.evaluate(values)
+    evaluation = nearest_expression.expression.evaluate(values)
+
+    indices = [component.name for component in path.components[len(nearest_expression.path):]]
+
+    for index in indices:
+        try:
+            evaluation = evaluation[index]
+        except Exception:
+            raise NotFound
+
+    return evaluation
 
 
 class EvaluationController:
@@ -30,19 +44,4 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        nearest_expression = await find_nearest_expression(repository=self._repository, path=self._path)
-
-        if nearest_expression is None:
-            raise NotFound
-
-        evaluation = await evaluate(expression=nearest_expression.expression, repository=self._repository)
-
-        indices = [component.name for component in self._path.components[len(nearest_expression.path):]]
-
-        for index in indices:
-            try:
-                evaluation = evaluation[index]
-            except Exception:
-                raise NotFound
-
-        return evaluation
+        return await evaluate(path=self._path, repository=self._repository)
