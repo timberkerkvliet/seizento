@@ -32,3 +32,22 @@ class TestReference(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/b', '{/a}')
+
+    async def test_object_reference(self):
+        await self.test_client.set(
+            '/schema/',
+            {
+                'type': 'object',
+                'properties': {
+                    'a': {'type': 'object', 'properties': {'x': {'type': 'string'}}},
+                    'b': {'type': 'object', 'properties': {'x': {'type': 'string'}}}
+                }
+            }
+        )
+        await self.test_client.set('/expression', {'a': {'x': 'copy this'}})
+        await self.test_client.set('/expression/b', '{/a}')
+
+        response = await self.test_client.get('/evaluation/b')
+
+        self.assertDictEqual(response, {'x': 'copy this'})
+
