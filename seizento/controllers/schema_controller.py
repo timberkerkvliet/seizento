@@ -60,8 +60,16 @@ class SchemaController:
             raise BadRequest from e
 
         expression = await self._repository.get_expression(path=self._path)
-        if expression is not None and not expression.get_type().is_subschema(new_schema):
-            raise Forbidden
+
+
+        if expression is not None:
+            references = expression.get_path_references()
+            schemas = {
+                reference: await self._repository.get_type(reference)
+                for reference in references
+            }
+            if not expression.get_type(schemas).is_subschema(new_schema):
+                raise Forbidden
 
         await self._repository.set_type(
             path=self._path,

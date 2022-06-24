@@ -21,7 +21,15 @@ class EvaluationController:
         if nearest_expression is None:
             raise NotFound
 
-        result = nearest_expression.expression.evaluate()
+        expression = nearest_expression.expression
+
+        references = expression.get_path_references()
+        values = {
+            reference: (await self._repository.get_expression(reference)).evaluate({})
+            for reference in references
+        }
+
+        result = nearest_expression.expression.evaluate(values)
 
         indices = [component.name for component in self._path.components[len(nearest_expression.path):]]
 

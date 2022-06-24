@@ -1,6 +1,7 @@
 from seizento.data_tree import DataTree
-from seizento.domain.expression import Expression, PrimitiveLiteral, ArrayLiteral, ObjectLiteral
+from seizento.domain.expression import Expression, PrimitiveLiteral, ArrayLiteral, ObjectLiteral, PathReference
 from seizento.path import EMPTY_PATH, Path, StringComponent
+from seizento.serializers.path_serializer import serialize_path, parse_path
 
 
 def expression_to_tree(value: Expression) -> DataTree:
@@ -30,6 +31,11 @@ def expression_to_tree(value: Expression) -> DataTree:
             )
         return result
 
+    if isinstance(value, PathReference):
+        return DataTree(
+            values={EMPTY_PATH: {'type': 'PATH_REFERENCE', 'reference': serialize_path(value.reference)}}
+        )
+
     raise TypeError(type(value))
 
 
@@ -54,6 +60,10 @@ def tree_to_expression(value: DataTree) -> Expression:
         return ObjectLiteral(
             values=values
         )
+
+    if isinstance(root_data, dict) and root_data.get('type') == 'PATH_REFERENCE':
+        reference = parse_path(root_data['reference'])
+        return PathReference(reference=reference)
 
     if isinstance(root_data, int):
         return PrimitiveLiteral(root_data)

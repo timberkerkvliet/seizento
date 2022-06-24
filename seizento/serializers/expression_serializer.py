@@ -1,6 +1,7 @@
 from typing import Any
 
-from seizento.domain.expression import Expression, PrimitiveLiteral, ArrayLiteral, ObjectLiteral
+from seizento.domain.expression import Expression, PrimitiveLiteral, ArrayLiteral, ObjectLiteral, PathReference
+from seizento.path import Path, StringComponent
 
 
 def serialize_expression(value: Expression) -> Any:
@@ -21,14 +22,15 @@ def parse_expression(value: Any) -> Expression:
         return ArrayLiteral(values=tuple(parse_expression(x) for x in value))
 
     if isinstance(value, dict):
-        values = {x: parse_expression(y) for x, y in value.items()}
-
         return ObjectLiteral(values={x: parse_expression(y) for x, y in value.items()})
 
     if isinstance(value, int):
         return PrimitiveLiteral(value)
 
     if isinstance(value, str):
+        if value == '{/0}':
+            return PathReference(reference=Path(components=(StringComponent('0'),)))
+
         return PrimitiveLiteral(value)
 
     raise TypeError

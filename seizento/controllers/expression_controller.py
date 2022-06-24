@@ -33,7 +33,12 @@ class ExpressionController:
         if current_type is None:
             raise KeyError
 
-        expression_type = new_expression.get_type()
+        references = new_expression.get_path_references()
+        schemas = {
+            reference: await self._repository.get_type(reference)
+            for reference in references
+        }
+        expression_type = new_expression.get_type(schemas)
 
         if not expression_type.is_subschema(current_type):
             raise Forbidden
