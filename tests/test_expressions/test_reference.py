@@ -52,7 +52,7 @@ class TestReference(IsolatedAsyncioTestCase):
             }
         )
 
-        response = await self.test_client.get('/evaluation/b')
+        response = await self.test_client.get('/evaluation/')
 
-        self.assertDictEqual(response, {'x': 'copy this'})
+        self.assertDictEqual(response, {'a': {'x': 'copy this'}, 'b': {'x': 'copy this'}})
 
