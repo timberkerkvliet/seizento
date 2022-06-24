@@ -28,7 +28,7 @@ async def evaluate(path: Path, repository: Repository) -> Any:
     for index in indices:
         try:
             evaluation = evaluation[index]
-        except Exception:
+        except KeyError:
             raise NotFound
 
     return evaluation
