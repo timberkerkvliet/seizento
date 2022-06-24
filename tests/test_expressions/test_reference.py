@@ -10,9 +10,7 @@ class TestReference(IsolatedAsyncioTestCase):
 
     async def test_set_reference(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-        await self.test_client.set('/expression/', [1])
-
-        await self.test_client.set('/expression/1', '{/0}')
+        await self.test_client.set('/expression/', [1, '{/0}'])
 
         response = await self.test_client.get('/evaluation/')
         self.assertEqual(response, [1, 1])
