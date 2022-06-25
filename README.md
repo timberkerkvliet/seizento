@@ -50,7 +50,7 @@ Suppose that by a GET request to  `/schema/stock` we find that a schema is defin
 }
 ```
 
-Then we can set the value with a PUT request to `/expression/stock`
+Then we can set an expression to define our desired values with a PUT request to `/expression/stock`:
 
 ```
 {  
