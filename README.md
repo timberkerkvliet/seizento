@@ -21,7 +21,7 @@ Suppose that by a GET request to `/schema/products` we find that the defined sch
 }
 ```
 
-Then data for this schema can be set with a PUT request to `/expression/product`
+Then data for this schema can be set with a PUT request to `/expression/products`:
 
 ```
 [
@@ -38,7 +38,11 @@ Then data for this schema can be set with a PUT request to `/expression/product`
 ]
 ```
 
-Now suppose that someone else needs the data in the form of a map from product names to stock.
+We are using the `expression` endpoint, but the data we are submitting is just a literal (array) value.
+If we get the evaluation of the expression by a `GET` request on `/evaluation/products`, 
+we get exactly the same data back.
+
+Now for something more interesting, suppose that someone else needs the data in the form of a map from product names to stock.
 Suppose that by a GET request to  `/schema/stock` we find that a schema is defined as follows:
 
 ```
