@@ -46,12 +46,7 @@ class SchemaController:
         if not self._path.empty:
             parent_type = await self._get_parent_type()
 
-            if isinstance(self._path.last_component, StringComponent) \
-                    and not isinstance(parent_type, Struct):
-                raise Forbidden
-
-            if isinstance(self._path.last_component, PlaceHolder) \
-                    and not isinstance(parent_type, (Array, Dictionary)):
+            if not parent_type.supports_child_at(self._path.last_component):
                 raise Forbidden
 
         try:
@@ -60,7 +55,6 @@ class SchemaController:
             raise BadRequest from e
 
         expression = await self._repository.get_expression(path=self._path)
-
 
         if expression is not None:
             references = expression.get_path_references()

@@ -1,5 +1,6 @@
 from typing import Dict
 
+from seizento.path import PathComponent, PlaceHolder
 from seizento.schema.schema import Schema
 
 
@@ -21,3 +22,5 @@ class Dictionary(Schema):
 
         return self.value_type.is_subschema(other.value_type)
 
+    def supports_child_at(self, component: PathComponent) -> bool:
+        return isinstance(component, PlaceHolder)

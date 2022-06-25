@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
+from seizento.path import PathComponent, PlaceHolder
 from seizento.schema.schema import Schema
 
 
@@ -14,6 +15,9 @@ class EmptyArray(Schema):
         if isinstance(other, (EmptyArray, Array)):
             return True
 
+        return False
+
+    def supports_child_at(self, component: PathComponent) -> bool:
         return False
 
 
@@ -30,3 +34,6 @@ class Array(Schema):
             return False
 
         return self.value_type.is_subschema(other.value_type)
+
+    def supports_child_at(self, component: PathComponent) -> bool:
+        return isinstance(component, PlaceHolder)

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from seizento.identifier import Identifier
+from seizento.path import PathComponent, StringComponent
 from seizento.schema.dictionary import Dictionary
 from seizento.schema.schema import Schema
 
@@ -18,6 +19,9 @@ class EmptyStruct(Schema):
         if isinstance(other, (EmptyStruct, Struct)):
             return True
 
+        return False
+
+    def supports_child_at(self, component: PathComponent) -> bool:
         return False
 
 
@@ -54,3 +58,6 @@ class Struct(Schema):
             field_type.is_subschema(other.fields[field])
             for field, field_type in self.fields.items()
         )
+
+    def supports_child_at(self, component: PathComponent) -> bool:
+        return isinstance(component, StringComponent)

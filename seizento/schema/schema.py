@@ -1,6 +1,8 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
+from seizento.path import PathComponent
+
 
 class Schema(ABC):
     @property
@@ -10,4 +12,8 @@ class Schema(ABC):
 
     @abstractmethod
     def is_subschema(self, other: Schema) -> bool:
+        pass
+
+    @abstractmethod
+    def supports_child_at(self, component: PathComponent) -> bool:
         pass
