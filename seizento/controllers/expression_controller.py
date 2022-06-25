@@ -1,6 +1,8 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import Forbidden, NotFound
+from seizento.expression.array_literal import ArrayLiteral
+from seizento.expression.struct_literal import StructLiteral
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
@@ -42,6 +44,14 @@ class ExpressionController:
 
         if not expression_type.is_subschema(current_type):
             raise Forbidden
+
+        if not self._path.empty:
+            parent_expression = await self._repository.get_expression(path=self._path.remove_last())
+            if parent_expression is None:
+                raise NotFound
+
+            if not isinstance(parent_expression, (ArrayLiteral, StructLiteral)):
+                raise Forbidden
 
         await self._repository.set_expression(
             path=self._path,
