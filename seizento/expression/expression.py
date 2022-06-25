@@ -8,7 +8,7 @@ from seizento.schema.schema import Schema
 
 class Expression(ABC):
     @abstractmethod
-    def get_type(self, schemas: Dict[Path, Schema]) -> Schema:
+    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         pass
 
     @abstractmethod

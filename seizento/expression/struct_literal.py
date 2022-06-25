@@ -13,12 +13,12 @@ from seizento.schema.schema import Schema
 class StructLiteral(Expression):
     values: Dict[str, Expression]
 
-    def get_type(self,  schemas: Dict[Path, Schema]) -> Schema:
+    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         if len(self.values) == 0:
             return EmptyStruct()
 
         return Struct(
-            fields={Identifier(x): y.get_type(schemas) for x, y in self.values.items()}
+            fields={Identifier(x): y.get_schema(schemas) for x, y in self.values.items()}
         )
 
     def evaluate(self, values: Dict[Path, Any]) -> Any:

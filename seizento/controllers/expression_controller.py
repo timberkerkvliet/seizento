@@ -40,7 +40,7 @@ class ExpressionController:
             reference: await self._repository.get_type(reference)
             for reference in references
         }
-        expression_type = new_expression.get_type(schemas)
+        expression_type = new_expression.get_schema(schemas)
 
         if not expression_type.is_subschema(current_type):
             raise Forbidden

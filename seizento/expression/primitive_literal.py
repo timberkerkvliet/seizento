@@ -12,7 +12,7 @@ from seizento.schema.schema import Schema
 class PrimitiveLiteral(Expression):
     value: Union[str, int, float, bool]
 
-    def get_type(self, schemas: Dict[Path, Schema]) -> Schema:
+    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         if isinstance(self.value, str):
             return String()
         if isinstance(self.value, int):

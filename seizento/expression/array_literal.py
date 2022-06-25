@@ -13,11 +13,11 @@ from seizento.schema.schema import Schema
 class ArrayLiteral(Expression):
     values: Tuple[Expression, ...]
 
-    def get_type(self,  schemas: Dict[Path, Schema]) -> Schema:
+    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         if len(self.values) == 0:
             return EmptyArray()
 
-        return Array(value_type=self.values[0].get_type(schemas))
+        return Array(value_type=self.values[0].get_schema(schemas))
 
     def evaluate(self, values: Dict[Path, Any]) -> Any:
         return [value.evaluate(values) for value in self.values]

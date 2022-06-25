@@ -12,7 +12,7 @@ from seizento.schema.schema import Schema
 class PathReference(Expression):
     reference: Path
 
-    def get_type(self,  schemas: Dict[Path, Schema]) -> Schema:
+    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         return schemas[self.reference]
 
     def evaluate(self, values: Dict[Path, Any]) -> Any:

@@ -68,7 +68,7 @@ class SchemaController:
                 reference: await self._repository.get_type(reference)
                 for reference in references
             }
-            if not expression.get_type(schemas).is_subschema(new_schema):
+            if not expression.get_schema(schemas).is_subschema(new_schema):
                 raise Forbidden
 
         await self._repository.set_type(
