@@ -1,10 +1,10 @@
 ## What does seizento do?
 
-The quick summary is:
+Seizento should do two things well:
 * It stores JSON data conforming to a JSON schema
 * It enables JSON projections by an expression language
 
-We show the core functionality by a basic example
+Let's illustrate this with an example.
 
 Suppose that by a GET request to `/schema/products` we find that the defined schema (using the defined standard at https://json-schema.org/) is:
 
