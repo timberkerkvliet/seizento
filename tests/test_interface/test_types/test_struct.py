@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from tests.test_client import UnitTestClient
+from tests.test_interface.test_client import UnitTestClient
 
 
 class TestStruct(IsolatedAsyncioTestCase):

@@ -1,7 +1,7 @@
 from unittest import IsolatedAsyncioTestCase
 
 from seizento.controllers.exceptions import NotFound, BadRequest
-from tests.test_client import UnitTestClient
+from tests.test_interface.test_client import UnitTestClient
 
 
 class TestGeneralErrors(IsolatedAsyncioTestCase):

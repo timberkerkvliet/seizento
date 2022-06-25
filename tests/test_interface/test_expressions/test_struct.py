@@ -1,7 +1,7 @@
-from unittest import IsolatedAsyncioTestCase, skip
+from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import Forbidden, NotFound
-from tests.test_client import UnitTestClient
+from seizento.controllers.exceptions import NotFound
+from tests.test_interface.test_client import UnitTestClient
 
 
 class TestStruct(IsolatedAsyncioTestCase):
