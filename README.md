@@ -2,7 +2,7 @@
 
 The quick summary is:
 * It stores JSON data conforming to a JSON schema
-* It enables JSON projections by a expression language
+* It enables JSON projections by an expression language
 
 We show the core functionality by a basic example
 
