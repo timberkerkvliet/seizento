@@ -1,8 +1,12 @@
 ## What does seizento do?
 
-### It stores JSON data conforming to a defined schema
+The quick summary is:
+* It stores JSON data conforming to a JSON schema
+* It enables JSON projections by a expression language
 
-Suppose that by a GET request to `/schema/products` we find that the defined schema is:
+We show the core functionality by a basic example
+
+Suppose that by a GET request to `/schema/products` we find that the defined schema (using the defined standard at https://json-schema.org/) is:
 
 ```
 {
@@ -33,8 +37,6 @@ Then data for this schema can be set with a PUT request to `/expression/product`
     }
 ]
 ```
-
-### It enables JSON projections
 
 Now suppose that someone else needs the data in the form of a map from product names to stock.
 Suppose that by a GET request to  `/schema/stock` we find that a schema is defined as follows:
