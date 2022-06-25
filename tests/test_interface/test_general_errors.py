@@ -12,6 +12,11 @@ class TestGeneralErrors(IsolatedAsyncioTestCase):
         with self.assertRaises(NotFound):
             await self.test_client.set('/schema/a', {'type': 'integer'})
 
+    async def test_when_setting_expression_with_no_paren_then_raise_not_found(self):
+        await self.test_client.set('/schema/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
+        with self.assertRaises(NotFound):
+            await self.test_client.set('/expression/a', 99)
+
     async def test_when_getting_nonsensical_resource_then_raise_bad_request(self):
         with self.assertRaises(BadRequest):
             await self.test_client.get('plfo//dsf')
