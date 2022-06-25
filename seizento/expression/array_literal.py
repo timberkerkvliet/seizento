@@ -5,7 +5,7 @@ from typing import Dict, Set, Any, Tuple
 
 from seizento.schema.array import Array, EmptyArray
 from seizento.expression.expression import Expression
-from seizento.path import Path
+from seizento.path import Path, PathComponent, StringComponent
 from seizento.schema.schema import Schema
 
 
@@ -24,3 +24,9 @@ class ArrayLiteral(Expression):
 
     def get_path_references(self) -> Set[Path]:
         return {reference for expression in self.values for reference in expression.get_path_references()}
+
+    def supports_child_at(self, component: PathComponent) -> bool:
+        if not isinstance(component, StringComponent):
+            return False
+
+        return component.value in {str(k) for k in range(len(self.values) + 1)}

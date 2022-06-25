@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Dict, Set, Any
 
 from seizento.expression.expression import Expression
-from seizento.path import Path
+from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 
@@ -20,3 +20,6 @@ class PathReference(Expression):
 
     def get_path_references(self) -> Set[Path]:
         return {self.reference}
+
+    def supports_child_at(self, component: PathComponent) -> bool:
+        return False

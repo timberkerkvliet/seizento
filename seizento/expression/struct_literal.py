@@ -5,7 +5,7 @@ from typing import Dict, Set, Any
 from seizento.identifier import Identifier
 from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression
-from seizento.path import Path
+from seizento.path import Path, PathComponent, StringComponent
 from seizento.schema.schema import Schema
 
 
@@ -30,3 +30,8 @@ class StructLiteral(Expression):
             for reference in expression.get_path_references()
         }
 
+    def supports_child_at(self, component: PathComponent) -> bool:
+        if not isinstance(component, StringComponent):
+            return False
+
+        return component.value in self.values

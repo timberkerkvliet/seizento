@@ -50,7 +50,7 @@ class ExpressionController:
             if parent_expression is None:
                 raise NotFound
 
-            if not isinstance(parent_expression, (ArrayLiteral, StructLiteral)):
+            if not parent_expression.supports_child_at(self._path.last_component):
                 raise Forbidden
 
         await self._repository.set_expression(
