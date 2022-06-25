@@ -28,9 +28,6 @@ class SchemaController:
         return result
 
     async def _get_parent_type(self) -> Schema:
-        if self._path.empty:
-            raise NotFound
-
         result = await self._repository.get_type(path=self._path.remove_last())
         if result is None:
             raise NotFound
