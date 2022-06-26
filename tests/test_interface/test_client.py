@@ -30,7 +30,7 @@ class FakeDataTreeStoreTransaction(DataTreeStoreTransaction):
 
 class FakeDataTreeStore:
     def __init__(self):
-        self._tree = DataTree.from_subtrees(root_data={})
+        self._tree = DataTree(root_data={})
 
     def _set_state(self, tree: DataTree) -> None:
         self._tree = tree

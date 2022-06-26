@@ -21,7 +21,7 @@ NAMES = {
 
 def schema_to_tree(value: Schema) -> DataTree:
     if isinstance(value, Struct):
-        return DataTree.from_subtrees(
+        return DataTree(
             root_data={'type': NAMES[type(value)]},
             subtrees={
                 StringComponent(field.name): schema_to_tree(field_type)
@@ -30,14 +30,14 @@ def schema_to_tree(value: Schema) -> DataTree:
         )
 
     if isinstance(value, (Array, Dictionary)):
-        return DataTree.from_subtrees(
+        return DataTree(
             root_data={'type': NAMES[type(value)]},
             subtrees={
                 PlaceHolder(): schema_to_tree(value.value_type)
             }
         )
 
-    return DataTree.from_subtrees(root_data={'type': NAMES[type(value)]})
+    return DataTree(root_data={'type': NAMES[type(value)]})
 
 
 def tree_to_schema(value: DataTree) -> Schema:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from typing import Dict, Any
 
@@ -13,85 +13,43 @@ class InvalidDataTree(Exception):
 
 @dataclass(frozen=True)
 class DataTree:
-    values: Dict[Path, Any]
-
-    def __post_init__(self):
-        for path in self.values.keys():
-            if path.empty:
-                continue
-
-            if not path.remove_last() in self.values.keys():
-                raise InvalidDataTree
-
-    @classmethod
-    def from_subtrees(cls, root_data: Any, subtrees: Dict[PathComponent, Any] = None):
-        subtrees = subtrees or {}
-        result = cls(values={EMPTY_PATH: root_data})
-        for component, subtree in subtrees.items():
-            result = result.set_subtree(
-                path=Path(components=(component,)),
-                subtree=subtree
-            )
-
-        return result
+    root_data: Any
+    subtrees: Dict[PathComponent, DataTree] = field(default_factory=dict)
 
     def delete_subtree(self, path: Path) -> DataTree:
-        return DataTree(
-            values={
-                tree_path: v for tree_path, v in self.values.items()
-                if not tree_path >= path
-            }
-        )
+        if path == EMPTY_PATH:
+            raise ValueError
+
+        subtrees = {
+            component: subtree for component, subtree in self.subtrees.items()
+            if component != path.first_component
+        }
+
+        if len(path) > 1 and path.first_component in self.subtrees:
+            subtrees[path.first_component] = self.subtrees[path.first_component].delete_subtree(path=path.remove_first())
+
+        return DataTree(root_data=self.root_data, subtrees=subtrees)
 
     def set_subtree(self, path: Path, subtree: DataTree) -> DataTree:
-        return DataTree(
-            values={
-                **{
-                    tree_path: v for tree_path, v in self.values.items()
-                    if not tree_path >= path
-                },
-                **{
-                    path + tree_path: value
-                    for tree_path, value in subtree.values.items()
-                }
-            }
-        )
+        if path == EMPTY_PATH:
+            raise ValueError
 
-    @property
-    def root_data(self):
-        root_values = [value for path, value in self.values.items() if path.empty]
-        if len(root_values) != 1:
-            raise Exception
-
-        return root_values[0]
-
-    @property
-    def values_per_component(self) -> Dict[PathComponent, Dict[Path, Dict]]:
-        categorized: Dict[PathComponent, Dict[Path, Dict]] = {}
-        for path, value in self.values.items():
-            if path.empty:
-                continue
-
-            component = path.first_component
-
-            if component not in categorized:
-                categorized[component] = {}
-
-            categorized[component][path] = value
-
-        return categorized
-
-    @property
-    def subtrees(self) -> Dict[PathComponent, DataTree]:
-        return {
-            component: DataTree(
-                values={
-                    path.remove_first(): data
-                    for path, data in values.items()
+        if len(path) == 1:
+            return DataTree(
+                root_data=self.root_data,
+                subtrees={
+                    **self.subtrees,
+                    path.first_component: subtree
                 }
             )
-            for component, values in self.values_per_component.items()
-        }
+
+        return DataTree(
+            root_data=self.root_data,
+            subtrees={
+                **self.subtrees,
+                path.first_component: self.subtrees[path.first_component].set_subtree(path=path.remove_first(), subtree=subtree)
+            }
+        )
 
     def get_subtree(self, path: Path) -> DataTree:
         result = self

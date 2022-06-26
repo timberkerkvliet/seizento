@@ -10,10 +10,10 @@ from seizento.serializers.path_serializer import serialize_path, parse_path
 
 def expression_to_tree(value: Expression) -> DataTree:
     if isinstance(value, PrimitiveLiteral):
-        return DataTree.from_subtrees(root_data=value.value)
+        return DataTree(root_data=value.value)
 
     if isinstance(value, StructLiteral):
-        return DataTree.from_subtrees(
+        return DataTree(
             root_data={'type': 'OBJECT'},
             subtrees={
                 StringComponent(str(name)): expression_to_tree(expression)
@@ -22,7 +22,7 @@ def expression_to_tree(value: Expression) -> DataTree:
         )
 
     if isinstance(value, ArrayLiteral):
-        return DataTree.from_subtrees(
+        return DataTree(
             root_data={'type': 'ARRAY'},
             subtrees={
                 StringComponent(str(k)): expression_to_tree(child)
@@ -31,7 +31,7 @@ def expression_to_tree(value: Expression) -> DataTree:
         )
 
     if isinstance(value, PathReference):
-        return DataTree.from_subtrees(
+        return DataTree(
             root_data={'type': 'PATH_REFERENCE', 'reference': serialize_path(value.reference)}
         )
 
