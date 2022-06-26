@@ -1,12 +1,11 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import Forbidden, NotFound
-from seizento.expression.array_literal import ArrayLiteral
-from seizento.expression.struct_literal import StructLiteral
+
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
-from seizento.service.expression_service import has_circular_dependencies
+from seizento.service.expression_service import can_reach_cycles_or_targets
 
 
 class ExpressionController:
@@ -54,7 +53,11 @@ class ExpressionController:
             if not parent_expression.supports_child_at(self._path.last_component):
                 raise Forbidden
 
-        if await has_circular_dependencies(expression=new_expression, repository=self._repository):
+        if await can_reach_cycles_or_targets(
+            expression=new_expression,
+            targets={self._path},
+            repository=self._repository
+        ):
             raise Forbidden
 
         await self._repository.set_expression(

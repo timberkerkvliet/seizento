@@ -76,3 +76,11 @@ class TestReference(IsolatedAsyncioTestCase):
 
         response = await self.test_client.get('/evaluation/')
         self.assertEqual(response, [1, 1, 1])
+
+    async def test_circular_reference(self):
+        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+
+        await self.test_client.set('/expression/', ['{/1}', '{/2}'])
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/expression/2', '{/0}')
