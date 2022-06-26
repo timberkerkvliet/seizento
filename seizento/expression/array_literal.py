@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Set, Any, Tuple
 
+from seizento.data_tree import DataTree
 from seizento.schema.array import Array, EmptyArray
 from seizento.expression.expression import Expression
 from seizento.path import Path, PathComponent, StringComponent
@@ -30,3 +31,12 @@ class ArrayLiteral(Expression):
             return False
 
         return component.value in {str(k) for k in range(len(self.values) + 1)}
+
+    def to_tree(self) -> DataTree:
+        return DataTree(
+            root_data=self,
+            subtrees={
+                StringComponent(str(k)): child_expression.to_tree()
+                for k, child_expression in enumerate(self.values)
+            }
+        )

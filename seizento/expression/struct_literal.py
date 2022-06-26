@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Set, Any
 
+from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression
@@ -35,3 +36,12 @@ class StructLiteral(Expression):
             return False
 
         return component.value in self.values
+
+    def to_tree(self) -> DataTree:
+        return DataTree(
+            root_data=self,
+            subtrees={
+                StringComponent(str(name)): expression.to_tree()
+                for name, expression in self.values.items()
+            }
+        )

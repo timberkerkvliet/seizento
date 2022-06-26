@@ -2,6 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Dict, Set, Any
 
+from seizento.data_tree import DataTree
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
@@ -21,4 +22,8 @@ class Expression(ABC):
 
     @abstractmethod
     def supports_child_at(self, component: PathComponent) -> bool:
+        pass
+
+    @abstractmethod
+    def to_tree(self) -> DataTree:
         pass

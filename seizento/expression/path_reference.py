@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Set, Any
 
+from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
@@ -23,3 +24,6 @@ class PathReference(Expression):
 
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
+
+    def to_tree(self) -> DataTree:
+        return DataTree(root_data=self)
