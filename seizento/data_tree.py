@@ -43,11 +43,14 @@ class DataTree:
                 }
             )
 
+        new_subtree = self.subtrees[path.first_component]\
+            .set_subtree(path=path.remove_first(), subtree=subtree)
+
         return DataTree(
             root_data=self.root_data,
             subtrees={
                 **self.subtrees,
-                path.first_component: self.subtrees[path.first_component].set_subtree(path=path.remove_first(), subtree=subtree)
+                path.first_component: new_subtree
             }
         )
 
