@@ -7,10 +7,6 @@ from typing import Dict, Any
 from seizento.path import Path, PathComponent, PlaceHolder, EMPTY_PATH
 
 
-class InvalidDataTree(Exception):
-    pass
-
-
 @dataclass(frozen=True)
 class DataTree:
     root_data: Any
