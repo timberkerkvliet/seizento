@@ -6,6 +6,7 @@ from seizento.expression.struct_literal import StructLiteral
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
+from seizento.service.expression_service import has_circular_dependencies
 
 
 class ExpressionController:
@@ -52,6 +53,9 @@ class ExpressionController:
 
             if not parent_expression.supports_child_at(self._path.last_component):
                 raise Forbidden
+
+        if await has_circular_dependencies(expression=new_expression, repository=self._repository):
+            raise Forbidden
 
         await self._repository.set_expression(
             path=self._path,

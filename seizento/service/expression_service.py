@@ -59,3 +59,7 @@ async def evaluate_expression(expression: Expression, repository: Repository) ->
     }
 
     return expression.evaluate(values)
+
+
+async def has_circular_dependencies(expression: Expression, repository: Repository) -> bool:
+    return False
