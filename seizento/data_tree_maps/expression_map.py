@@ -13,14 +13,13 @@ def expression_to_tree(value: Expression) -> DataTree:
         return DataTree(values={EMPTY_PATH:  value.value})
 
     if isinstance(value, StructLiteral):
-        result = DataTree(values={EMPTY_PATH: {'type': 'OBJECT'}})
-        for name, expression in value.values.items():
-            result = result.set_subtree(
-                path=Path(components=(StringComponent(str(name)),)),
-                subtree=expression_to_tree(expression)
-            )
-
-        return result
+        return DataTree.from_subtrees(
+            root_data={'type': 'OBJECT'},
+            subtrees={
+                StringComponent(str(name)): expression_to_tree(expression)
+                for name, expression in value.values.items()
+            }
+        )
 
     if isinstance(value, ArrayLiteral):
         result = DataTree(

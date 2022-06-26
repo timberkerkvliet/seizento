@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from typing import Dict, Any
 
-from seizento.path import Path, PathComponent, PlaceHolder
+from seizento.path import Path, PathComponent, PlaceHolder, EMPTY_PATH
 
 
 class InvalidDataTree(Exception):
@@ -22,6 +22,17 @@ class DataTree:
 
             if not path.remove_last() in self.values.keys():
                 raise InvalidDataTree
+
+    @classmethod
+    def from_subtrees(cls, root_data: Any, subtrees: Dict[PathComponent, Any]):
+        result = cls(values={EMPTY_PATH: root_data})
+        for component, subtree in subtrees.items():
+            result = result.set_subtree(
+                path=Path(components=(component,)),
+                subtree=subtree
+            )
+
+        return result
 
     def delete_subtree(self, path: Path) -> DataTree:
         return DataTree(
