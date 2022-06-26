@@ -24,7 +24,8 @@ class DataTree:
                 raise InvalidDataTree
 
     @classmethod
-    def from_subtrees(cls, root_data: Any, subtrees: Dict[PathComponent, Any]):
+    def from_subtrees(cls, root_data: Any, subtrees: Dict[PathComponent, Any] = None):
+        subtrees = subtrees or {}
         result = cls(values={EMPTY_PATH: root_data})
         for component, subtree in subtrees.items():
             result = result.set_subtree(
