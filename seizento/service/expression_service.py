@@ -54,13 +54,21 @@ async def evaluate_expression_at_path(
     expression = nearest_expression.expression
 
     references = expression.get_path_references()
-    values = {
-        reference: await evaluate_expression_at_path(
-            path=reference,
-            repository=repository,
-            visited=visited | {path}
-        ) for reference in references
-    }
+
+    values = {}
+    not_found = False
+    for reference in references:
+        try:
+            values[reference] = await evaluate_expression_at_path(
+                path=reference,
+                repository=repository,
+                visited=visited | {path}
+            )
+        except NotFound:
+            not_found = True
+
+    if not_found:
+        raise NotFound
 
     evaluation = expression.evaluate(values)
 

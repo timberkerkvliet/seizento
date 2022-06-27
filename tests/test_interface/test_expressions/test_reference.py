@@ -90,3 +90,9 @@ class TestReference(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression', ['{/0}'])
+
+    async def test_self_reference_and_non_existing(self):
+        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/expression', ['{/100}', '{/101}', '{/102}', '{/103}', '{/104}', '{/5}'])
