@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Tuple
+from dataclasses import dataclass, field
+from typing import Tuple, Optional
+
+from seizento.identifier import Identifier
 
 
 class PathComponent:
@@ -19,7 +21,9 @@ class LiteralComponent(PathComponent):
 
 @dataclass(frozen=True)
 class MatchComponent(PathComponent):
-    pass
+    prefix: str = ''
+    name: Optional[Identifier] = None
+    postfix: str = ''
 
 
 @dataclass(frozen=True)
