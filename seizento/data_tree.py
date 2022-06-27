@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 from typing import Dict, Any
 
-from seizento.path import Path, PathComponent, PlaceHolder, EMPTY_PATH
+from seizento.path import Path, PathComponent, MatchComponent, EMPTY_PATH
 
 
 @dataclass(frozen=True)
@@ -56,8 +56,8 @@ class DataTree:
             subtrees = result.subtrees
             if component in subtrees:
                 result = subtrees[component]
-            elif PlaceHolder() in subtrees:
-                result = subtrees[PlaceHolder()]
+            elif MatchComponent() in subtrees:
+                result = subtrees[MatchComponent()]
             else:
                 raise KeyError
 

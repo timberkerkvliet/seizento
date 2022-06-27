@@ -18,7 +18,7 @@ class LiteralComponent(PathComponent):
 
 
 @dataclass(frozen=True)
-class PlaceHolder(PathComponent):
+class MatchComponent(PathComponent):
     pass
 
 
