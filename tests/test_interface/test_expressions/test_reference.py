@@ -85,7 +85,6 @@ class TestReference(IsolatedAsyncioTestCase):
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/2', '{/0}')
 
-    @skip('wip')
     async def test_self_reference(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
 
