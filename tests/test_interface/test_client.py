@@ -2,7 +2,7 @@ import uuid
 from typing import Callable
 
 from seizento.controllers.resource_controller import ResourceController
-from seizento.path import Path, EMPTY_PATH, StringComponent
+from seizento.path import Path
 from seizento.data_tree import DataTree
 from seizento.repository import Repository, DataTreeStoreTransaction
 
