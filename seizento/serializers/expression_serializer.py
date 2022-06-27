@@ -33,7 +33,7 @@ def parse_expression(value: Any) -> Expression:
         return PrimitiveLiteral(value)
 
     if isinstance(value, str):
-        if value[0] == '{' and value[-1] == '}':
+        if value[0] == '{' and value[1] != '{' and value[-1] == '}':
             return PathReference(reference=parse_path(value[1:-1]))
 
         return PrimitiveLiteral(value.replace('{{', '{').replace('}}', '}'))
