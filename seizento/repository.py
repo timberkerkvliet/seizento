@@ -4,7 +4,7 @@ from typing import Optional
 
 from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
 from seizento.expression.expression import Expression
-from seizento.path import Path, StringComponent
+from seizento.path import Path, LiteralComponent
 from seizento.schema.schema import Schema
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
 from seizento.data_tree import DataTree
@@ -37,7 +37,7 @@ class Repository:
 
     async def get_type(self, path: Path) -> Optional[Schema]:
         try:
-            data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('type')))
+            data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('type')))
         except KeyError:
             return None
 
@@ -45,18 +45,18 @@ class Repository:
 
     async def set_type(self, path: Path, value: Schema) -> None:
         await self._transaction.set_tree(
-            path=path.insert_first(StringComponent('type')),
+            path=path.insert_first(LiteralComponent('type')),
             tree=schema_to_tree(value)
         )
 
     async def delete_type(self, path: Path) -> None:
         await self._transaction.delete_tree(
-            path=path.insert_first(StringComponent('type'),)
+            path=path.insert_first(LiteralComponent('type'), )
         )
 
     async def get_expression(self, path: Path) -> Optional[Expression]:
         try:
-            data_tree = await self._transaction.get_tree(path=path.insert_first(StringComponent('expression')))
+            data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('expression')))
         except KeyError:
             return None
 
@@ -64,6 +64,6 @@ class Repository:
 
     async def set_expression(self, path: Path, value: Expression) -> None:
         await self._transaction.set_tree(
-            path=path.insert_first(StringComponent('expression')),
+            path=path.insert_first(LiteralComponent('expression')),
             tree=expression_to_tree(value)
         )

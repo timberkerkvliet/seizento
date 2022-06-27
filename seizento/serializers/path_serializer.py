@@ -1,13 +1,13 @@
 from urllib.parse import quote, unquote
 
-from seizento.path import PlaceHolder, StringComponent, Path, PathComponent
+from seizento.path import PlaceHolder, LiteralComponent, Path, PathComponent
 
 
 def parse_component(value: str) -> PathComponent:
     if value == '~':
         return PlaceHolder()
 
-    return StringComponent(value=unquote(value))
+    return LiteralComponent(value=unquote(value))
 
 
 def parse_path(value: str) -> Path:
@@ -25,7 +25,7 @@ def parse_path(value: str) -> Path:
 def serialize_component(component: PathComponent) -> str:
     if isinstance(component, PlaceHolder):
         return '~'
-    if isinstance(component, StringComponent):
+    if isinstance(component, LiteralComponent):
         return quote(component.value)
 
 

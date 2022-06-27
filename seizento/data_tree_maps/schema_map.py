@@ -1,5 +1,5 @@
 from seizento.identifier import Identifier
-from seizento.path import Path, StringComponent, PlaceHolder
+from seizento.path import Path, LiteralComponent, PlaceHolder
 from seizento.schema.schema import Schema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array
@@ -24,7 +24,7 @@ def schema_to_tree(value: Schema) -> DataTree:
         return DataTree(
             root_data={'type': NAMES[type(value)]},
             subtrees={
-                StringComponent(field.name): schema_to_tree(field_type)
+                LiteralComponent(field.name): schema_to_tree(field_type)
                 for field, field_type in value.fields.items()
             }
         )

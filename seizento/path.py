@@ -9,7 +9,7 @@ class PathComponent:
 
 
 @dataclass(frozen=True)
-class StringComponent(PathComponent):
+class LiteralComponent(PathComponent):
     value: str
 
     def __post_init__(self):

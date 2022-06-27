@@ -6,7 +6,7 @@ from typing import Dict, Set, Any, Tuple
 from seizento.data_tree import DataTree
 from seizento.schema.array import Array, EmptyArray
 from seizento.expression.expression import Expression
-from seizento.path import Path, PathComponent, StringComponent
+from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 
@@ -27,7 +27,7 @@ class ArrayLiteral(Expression):
         return {reference for expression in self.values for reference in expression.get_path_references()}
 
     def supports_child_at(self, component: PathComponent) -> bool:
-        if not isinstance(component, StringComponent):
+        if not isinstance(component, LiteralComponent):
             return False
 
         return component.value in {str(k) for k in range(len(self.values) + 1)}
@@ -36,7 +36,7 @@ class ArrayLiteral(Expression):
         return DataTree(
             root_data=self,
             subtrees={
-                StringComponent(str(k)): child_expression.to_tree()
+                LiteralComponent(str(k)): child_expression.to_tree()
                 for k, child_expression in enumerate(self.values)
             }
         )

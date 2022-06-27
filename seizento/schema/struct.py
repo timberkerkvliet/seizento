@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from seizento.identifier import Identifier
-from seizento.path import PathComponent, StringComponent
+from seizento.path import PathComponent, LiteralComponent
 from seizento.schema.dictionary import Dictionary
 from seizento.schema.schema import Schema
 
@@ -60,4 +60,4 @@ class Struct(Schema):
         )
 
     def supports_child_at(self, component: PathComponent) -> bool:
-        return isinstance(component, StringComponent)
+        return isinstance(component, LiteralComponent)

@@ -6,7 +6,7 @@ from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression
-from seizento.path import Path, PathComponent, StringComponent
+from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 
@@ -32,7 +32,7 @@ class StructLiteral(Expression):
         }
 
     def supports_child_at(self, component: PathComponent) -> bool:
-        if not isinstance(component, StringComponent):
+        if not isinstance(component, LiteralComponent):
             return False
 
         return component.value in self.values
@@ -41,7 +41,7 @@ class StructLiteral(Expression):
         return DataTree(
             root_data=self,
             subtrees={
-                StringComponent(str(name)): expression.to_tree()
+                LiteralComponent(str(name)): expression.to_tree()
                 for name, expression in self.values.items()
             }
         )
