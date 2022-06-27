@@ -36,6 +36,6 @@ def parse_expression(value: Any) -> Expression:
         if value[0] == '{' and value[-1] == '}':
             return PathReference(reference=parse_path(value[1:-1]))
 
-        return PrimitiveLiteral(value)
+        return PrimitiveLiteral(value.replace('{{', '{').replace('}}', '}'))
 
     raise TypeError
