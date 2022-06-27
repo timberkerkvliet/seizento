@@ -5,7 +5,8 @@ from seizento.controllers.exceptions import Forbidden, NotFound
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
-from seizento.service.expression_service import can_reach_cycles_or_targets
+from seizento.service.expression_service import can_reach_cycles_or_targets, evaluate_expression_at_path, \
+    CircularReference
 
 
 class ExpressionController:
@@ -53,14 +54,11 @@ class ExpressionController:
             if not parent_expression.supports_child_at(self._path.last_component):
                 raise Forbidden
 
-        if await can_reach_cycles_or_targets(
-            expression=new_expression,
-            targets={self._path},
-            repository=self._repository
-        ):
-            raise Forbidden
+        await self._repository.set_expression(path=self._path, value=new_expression)
 
-        await self._repository.set_expression(
-            path=self._path,
-            value=new_expression
-        )
+        try:
+            await evaluate_expression_at_path(path=self._path, repository=self._repository)
+        except CircularReference as e:
+            raise Forbidden from e
+        except NotFound:
+            pass

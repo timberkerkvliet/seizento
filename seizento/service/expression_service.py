@@ -30,7 +30,20 @@ async def find_nearest_expression(repository: Repository, path: Path) -> Optiona
         continue
 
 
-async def evaluate_expression_at_path(path: Path, repository: Repository) -> Any:
+class CircularReference(Exception):
+    pass
+
+
+async def evaluate_expression_at_path(
+    path: Path,
+    repository: Repository,
+    visited: Set[Path] = None
+) -> Any:
+    visited = visited or set()
+
+    if path in visited:
+        raise CircularReference
+
     nearest_expression = await find_nearest_expression(repository=repository, path=path)
 
     if nearest_expression is None:
@@ -38,7 +51,18 @@ async def evaluate_expression_at_path(path: Path, repository: Repository) -> Any
 
     indices = [component.name for component in path.components[len(nearest_expression.path):]]
 
-    evaluation = await evaluate_expression(expression=nearest_expression.expression, repository=repository)
+    expression = nearest_expression.expression
+
+    references = expression.get_path_references()
+    values = {
+        reference: await evaluate_expression_at_path(
+            path=reference,
+            repository=repository,
+            visited=visited | {path}
+        ) for reference in references
+    }
+
+    evaluation = expression.evaluate(values)
 
     for index in indices:
         try:
@@ -47,18 +71,6 @@ async def evaluate_expression_at_path(path: Path, repository: Repository) -> Any
             raise NotFound
 
     return evaluation
-
-
-async def evaluate_expression(expression: Expression, repository: Repository) -> Any:
-    references = expression.get_path_references()
-    values = {
-        reference: await evaluate_expression_at_path(
-            path=reference,
-            repository=repository
-        ) for reference in references
-    }
-
-    return expression.evaluate(values)
 
 
 async def can_reach_cycles_or_targets(
