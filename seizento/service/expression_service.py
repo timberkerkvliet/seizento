@@ -71,29 +71,3 @@ async def evaluate_expression_at_path(
             raise NotFound
 
     return evaluation
-
-
-async def can_reach_cycles_or_targets(
-    expression: Expression,
-    targets: Set[Path],
-    repository: Repository
-) -> bool:
-    paths = expression.get_path_references()
-
-    if any(target >= path for target in targets for path in paths):
-        return True
-
-    for path in paths:
-        expression = await repository.get_expression(path)
-
-        if expression is None:
-            continue
-
-        if await can_reach_cycles_or_targets(
-            expression=expression,
-            targets=targets | {path},
-            repository=repository
-        ):
-            return True
-
-    return False
