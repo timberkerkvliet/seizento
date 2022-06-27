@@ -16,7 +16,8 @@ class FakeDataTreeStoreTransaction(DataTreeStoreTransaction):
         pass
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._on_exit(self._tree)
+        if exc_val is None:
+            self._on_exit(self._tree)
 
     async def get_tree(self, path: Path) -> DataTree:
         return self._tree.get_subtree(path=path)

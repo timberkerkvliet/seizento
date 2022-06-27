@@ -91,6 +91,20 @@ class TestReference(IsolatedAsyncioTestCase):
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression', ['{/0}'])
 
+    async def test_self_reference_did_not_change_anything(self):
+        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+
+        await self.test_client.set('/expression', [1])
+
+        try:
+            await self.test_client.set('/expression', ['{/0}'])
+        except Forbidden:
+            pass
+
+        response = await self.test_client.get('/expression')
+
+        self.assertEqual(response, [1])
+
     async def test_self_reference_and_non_existing(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
 
