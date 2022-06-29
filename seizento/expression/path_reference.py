@@ -16,7 +16,7 @@ class PathReference(Expression):
     def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         return schemas[self.reference]
 
-    def evaluate(self, values: Dict[Path, Any]) -> Any:
+    def evaluate(self, values: Dict[Path, Any],  arguments: Dict[str, str]) -> Any:
         return values[self.reference]
 
     def get_path_references(self) -> Set[Path]:

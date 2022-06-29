@@ -20,8 +20,8 @@ class ArrayLiteral(Expression):
 
         return Array(value_type=self.values[0].get_schema(schemas))
 
-    def evaluate(self, values: Dict[Path, Any]) -> Any:
-        return [value.evaluate(values) for value in self.values]
+    def evaluate(self, values: Dict[Path, Any], arguments: Dict[str, str]) -> Any:
+        return [value.evaluate(values, arguments) for value in self.values]
 
     def get_path_references(self) -> Set[Path]:
         return {reference for expression in self.values for reference in expression.get_path_references()}

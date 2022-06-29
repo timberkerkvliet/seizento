@@ -13,7 +13,7 @@ class Expression(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self, values: Dict[Path, Any]) -> Any:
+    def evaluate(self, values: Dict[Path, Any], arguments: Dict[str, str]) -> Any:
         pass
 
     @abstractmethod

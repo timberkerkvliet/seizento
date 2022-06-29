@@ -22,8 +22,8 @@ class StructLiteral(Expression):
             fields={Identifier(x): y.get_schema(schemas) for x, y in self.values.items()}
         )
 
-    def evaluate(self, values: Dict[Path, Any]) -> Any:
-        return {key: value.evaluate(values) for key, value in self.values.items()}
+    def evaluate(self, values: Dict[Path, Any],  arguments: Dict[str, str]) -> Any:
+        return {key: value.evaluate(values, arguments) for key, value in self.values.items()}
 
     def get_path_references(self) -> Set[Path]:
         return {

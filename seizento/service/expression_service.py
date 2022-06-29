@@ -70,7 +70,7 @@ async def evaluate_expression_at_path(
     if not_found:
         raise NotFound
 
-    evaluation = expression.evaluate(values)
+    evaluation = expression.evaluate(values, arguments={})
 
     for index in indices:
         try:

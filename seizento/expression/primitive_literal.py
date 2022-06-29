@@ -19,7 +19,7 @@ class PrimitiveLiteral(Expression):
         if isinstance(self.value, int):
             return Integer()
 
-    def evaluate(self, values: Dict[Path, Any]) -> Any:
+    def evaluate(self, values: Dict[Path, Any],  arguments: Dict[str, str]) -> Any:
         return self.value
 
     def get_path_references(self) -> Set[Path]:
