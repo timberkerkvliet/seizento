@@ -9,7 +9,7 @@ from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import ExpressionEvaluator
+    from seizento.service.expression_service import PathEvaluator
 
 
 @dataclass(frozen=True)
@@ -19,7 +19,7 @@ class PathReference(Expression):
     def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         return schemas[self.reference]
 
-    async def evaluate(self, evaluator: ExpressionEvaluator, arguments: Dict[str, str]) -> Any:
+    async def evaluate(self, evaluator: PathEvaluator, arguments: Dict[str, str]) -> Any:
         return await evaluator.evaluate(path=self.reference)
 
     def get_path_references(self) -> Set[Path]:

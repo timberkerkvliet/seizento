@@ -34,7 +34,7 @@ class CircularReference(Exception):
     pass
 
 
-class ExpressionEvaluator:
+class PathEvaluator:
     def __init__(self, repository: Repository):
         self._repository = repository
 

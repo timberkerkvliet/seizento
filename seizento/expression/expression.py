@@ -7,7 +7,7 @@ from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import ExpressionEvaluator
+    from seizento.service.expression_service import PathEvaluator
 
 
 class Expression(ABC):
@@ -16,7 +16,7 @@ class Expression(ABC):
         pass
 
     @abstractmethod
-    async def evaluate(self, evaluator: ExpressionEvaluator, arguments: Dict[str, str]) -> Any:
+    async def evaluate(self, evaluator: PathEvaluator, arguments: Dict[str, str]) -> Any:
         pass
 
     @abstractmethod

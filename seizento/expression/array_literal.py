@@ -10,7 +10,7 @@ from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import ExpressionEvaluator
+    from seizento.service.expression_service import PathEvaluator
 
 
 
@@ -24,7 +24,7 @@ class ArrayLiteral(Expression):
 
         return Array(value_type=self.values[0].get_schema(schemas))
 
-    async def evaluate(self, evaluator: ExpressionEvaluator, arguments: Dict[str, str]) -> Any:
+    async def evaluate(self, evaluator: PathEvaluator, arguments: Dict[str, str]) -> Any:
         return [await value.evaluate(evaluator, arguments) for value in self.values]
 
     def get_path_references(self) -> Set[Path]:

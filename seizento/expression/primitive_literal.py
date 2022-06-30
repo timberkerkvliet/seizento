@@ -9,7 +9,7 @@ from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import ExpressionEvaluator
+    from seizento.service.expression_service import PathEvaluator
 
 
 @dataclass(frozen=True)
@@ -22,7 +22,7 @@ class PrimitiveLiteral(Expression):
         if isinstance(self.value, int):
             return Integer()
 
-    async def evaluate(self, evaluator: ExpressionEvaluator, arguments: Dict[str, str]) -> Any:
+    async def evaluate(self, evaluator: PathEvaluator, arguments: Dict[str, str]) -> Any:
         return self.value
 
     def get_path_references(self) -> Set[Path]:
