@@ -5,8 +5,7 @@ from seizento.controllers.exceptions import Forbidden, NotFound
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
-from seizento.service.expression_service import evaluate_expression_at_path, \
-    CircularReference
+from seizento.service.expression_service import CircularReference, ExpressionEvaluator
 
 
 class ExpressionController:
@@ -56,8 +55,10 @@ class ExpressionController:
 
         await self._repository.set_expression(path=self._path, value=new_expression)
 
+        evaluator = ExpressionEvaluator(repository=self._repository)
+
         try:
-            await evaluate_expression_at_path(path=self._path, repository=self._repository)
+            await evaluator.evaluate(path=self._path)
         except CircularReference as e:
             raise Forbidden from e
         except NotFound:

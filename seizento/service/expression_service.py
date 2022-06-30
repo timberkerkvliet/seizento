@@ -34,48 +34,51 @@ class CircularReference(Exception):
     pass
 
 
-async def evaluate_expression_at_path(
-    path: Path,
-    repository: Repository,
-    visited: Set[Path] = None
-) -> Any:
-    visited = visited or set()
+class ExpressionEvaluator:
+    def __init__(self, repository: Repository):
+        self._repository = repository
 
-    if path in visited:
-        raise CircularReference
+    async def evaluate(
+        self,
+        path: Path,
+        visited: Set[Path] = None
+    ) -> Any:
+        visited = visited or set()
 
-    nearest_expression = await find_nearest_expression(repository=repository, path=path)
+        if path in visited:
+            raise CircularReference
 
-    if nearest_expression is None:
-        raise NotFound
+        nearest_expression = await find_nearest_expression(repository=self._repository, path=path)
 
-    indices = [component.name for component in path.components[len(nearest_expression.path):]]
-
-    expression = nearest_expression.expression
-
-    references = expression.get_path_references()
-
-    values = {}
-    not_found = False
-    for reference in references:
-        try:
-            values[reference] = await evaluate_expression_at_path(
-                path=reference,
-                repository=repository,
-                visited=visited | {path}
-            )
-        except NotFound:
-            not_found = True
-
-    if not_found:
-        raise NotFound
-
-    evaluation = expression.evaluate(values, arguments={})
-
-    for index in indices:
-        try:
-            evaluation = evaluation[index]
-        except KeyError:
+        if nearest_expression is None:
             raise NotFound
 
-    return evaluation
+        indices = [component.name for component in path.components[len(nearest_expression.path):]]
+
+        expression = nearest_expression.expression
+
+        references = expression.get_path_references()
+
+        values = {}
+        not_found = False
+        for reference in references:
+            try:
+                values[reference] = await self.evaluate(
+                    path=reference,
+                    visited=visited | {path}
+                )
+            except NotFound:
+                not_found = True
+
+        if not_found:
+            raise NotFound
+
+        evaluation = expression.evaluate(values, arguments={})
+
+        for index in indices:
+            try:
+                evaluation = evaluation[index]
+            except KeyError:
+                raise NotFound
+
+        return evaluation
