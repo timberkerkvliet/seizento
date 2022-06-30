@@ -73,7 +73,7 @@ class ExpressionEvaluator:
         if not_found:
             raise NotFound
 
-        evaluation = expression.evaluate(values, arguments={})
+        evaluation = await expression.evaluate(evaluator=self, arguments={})
 
         for index in indices:
             try:

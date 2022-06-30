@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Dict, Set, Any
+from typing import Dict, Set, Any, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
@@ -8,6 +8,9 @@ from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression
 from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
+
+if TYPE_CHECKING:
+    from seizento.service.expression_service import ExpressionEvaluator
 
 
 @dataclass(frozen=True)
@@ -22,8 +25,8 @@ class StructLiteral(Expression):
             fields={Identifier(x): y.get_schema(schemas) for x, y in self.values.items()}
         )
 
-    def evaluate(self, values: Dict[Path, Any],  arguments: Dict[str, str]) -> Any:
-        return {key: value.evaluate(values, arguments) for key, value in self.values.items()}
+    async def evaluate(self, evaluator: ExpressionEvaluator, arguments: Dict[str, str]) -> Any:
+        return {key: await value.evaluate(evaluator, arguments) for key, value in self.values.items()}
 
     def get_path_references(self) -> Set[Path]:
         return {

@@ -1,10 +1,13 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Dict, Set, Any
+from typing import Dict, Set, Any, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
+
+if TYPE_CHECKING:
+    from seizento.service.expression_service import ExpressionEvaluator
 
 
 class Expression(ABC):
@@ -13,7 +16,7 @@ class Expression(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self, values: Dict[Path, Any], arguments: Dict[str, str]) -> Any:
+    async def evaluate(self, evaluator: ExpressionEvaluator, arguments: Dict[str, str]) -> Any:
         pass
 
     @abstractmethod
