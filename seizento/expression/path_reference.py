@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Set, Any, TYPE_CHECKING
+from typing import Dict, Set, Any, TYPE_CHECKING, FrozenSet
 
 from seizento.data_tree import DataTree
-from seizento.expression.expression import Expression
+from seizento.expression.expression import Expression, Argument
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
@@ -19,8 +19,14 @@ class PathReference(Expression):
     def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         return schemas[self.reference]
 
-    async def evaluate(self, evaluator: PathEvaluator, arguments: Dict[str, str]) -> Any:
-        return await evaluator.evaluate(path=self.reference)
+    async def evaluate(
+        self,
+        evaluator: PathEvaluator,
+        arguments: FrozenSet[Argument]
+    ) -> Dict[FrozenSet[Argument], Any]:
+        return {
+            frozenset(): await evaluator.evaluate(path=self.reference)
+        }
 
     def get_path_references(self) -> Set[Path]:
         return {self.reference}

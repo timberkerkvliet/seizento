@@ -73,7 +73,7 @@ class PathEvaluator:
         if not_found:
             raise NotFound
 
-        evaluation = await expression.evaluate(evaluator=self, arguments={})
+        evaluation = (await expression.evaluate(evaluator=self, arguments=frozenset()))[frozenset()]
 
         for index in indices:
             try:

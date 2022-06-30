@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Set, Any, Tuple, TYPE_CHECKING
+from typing import Dict, Set, Any, Tuple, TYPE_CHECKING, FrozenSet
 
 from seizento.data_tree import DataTree
 from seizento.schema.array import Array, EmptyArray
-from seizento.expression.expression import Expression
+from seizento.expression.expression import Expression, Argument
 from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
@@ -24,8 +24,14 @@ class ArrayLiteral(Expression):
 
         return Array(value_type=self.values[0].get_schema(schemas))
 
-    async def evaluate(self, evaluator: PathEvaluator, arguments: Dict[str, str]) -> Any:
-        return [await value.evaluate(evaluator, arguments) for value in self.values]
+    async def evaluate(
+        self,
+        evaluator: PathEvaluator,
+        arguments: FrozenSet[Argument]
+    ) -> Dict[FrozenSet[Argument], Any]:
+        return {
+            frozenset(): [(await value.evaluate(evaluator, arguments))[frozenset()] for value in self.values]
+        }
 
     def get_path_references(self) -> Set[Path]:
         return {reference for expression in self.values for reference in expression.get_path_references()}
