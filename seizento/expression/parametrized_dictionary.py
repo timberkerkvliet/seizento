@@ -5,9 +5,8 @@ from typing import Dict, Set, Any
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.dictionary import Dictionary
-from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression, Constraint
-from seizento.path import Path, PathComponent, LiteralComponent
+from seizento.path import Path, PathComponent, MatchComponent
 from seizento.schema.schema import Schema
 from seizento.service.expression_service import PathEvaluator
 
@@ -26,10 +25,12 @@ class ParametrizedDictionary(Expression):
         value_result = await self.value.evaluate(evaluator=evaluator, constraint=constraint)
 
         return key_result \
-            .merge(other=value_result) \
-            .aggregate(
+            .merge(
+                other=value_result,
+                merge_function=lambda x, y: {x: y}
+            ).aggregate(
                 parameter=self.parameter,
-                aggregate_function=lambda pairs: {p[0]: p[1] for p in pairs}
+                aggregate_function=lambda x, y: {**x, **y}
             )
 
     def get_path_references(self) -> Set[Path]:
@@ -41,8 +42,5 @@ class ParametrizedDictionary(Expression):
     def to_tree(self) -> DataTree:
         return DataTree(
             root_data=self,
-            subtrees={
-                LiteralComponent(str(name)): expression.to_tree()
-                for name, expression in self.values.items()
-            }
+            subtrees={MatchComponent(): self.value.to_tree()}
         )
