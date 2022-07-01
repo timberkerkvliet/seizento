@@ -1,10 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Union, Dict, Set, Any, TYPE_CHECKING, FrozenSet
+from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.schema.primitives import String, Integer
-from seizento.expression.expression import Expression, Argument
+from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
@@ -23,11 +23,11 @@ class PrimitiveLiteral(Expression):
             return Integer()
 
     async def evaluate(
-        self,
-        evaluator: PathEvaluator,
-        arguments: FrozenSet[Argument]
-    ) -> Dict[FrozenSet[Argument], Any]:
-        return {frozenset(): self.value}
+            self,
+            evaluator: PathEvaluator,
+            constraint: Constraint
+    ) -> EvaluationResult:
+        return EvaluationResult({NO_CONSTRAINT: self.value})
 
     def get_path_references(self) -> Set[Path]:
         return set()

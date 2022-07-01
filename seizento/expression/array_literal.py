@@ -5,7 +5,7 @@ from typing import Dict, Set, Any, Tuple, TYPE_CHECKING, FrozenSet
 
 from seizento.data_tree import DataTree
 from seizento.schema.array import Array, EmptyArray
-from seizento.expression.expression import Expression, Argument
+from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
 from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
@@ -27,11 +27,12 @@ class ArrayLiteral(Expression):
     async def evaluate(
         self,
         evaluator: PathEvaluator,
-        arguments: FrozenSet[Argument]
-    ) -> Dict[FrozenSet[Argument], Any]:
-        return {
-            frozenset(): [(await value.evaluate(evaluator, arguments))[frozenset()] for value in self.values]
+        constraint: Constraint
+    ) -> EvaluationResult:
+        return EvaluationResult({
+            NO_CONSTRAINT: [(await value.evaluate(evaluator, constraint)).get_one() for value in self.values]
         }
+        )
 
     def get_path_references(self) -> Set[Path]:
         return {reference for expression in self.values for reference in expression.get_path_references()}

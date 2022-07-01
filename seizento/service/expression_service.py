@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, Any, Optional, Set
 
 from seizento.controllers.exceptions import NotFound
-from seizento.expression.expression import Expression
+from seizento.expression.expression import Expression, NO_CONSTRAINT
 from seizento.path import Path
 from seizento.repository import Repository
 
@@ -73,7 +73,7 @@ class PathEvaluator:
         if not_found:
             raise NotFound
 
-        evaluation = (await expression.evaluate(evaluator=self, arguments=frozenset()))[frozenset()]
+        evaluation = (await expression.evaluate(evaluator=self, constraint=NO_CONSTRAINT)).get_one()
 
         for index in indices:
             try:
