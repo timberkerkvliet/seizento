@@ -61,8 +61,8 @@ def tree_to_expression(value: DataTree) -> Expression:
         )
 
     if isinstance(root_data, dict) and root_data.get('type') == 'PATH_REFERENCE':
-        reference = parse_path(root_data['reference'])
-        return PathReference(reference=reference)
+        path = parse_path(root_data['reference'])
+        return PathReference(reference=list(path.components))
 
     if isinstance(root_data, int):
         return PrimitiveLiteral(root_data)
