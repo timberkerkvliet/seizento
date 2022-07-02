@@ -64,6 +64,6 @@ def parse_schema(value: Any) -> Schema:
         )
 
     if name == NAMES[Dictionary]:
-        return Dictionary(value_type=value['additionalProperties'])
+        return Dictionary(value_type=parse_schema(value['additionalProperties']))
 
     raise TypeError

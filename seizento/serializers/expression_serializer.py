@@ -32,6 +32,9 @@ def parse_expression(value: Any) -> Expression:
     if isinstance(value, int):
         return PrimitiveLiteral(value)
 
+    if isinstance(value, bool):
+        return PrimitiveLiteral(value)
+
     if isinstance(value, str):
         if value[0] == '{' and value[1] != '{' and value[-1] == '}':
             return PathReference(reference=parse_path(value[1:-1]))

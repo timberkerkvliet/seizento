@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
-from seizento.schema.primitives import String, Integer
+from seizento.schema.primitives import String, Integer, Boolean
 from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
@@ -19,6 +19,8 @@ class PrimitiveLiteral(Expression):
     def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         if isinstance(self.value, str):
             return String()
+        if isinstance(self.value, bool):
+            return Boolean()
         if isinstance(self.value, int):
             return Integer()
 

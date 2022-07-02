@@ -16,7 +16,7 @@ Suppose that by a GET request to `/schema/products` we find that the defined sch
         "properties": {
             "id": {"type": "integer"},
             "name": {"type": "string"},
-            "on_stock: {"type: "boolean"}
+            "on_stock": {"type": "boolean"}
         }
 }
 ```
