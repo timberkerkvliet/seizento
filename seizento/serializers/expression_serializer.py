@@ -5,6 +5,7 @@ from seizento.expression.primitive_literal import PrimitiveLiteral
 from seizento.expression.array_literal import ArrayLiteral
 from seizento.expression.struct_literal import StructLiteral
 from seizento.expression.path_reference import PathReference
+from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
 from seizento.serializers.path_serializer import parse_path
 
@@ -22,6 +23,17 @@ def serialize_expression(value: Expression) -> Any:
     raise TypeError(type(value))
 
 
+def parse_reference(value: str) -> PathReference:
+    parts = [part for part in value.split('/') if len(part) > 0]
+
+    return PathReference(
+        reference=[
+            LiteralComponent(part) if '<' not in part else Identifier(part[1:-1])
+            for part in parts
+        ]
+    )
+
+
 def parse_expression(value: Any) -> Expression:
     if isinstance(value, list):
         return ArrayLiteral(values=tuple(parse_expression(x) for x in value))
@@ -37,7 +49,7 @@ def parse_expression(value: Any) -> Expression:
 
     if isinstance(value, str):
         if value[0] == '{' and value[1] != '{' and value[-1] == '}':
-            return PathReference(reference=parse_path(value[1:-1]))
+            return parse_reference(value[1:-1])
 
         return PrimitiveLiteral(value.replace('{{', '{').replace('}}', '}'))
 

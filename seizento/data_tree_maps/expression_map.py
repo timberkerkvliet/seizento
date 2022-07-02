@@ -32,7 +32,7 @@ def expression_to_tree(value: Expression) -> DataTree:
 
     if isinstance(value, PathReference):
         return DataTree(
-            root_data={'type': 'PATH_REFERENCE', 'reference': serialize_path(value.reference)}
+            root_data={'type': 'PATH_REFERENCE', 'reference': value.reference}
         )
 
     raise TypeError(type(value))
@@ -61,8 +61,8 @@ def tree_to_expression(value: DataTree) -> Expression:
         )
 
     if isinstance(root_data, dict) and root_data.get('type') == 'PATH_REFERENCE':
-        path = parse_path(root_data['reference'])
-        return PathReference(reference=list(path.components))
+        ref = root_data['reference']
+        return PathReference(reference=ref)
 
     if isinstance(root_data, int):
         return PrimitiveLiteral(root_data)
