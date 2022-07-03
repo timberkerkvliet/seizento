@@ -74,3 +74,5 @@ def tree_to_schema(value: DataTree) -> Schema:
                 for component, subtree in subtrees.items()
             }
         )
+
+    raise TypeError

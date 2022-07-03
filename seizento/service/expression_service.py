@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, Any, Optional, Set
 
 from seizento.controllers.exceptions import NotFound
-from seizento.expression.expression import Expression, NO_CONSTRAINT
+from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path
 from seizento.repository import Repository
 
@@ -34,9 +34,20 @@ class CircularReference(Exception):
     pass
 
 
-class PathEvaluator:
+class PathService:
     def __init__(self, repository: Repository):
         self._repository = repository
+
+    async def get_argument_space(
+        self,
+        path: Path
+    ) -> ArgumentSpace:
+        nearest_expression = await find_nearest_expression(repository=self._repository, path=path)
+
+        if nearest_expression is None:
+            raise NotFound
+
+        return await nearest_expression.expression.get_argument_space(path_service=self)
 
     async def evaluate(
         self,
@@ -57,23 +68,7 @@ class PathEvaluator:
 
         expression = nearest_expression.expression
 
-        references = expression.get_path_references()
-
-        values = {}
-        not_found = False
-        for reference in references:
-            try:
-                values[reference] = await self.evaluate(
-                    path=reference,
-                    visited=visited | {path}
-                )
-            except NotFound:
-                not_found = True
-
-        if not_found:
-            raise NotFound
-
-        evaluation = (await expression.evaluate(evaluator=self, constraint=NO_CONSTRAINT)).get_one()
+        evaluation = await expression.evaluate(path_service=self, arguments={})
 
         for index in indices:
             try:

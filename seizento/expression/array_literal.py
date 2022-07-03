@@ -4,14 +4,14 @@ from dataclasses import dataclass
 from typing import Dict, Set, Any, Tuple, TYPE_CHECKING, FrozenSet
 
 from seizento.data_tree import DataTree
+from seizento.identifier import Identifier
 from seizento.schema.array import Array, EmptyArray
-from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
+from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathEvaluator
-
+    from seizento.service.expression_service import PathService
 
 
 @dataclass(frozen=True)
@@ -24,15 +24,22 @@ class ArrayLiteral(Expression):
 
         return Array(value_type=self.values[0].get_schema(schemas))
 
+    async def get_argument_space(
+        self,
+        path_service: PathService
+    ) -> ArgumentSpace:
+        result = ArgumentSpace(values={})
+        for value in self.values:
+            result = result.intersect(await value.get_argument_space(path_service=path_service))
+
+        return result
+
     async def evaluate(
         self,
-        evaluator: PathEvaluator,
-        constraint: Constraint
-    ) -> EvaluationResult:
-        return EvaluationResult({
-            NO_CONSTRAINT: [(await value.evaluate(evaluator, constraint)).get_one() for value in self.values]
-        }
-        )
+        path_service: PathService,
+        arguments: Dict[Identifier, str]
+    ):
+        return [await value.evaluate(path_service, arguments) for value in self.values]
 
     def get_path_references(self) -> Set[Path]:
         return {reference for expression in self.values for reference in expression.get_path_references()}

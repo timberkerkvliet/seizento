@@ -3,13 +3,14 @@ from dataclasses import dataclass
 from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
+from seizento.identifier import Identifier
 from seizento.schema.primitives import String, Integer, Boolean
-from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
+from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathEvaluator
+    from seizento.service.expression_service import PathEvaluator, PathService
 
 
 @dataclass(frozen=True)
@@ -24,12 +25,18 @@ class PrimitiveLiteral(Expression):
         if isinstance(self.value, int):
             return Integer()
 
+    async def get_argument_space(
+        self,
+        path_service: PathService
+    ) -> ArgumentSpace:
+        return ArgumentSpace(values={})
+
     async def evaluate(
-            self,
-            evaluator: PathEvaluator,
-            constraint: Constraint
-    ) -> EvaluationResult:
-        return EvaluationResult({NO_CONSTRAINT: self.value})
+        self,
+        path_service: PathService,
+        arguments: Dict[Identifier, str]
+    ):
+        return self.value
 
     def get_path_references(self) -> Set[Path]:
         return set()

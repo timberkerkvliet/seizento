@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, Set, Any, TYPE_CHECKING, Callable, Optional
+from typing import Dict, Set, Any, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
@@ -9,71 +9,38 @@ from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathEvaluator
+    from seizento.service.expression_service import PathService
 
 
 @dataclass(frozen=True)
-class Constraint:
-    values: Dict[Identifier, str]
+class ArgumentSpace:
+    values: Dict[Identifier, Set[str]]
 
-    def can_merge(self, other: Constraint) -> bool:
-        return set(other.values.keys()).isdisjoint(self.values.keys())
+    def intersect(self, other: ArgumentSpace) -> ArgumentSpace:
+        return ArgumentSpace(
+            values={
+                **{
+                    k: v for k, v in self.values.items()
+                    if k not in other.values
+                },
+                **{
+                    k: v for k, v in other.values.items()
+                    if k not in self.values
+                },
+                **{
+                    k: v & other.values[k] for k, v in self.values.items()
+                    if k in other.values
+                }
+            }
+        )
 
-    def merge(self, other: Constraint) -> Constraint:
-        if not self.can_merge(other):
-            raise ValueError
-
-        return Constraint(values={**self.values, **other.values})
-
-    def pop_parameter(self, parameter: Identifier) -> Constraint:
-        return Constraint(
+    def remove(self, parameter: Identifier) -> ArgumentSpace:
+        return ArgumentSpace(
             values={k: v for k, v in self.values.items() if k != parameter}
         )
 
-    def __hash__(self):
-        return hash(tuple(self.values.items()))
-
-
-NO_CONSTRAINT = Constraint(values={})
-
-
-@dataclass(frozen=True)
-class EvaluationResult:
-    results: Dict[Constraint, Any]
-
-    def get_one(self):
-        if len(set(self.results.keys())) != 1:
-            raise Exception
-
-        return self.results[NO_CONSTRAINT]
-
-    def merge(self, other: EvaluationResult, merge_function: Callable) -> EvaluationResult:
-        new_results = self.results
-        for other_constraint, other_value in other.results.items():
-            new_results = {
-                constraint.merge(other_constraint): merge_function(value, other_value)
-                for constraint, value in new_results.items()
-                if constraint.can_merge(other_constraint)
-            }
-
-        return EvaluationResult(results=new_results)
-
-    def aggregate(self, parameter: Identifier, aggregate_function: Callable) -> Dict[Optional[str], EvaluationResult]:
-        result: Dict[Optional[str], EvaluationResult] = {}
-
-        for constraint, value in self.results.items():
-            key = constraint.values[parameter] if parameter not in constraint.values else None
-            new_result = EvaluationResult(results={constraint.pop_parameter(parameter): value})
-
-            if key not in result:
-                result[key] = new_result
-            else:
-                result[key] = result[key].merge(
-                    other=new_result,
-                    merge_function=aggregate_function
-                )
-
-        return result
+    def __iter__(self):
+        return iter(self.values)
 
 
 class Expression(ABC):
@@ -82,11 +49,18 @@ class Expression(ABC):
         pass
 
     @abstractmethod
+    async def get_argument_space(
+        self,
+        path_service: PathService
+    ) -> ArgumentSpace:
+        pass
+
+    @abstractmethod
     async def evaluate(
         self,
-        evaluator: PathEvaluator,
-        constraint: Constraint
-    ) -> EvaluationResult:
+        path_service: PathService,
+        arguments: Dict[Identifier, str]
+    ) -> Any:
         pass
 
     @abstractmethod

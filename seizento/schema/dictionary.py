@@ -1,16 +1,13 @@
+from dataclasses import dataclass
 from typing import Dict
 
 from seizento.path import PathComponent, MatchComponent
 from seizento.schema.schema import Schema
 
 
+@dataclass(frozen=True)
 class Dictionary(Schema):
-    def __init__(self, value_type: Schema):
-        self._value_type = value_type
-
-    @property
-    def value_type(self):
-        return self._value_type
+    value_type: Schema
 
     @property
     def default_value(self) -> Dict:

@@ -1,6 +1,7 @@
 from typing import Any
 
 from seizento.expression.expression import Expression
+from seizento.expression.parametrized_dictionary import ParametrizedDictionary
 from seizento.expression.primitive_literal import PrimitiveLiteral
 from seizento.expression.array_literal import ArrayLiteral
 from seizento.expression.struct_literal import StructLiteral
@@ -39,6 +40,16 @@ def parse_expression(value: Any) -> Expression:
         return ArrayLiteral(values=tuple(parse_expression(x) for x in value))
 
     if isinstance(value, dict):
+        if len(value.keys()) == 1:
+            key_expression = parse_expression(list(value.keys())[0])
+
+            if not isinstance(key_expression, PrimitiveLiteral):
+                return ParametrizedDictionary(
+                    key=key_expression,
+                    value=parse_expression(list(value.values())[0]),
+                    parameter=Identifier('k')
+                )
+
         return StructLiteral(values={x: parse_expression(y) for x, y in value.items()})
 
     if isinstance(value, int):

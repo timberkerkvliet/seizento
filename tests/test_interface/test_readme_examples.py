@@ -7,7 +7,6 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    @skip
     async def test_first_case(self):
         await self.test_client.set(
             '/schema',
@@ -50,7 +49,7 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
                     }
                 ],
                 "stock": {
-                    "{products/<k>/name}": "{products/<k>/stock}"
+                    "{products/<k>/name}": "{products/<k>/on_stock}"
                 }
             }
 

@@ -4,13 +4,13 @@ from dataclasses import dataclass
 from typing import Set, TYPE_CHECKING, Union
 
 from seizento.data_tree import DataTree
-from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
+from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
 from seizento.path import Path, PathComponent, LiteralComponent, MatchComponent, EMPTY_PATH
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathEvaluator
+    from seizento.service.expression_service import PathService
 
 
 @dataclass(frozen=True)
@@ -29,35 +29,58 @@ class PathReference(Expression):
     def get_schema(self, schemas: dict[Path, Schema]) -> Schema:
         return schemas[self.path]
 
-    def _map_to_result(self, value, parts) -> EvaluationResult:
+    def _get_argument_space(self, value, parts) -> ArgumentSpace:
         if len(parts) == 0:
-            return EvaluationResult({NO_CONSTRAINT: value})
+            return ArgumentSpace(values={})
 
         part = parts[0]
 
         if isinstance(part, LiteralComponent):
-            return self._map_to_result(value[part.value], parts=parts[1:])
+            index = part.value if isinstance(value, dict) else int(part.value)
+            return self._get_argument_space(value[index], parts[1:])
 
-        return EvaluationResult(
-            {
-                Constraint(values={part: key}): value
-                for key, value in value.items()
-            }
-        )
+        if isinstance(part, Identifier) and isinstance(value, dict):
+            result = ArgumentSpace(values={part: set(value.keys())})
+            for val in value.values():
+                result = result.intersect(self._get_argument_space(val, parts[1:]))
+
+            return result
+
+        if isinstance(part, Identifier) and isinstance(value, list):
+            result = ArgumentSpace(values={part: set(range(len(value)))})
+            for val in value:
+                result = result.intersect(self._get_argument_space(val, parts[1:]))
+
+            return result
+
+        raise TypeError
+
+    async def get_argument_space(
+        self,
+        path_service: PathService
+    ) -> ArgumentSpace:
+        parts = self.reference
+        path = EMPTY_PATH
+        while len(parts) > 0 and isinstance(parts[0], LiteralComponent):
+            path = path.append(parts[0])
+            parts = parts[1:]
+
+        root_value = await path_service.evaluate(path=path)
+
+        return self._get_argument_space(value=root_value, parts=parts)
 
     async def evaluate(
         self,
-        evaluator: PathEvaluator,
-        constraint: Constraint
-    ) -> EvaluationResult:
-        path = EMPTY_PATH
+        path_service: PathService,
+        arguments: dict[Identifier, str]
+    ):
+        path = Path(
+            components=tuple(
+                x if isinstance(x, LiteralComponent) else LiteralComponent(str(arguments[x])) for x in self.reference
+            )
+        )
 
-        for part in self.reference:
-            if not isinstance(part, LiteralComponent):
-                break
-            path = path.append(part)
-
-        return self._map_to_result(await evaluator.evaluate(path=path), parts=self.reference[len(path):])
+        return await path_service.evaluate(path=path)
 
     def get_path_references(self) -> Set[Path]:
         return {self.path}

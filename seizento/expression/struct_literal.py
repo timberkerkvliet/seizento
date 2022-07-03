@@ -5,12 +5,12 @@ from typing import Dict, Set, Any, TYPE_CHECKING, FrozenSet
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.struct import Struct, EmptyStruct
-from seizento.expression.expression import Expression, Constraint, EvaluationResult, NO_CONSTRAINT
+from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathEvaluator
+    from seizento.service.expression_service import PathEvaluator, PathService
 
 
 @dataclass(frozen=True)
@@ -25,17 +25,25 @@ class StructLiteral(Expression):
             fields={Identifier(x): y.get_schema(schemas) for x, y in self.values.items()}
         )
 
+    async def get_argument_space(
+        self,
+        path_service: PathService
+    ) -> ArgumentSpace:
+        result = ArgumentSpace(values={})
+        for value in self.values.values():
+            result = result.intersect(await value.get_argument_space(path_service=path_service))
+
+        return result
+
     async def evaluate(
-            self,
-            evaluator: PathEvaluator,
-            constraint: Constraint
-    ) -> EvaluationResult:
-        return EvaluationResult({
-            NO_CONSTRAINT: {
-                key: (await value.evaluate(evaluator, constraint)).get_one()
-                for key, value in self.values.items()
-            }
-        })
+        self,
+        path_service: PathService,
+        arguments: Dict[Identifier, str]
+    ):
+        return {
+            key: await value.evaluate(path_service, arguments)
+            for key, value in self.values.items()
+        }
 
     def get_path_references(self) -> Set[Path]:
         return {

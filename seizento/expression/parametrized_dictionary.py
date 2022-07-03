@@ -1,14 +1,16 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Dict, Set, Any
+from typing import Dict, Set, Any, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.dictionary import Dictionary
-from seizento.expression.expression import Expression, Constraint
+from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, MatchComponent
 from seizento.schema.schema import Schema
-from seizento.service.expression_service import PathEvaluator
+
+if TYPE_CHECKING:
+    from seizento.service.expression_service import PathService
 
 
 @dataclass(frozen=True)
@@ -20,18 +22,29 @@ class ParametrizedDictionary(Expression):
     def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
         return Dictionary(value_type=self.value.get_schema(schemas))
 
-    async def evaluate(self, evaluator: PathEvaluator, constraint: Constraint) -> Any:
-        key_result = await self.key.evaluate(evaluator=evaluator, constraint=constraint)
-        value_result = await self.value.evaluate(evaluator=evaluator, constraint=constraint)
+    async def _internal_space(self, path_service: PathService):
+        key_space = await self.key.get_argument_space(path_service=path_service)
+        value_space = await self.value.get_argument_space(path_service=path_service)
 
-        return key_result \
-            .merge(
-                other=value_result,
-                merge_function=lambda x, y: {x: y}
-            ).aggregate(
-                parameter=self.parameter,
-                aggregate_function=lambda x, y: {**x, **y}
-            )
+        return key_space.intersect(value_space)
+
+    async def get_argument_space(
+        self,
+        path_service: PathService
+    ) -> ArgumentSpace:
+        return (await self._internal_space(path_service)).remove(self.parameter)
+
+    async def evaluate(self, path_service: PathService, arguments: Dict[Identifier, str]) -> Any:
+        argument_space = await self._internal_space(path_service)
+
+        if self.parameter not in argument_space:
+            raise Exception
+
+        return {
+            await self.key.evaluate(path_service=path_service, arguments={**arguments, self.parameter: value}):
+                await self.value.evaluate(path_service=path_service, arguments={**arguments, self.parameter: value})
+            for value in argument_space.values[self.parameter]
+        }
 
     def get_path_references(self) -> Set[Path]:
         return self.key.get_path_references() | self.value.get_path_references()

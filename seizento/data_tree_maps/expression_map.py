@@ -1,5 +1,6 @@
 from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression
+from seizento.expression.parametrized_dictionary import ParametrizedDictionary
 from seizento.expression.primitive_literal import PrimitiveLiteral
 from seizento.expression.array_literal import ArrayLiteral
 from seizento.expression.struct_literal import StructLiteral
@@ -35,6 +36,11 @@ def expression_to_tree(value: Expression) -> DataTree:
             root_data={'type': 'PATH_REFERENCE', 'reference': value.reference}
         )
 
+    if isinstance(value, ParametrizedDictionary):
+        return DataTree(
+            root_data={'type': 'PARAMETRIZED_DICTIONARY', 'data': value}
+        )
+
     raise TypeError(type(value))
 
 
@@ -63,6 +69,9 @@ def tree_to_expression(value: DataTree) -> Expression:
     if isinstance(root_data, dict) and root_data.get('type') == 'PATH_REFERENCE':
         ref = root_data['reference']
         return PathReference(reference=ref)
+
+    if isinstance(root_data, dict) and root_data.get('type') == 'PARAMETRIZED_DICTIONARY':
+        return root_data['data']
 
     if isinstance(root_data, int):
         return PrimitiveLiteral(root_data)
