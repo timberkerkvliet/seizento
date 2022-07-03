@@ -22,6 +22,15 @@ def serialize_expression(value: Expression) -> Any:
     if isinstance(value, StructLiteral):
         return {x: serialize_expression(y) for x, y in value.values.items()}
 
+    if isinstance(value, ParameterReference):
+        return '{' + value.reference.name + '}'
+
+    if isinstance(value, PathReference):
+        return '{' \
+               + '/'.join(x.value if isinstance(x, LiteralComponent) else f'<{x.name}>'
+                          for x in value.reference) \
+               + '}'
+
     raise TypeError(type(value))
 
 

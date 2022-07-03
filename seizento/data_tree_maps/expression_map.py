@@ -5,7 +5,9 @@ from seizento.expression.primitive_literal import PrimitiveLiteral
 from seizento.expression.array_literal import ArrayLiteral
 from seizento.expression.struct_literal import StructLiteral
 from seizento.expression.path_reference import PathReference
-from seizento.path import EMPTY_PATH, Path, LiteralComponent
+from seizento.identifier import Identifier
+from seizento.path import EMPTY_PATH, Path, LiteralComponent, PlaceHolder
+from seizento.serializers.expression_serializer import serialize_expression, parse_expression
 from seizento.serializers.path_serializer import serialize_path, parse_path
 
 
@@ -38,7 +40,14 @@ def expression_to_tree(value: Expression) -> DataTree:
 
     if isinstance(value, ParametrizedDictionary):
         return DataTree(
-            root_data={'type': 'PARAMETRIZED_DICTIONARY', 'data': value}
+            root_data={
+                'type': 'PARAMETRIZED_DICTIONARY',
+                'parameter': value.parameter.name,
+                'key': serialize_expression(value.key)
+            },
+            subtrees={
+                PlaceHolder(): expression_to_tree(value.value)
+            }
         )
 
     raise TypeError(type(value))
@@ -71,7 +80,11 @@ def tree_to_expression(value: DataTree) -> Expression:
         return PathReference(reference=ref)
 
     if isinstance(root_data, dict) and root_data.get('type') == 'PARAMETRIZED_DICTIONARY':
-        return root_data['data']
+        return ParametrizedDictionary(
+            key=parse_expression(root_data['key']),
+            parameter=Identifier(root_data['parameter']),
+            value=tree_to_expression(value.subtrees[PlaceHolder()])
+        )
 
     if isinstance(root_data, int):
         return PrimitiveLiteral(root_data)
