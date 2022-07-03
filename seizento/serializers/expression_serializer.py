@@ -40,15 +40,12 @@ def parse_expression(value: Any) -> Expression:
         return ArrayLiteral(values=tuple(parse_expression(x) for x in value))
 
     if isinstance(value, dict):
-        if len(value.keys()) == 1:
-            key_expression = parse_expression(list(value.keys())[0])
-
-            if not isinstance(key_expression, PrimitiveLiteral):
-                return ParametrizedDictionary(
-                    key=key_expression,
-                    value=parse_expression(list(value.values())[0]),
-                    parameter=Identifier('k')
-                )
+        if set(value.keys()) == {'*parameter', '*properties', '*values'}:
+            return ParametrizedDictionary(
+                key=parse_expression(value['*properties']),
+                value=parse_expression(value['*values']),
+                parameter=Identifier(value['*parameter'])
+            )
 
         return StructLiteral(values={x: parse_expression(y) for x, y in value.items()})
 

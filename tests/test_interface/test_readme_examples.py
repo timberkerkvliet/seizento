@@ -49,7 +49,9 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
                     }
                 ],
                 'stock': {
-                    '{products/<k>/name}': '{products/<k>/on_stock}'
+                    '*parameter': 'k',
+                    '*properties': '{products/<k>/name}',
+                    '*values': '{products/<k>/on_stock}'
                 }
             }
         )
