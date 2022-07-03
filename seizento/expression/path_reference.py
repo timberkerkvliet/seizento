@@ -82,9 +82,6 @@ class PathReference(Expression):
 
         return await path_service.evaluate(path=path)
 
-    def get_path_references(self) -> Set[Path]:
-        return {self.path}
-
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
 

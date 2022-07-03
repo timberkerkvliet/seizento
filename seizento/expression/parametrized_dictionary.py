@@ -46,9 +46,6 @@ class ParametrizedDictionary(Expression):
             for value in argument_space.values[self.parameter]
         }
 
-    def get_path_references(self) -> Set[Path]:
-        return self.key.get_path_references() | self.value.get_path_references()
-
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
 

@@ -41,9 +41,6 @@ class ArrayLiteral(Expression):
     ):
         return [await value.evaluate(path_service, arguments) for value in self.values]
 
-    def get_path_references(self) -> Set[Path]:
-        return {reference for expression in self.values for reference in expression.get_path_references()}
-
     def supports_child_at(self, component: PathComponent) -> bool:
         if not isinstance(component, LiteralComponent):
             return False

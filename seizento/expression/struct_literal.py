@@ -45,12 +45,6 @@ class StructLiteral(Expression):
             for key, value in self.values.items()
         }
 
-    def get_path_references(self) -> Set[Path]:
-        return {
-            reference for expression in self.values.values()
-            for reference in expression.get_path_references()
-        }
-
     def supports_child_at(self, component: PathComponent) -> bool:
         if not isinstance(component, LiteralComponent):
             return False

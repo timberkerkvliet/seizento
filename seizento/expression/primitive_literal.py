@@ -38,9 +38,6 @@ class PrimitiveLiteral(Expression):
     ):
         return self.value
 
-    def get_path_references(self) -> Set[Path]:
-        return set()
-
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
 
