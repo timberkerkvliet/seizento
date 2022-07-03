@@ -2,10 +2,11 @@ from uuid import UUID
 
 from fastapi import FastAPI
 
+from seizento.adapters.fake_data_tree_store import FakeDataTreeStore
 from seizento.adapters.starlette_adapter import StarletteAdapter
 from seizento.controllers.resource_controller import ResourceController
 from seizento.repository import Repository
-from tests.test_interface.test_client import FakeDataTreeStore
+
 
 app = FastAPI()
 store = FakeDataTreeStore()
