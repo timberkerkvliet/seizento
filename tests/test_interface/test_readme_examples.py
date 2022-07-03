@@ -50,8 +50,8 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
                 ],
                 'stock': {
                     '*parameter': 'k',
-                    '*properties': '{products/<k>/name}',
-                    '*values': '{products/<k>/on_stock}'
+                    '*property': '{products/<k>/name}',
+                    '*value': '{products/<k>/on_stock}'
                 }
             }
         )

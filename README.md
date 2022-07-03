@@ -57,8 +57,10 @@ Suppose that by a GET request to  `/schema/stock` we find that a schema is defin
 Then we can set an expression to define our desired values with a PUT request to `/expression/stock`:
 
 ```
-{  
-    "{products/<k>/name}": "{products/<k>/stock}"
+{
+    "*parameter": "k",
+    "*property": "{products/<k>/name}"
+    "*value": "{products/<k>/stock}"
 }
 ```
 
