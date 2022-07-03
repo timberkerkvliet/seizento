@@ -7,7 +7,7 @@ from seizento.schema.dictionary import Dictionary
 
 from seizento.schema.struct import Struct
 from seizento.schema.schema import Schema
-from seizento.path import Path, LiteralComponent, MatchComponent
+from seizento.path import Path, LiteralComponent, PlaceHolder
 from seizento.repository import Repository
 from seizento.serializers.schema_serializer import parse_schema, serialize_schema
 

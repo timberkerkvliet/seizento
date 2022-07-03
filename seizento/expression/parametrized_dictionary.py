@@ -6,7 +6,7 @@ from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.dictionary import Dictionary
 from seizento.expression.expression import Expression, ArgumentSpace
-from seizento.path import Path, PathComponent, MatchComponent
+from seizento.path import Path, PathComponent, PlaceHolder
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
@@ -52,5 +52,5 @@ class ParametrizedDictionary(Expression):
     def to_tree(self) -> DataTree:
         return DataTree(
             root_data=self,
-            subtrees={MatchComponent(): self.value.to_tree()}
+            subtrees={PlaceHolder(): self.value.to_tree()}
         )

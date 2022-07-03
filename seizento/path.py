@@ -20,10 +20,8 @@ class LiteralComponent(PathComponent):
 
 
 @dataclass(frozen=True)
-class MatchComponent(PathComponent):
-    prefix: str = ''
-    name: Optional[Identifier] = None
-    postfix: str = ''
+class PlaceHolder(PathComponent):
+    pass
 
 
 @dataclass(frozen=True)

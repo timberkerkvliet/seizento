@@ -1,5 +1,5 @@
 from seizento.identifier import Identifier
-from seizento.path import Path, LiteralComponent, MatchComponent
+from seizento.path import Path, LiteralComponent, PlaceHolder
 from seizento.schema.schema import Schema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array
@@ -33,7 +33,7 @@ def schema_to_tree(value: Schema) -> DataTree:
         return DataTree(
             root_data={'type': NAMES[type(value)]},
             subtrees={
-                MatchComponent(): schema_to_tree(value.value_type)
+                PlaceHolder(): schema_to_tree(value.value_type)
             }
         )
 
@@ -54,7 +54,7 @@ def tree_to_schema(value: DataTree) -> Schema:
     if name == 'BOOLEAN':
         return Boolean()
     if name in {'ARRAY', 'DICTIONARY'}:
-        value_type = value.get_subtree(Path(components=(MatchComponent(),)))
+        value_type = value.get_subtree(Path(components=(PlaceHolder(),)))
 
         if name == 'ARRAY':
             return Array(

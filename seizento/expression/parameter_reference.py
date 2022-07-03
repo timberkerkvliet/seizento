@@ -6,7 +6,7 @@ from typing import Set, TYPE_CHECKING, Union
 from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
-from seizento.path import Path, PathComponent, LiteralComponent, MatchComponent, EMPTY_PATH
+from seizento.path import Path, PathComponent, LiteralComponent, PlaceHolder, EMPTY_PATH
 from seizento.schema.primitives import String
 from seizento.schema.schema import Schema
 

@@ -6,7 +6,7 @@ from typing import Set, TYPE_CHECKING, Union
 from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
-from seizento.path import Path, PathComponent, LiteralComponent, MatchComponent, EMPTY_PATH
+from seizento.path import Path, PathComponent, LiteralComponent, PlaceHolder, EMPTY_PATH
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ class PathReference(Expression):
     def path(self) -> Path:
         return Path(
             components=tuple(
-                x if isinstance(x, LiteralComponent) else MatchComponent()
+                x if isinstance(x, LiteralComponent) else PlaceHolder()
                 for x in self.reference
             )
         )
