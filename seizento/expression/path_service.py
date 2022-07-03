@@ -13,23 +13,6 @@ class NearestExpressionResult:
     path: Path
 
 
-async def find_nearest_expression(repository: Repository, path: Path) -> Optional[NearestExpressionResult]:
-    current_path = path
-    while True:
-        expression = await repository.get_expression(current_path)
-        if expression is not None:
-            return NearestExpressionResult(
-                expression=expression,
-                path=current_path
-            )
-
-        if path.empty:
-            return None
-
-        path = path.remove_last()
-        continue
-
-
 class CircularReference(Exception):
     pass
 
@@ -39,14 +22,28 @@ class PathService:
         self._repository = repository
         self._visited = visited or set()
 
+    @staticmethod
+    async def find_nearest_expression(repository: Repository, path: Path) -> NearestExpressionResult:
+        current_path = path
+        while True:
+            expression = await repository.get_expression(current_path)
+            if expression is not None:
+                return NearestExpressionResult(
+                    expression=expression,
+                    path=current_path
+                )
+
+            if path.empty:
+                raise NotFound
+
+            path = path.remove_last()
+            continue
+
     async def get_argument_space(
         self,
         path: Path
     ) -> ArgumentSpace:
-        nearest_expression = await find_nearest_expression(repository=self._repository, path=path)
-
-        if nearest_expression is None:
-            raise NotFound
+        nearest_expression = await self.find_nearest_expression(repository=self._repository, path=path)
 
         return await nearest_expression.expression.get_argument_space(path_service=self)
 
@@ -54,10 +51,7 @@ class PathService:
         if path in self._visited:
             raise CircularReference
 
-        nearest_expression = await find_nearest_expression(repository=self._repository, path=path)
-
-        if nearest_expression is None:
-            raise NotFound
+        nearest_expression = await self.find_nearest_expression(repository=self._repository, path=path)
 
         indices = [component.name for component in path.components[len(nearest_expression.path):]]
 
