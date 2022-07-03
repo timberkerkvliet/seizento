@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Union
 
 from seizento.expression.expression import Expression
+from seizento.expression.parameter_reference import ParameterReference
 from seizento.expression.parametrized_dictionary import ParametrizedDictionary
 from seizento.expression.primitive_literal import PrimitiveLiteral
 from seizento.expression.array_literal import ArrayLiteral
@@ -24,7 +25,10 @@ def serialize_expression(value: Expression) -> Any:
     raise TypeError(type(value))
 
 
-def parse_reference(value: str) -> PathReference:
+def parse_reference(value: str) -> Union[ParameterReference, PathReference]:
+    if '/' not in value:
+        return ParameterReference(reference=Identifier(value))
+
     parts = [part for part in value.split('/') if len(part) > 0]
 
     return PathReference(

@@ -39,7 +39,7 @@ class Struct(Schema):
     def single_value_type(self) -> Optional[Schema]:
         schemas = set(self.fields.values())
 
-        if len(schemas) != 0:
+        if len(schemas) != 1:
             return None
 
         return schemas.pop()
