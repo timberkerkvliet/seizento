@@ -47,4 +47,4 @@ class ParametrizedDictionary(Expression):
         }
 
     def supports_child_at(self, component: PathComponent) -> bool:
-        return False
+        return component == PlaceHolder()

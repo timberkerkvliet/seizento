@@ -58,9 +58,15 @@ class ExpressionController:
 
         path_service = PathService(repository=self._repository)
 
-        try:
-            await path_service.evaluate(path=self._path)
-        except CircularReference as e:
-            raise Forbidden from e
-        except NotFound:
-            pass
+        path = self._path
+        while True:
+            try:
+                await path_service.evaluate(path=path)
+                return
+            except CircularReference as e:
+                raise Forbidden from e
+            except NotFound:
+                return
+            except KeyError:
+                path = path.remove_last()
+                continue
