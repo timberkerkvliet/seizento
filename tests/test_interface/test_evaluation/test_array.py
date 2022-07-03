@@ -34,3 +34,10 @@ class TestArray(IsolatedAsyncioTestCase):
         await self.test_client.set('/expression/', [1, 2, 3, 4])
         with self.assertRaises(NotFound):
             await self.test_client.get('/evaluation/4')
+
+    async def test_empty_array(self):
+        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        await self.test_client.set('/expression/', [])
+        response = await self.test_client.get('/evaluation/')
+
+        self.assertEqual(response, [])
