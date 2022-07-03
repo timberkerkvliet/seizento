@@ -69,7 +69,7 @@ class TestParametrizedDictionary(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/evaluation/projection')
         self.assertEqual(response, {'0': 1, '1': 2, '2': 3})
 
-    async def test_with_nested_object(self):
+    async def test_switch_nested_objects(self):
         await self.test_client.set(
             '/schema/',
             {
