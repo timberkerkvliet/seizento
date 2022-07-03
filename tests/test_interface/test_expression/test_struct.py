@@ -59,18 +59,6 @@ class TestStruct(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, {})
 
-    async def test_not_found_before_set(self):
-        await self.test_client.set(
-            '/schema/',
-            {
-                'type': 'object',
-                'properties': {'a': {'type': 'integer'}}
-            }
-        )
-
-        with self.assertRaises(NotFound):
-            await self.test_client.get('/evaluation/')
-
     async def test_get_field_expression(self):
         await self.test_client.set(
             '/schema/',
