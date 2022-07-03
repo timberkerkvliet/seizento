@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import NotFound
+from seizento.controllers.exceptions import NotFound, Forbidden
 from tests.test_interface.test_client import UnitTestClient
 
 
@@ -95,3 +95,30 @@ class TestStruct(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/expression/a/b')
 
         self.assertEqual(response, 99)
+
+    async def test_given_a_non_literal_parent_expression_when_setting_expression_then_raise_forbidden(self):
+        await self.test_client.set(
+            '/schema/',
+            {
+                'type': 'object',
+                'properties': {
+                    'a': {'type': 'array', 'items': {'type': 'integer'}},
+                    'b': {'type': 'array', 'items': {'type': 'integer'}}
+                }
+            }
+        )
+        await self.test_client.set(
+            '/expression',
+            {
+                'a': [1, 2, 3, 4],
+                'b': '{/a}'
+            }
+        )
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/expression/b/0', 5)
+
+    async def test_when_setting_expression_with_no_paren_then_raise_not_found(self):
+        await self.test_client.set('/schema/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
+        with self.assertRaises(NotFound):
+            await self.test_client.set('/expression/a', 99)
