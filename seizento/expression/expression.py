@@ -19,14 +19,8 @@ class ArgumentSpace:
     def intersect(self, other: ArgumentSpace) -> ArgumentSpace:
         return ArgumentSpace(
             values={
-                **{
-                    k: v for k, v in self.values.items()
-                    if k not in other.values
-                },
-                **{
-                    k: v for k, v in other.values.items()
-                    if k not in self.values
-                },
+                **self.values,
+                **other.values,
                 **{
                     k: v & other.values[k] for k, v in self.values.items()
                     if k in other.values
