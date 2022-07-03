@@ -16,7 +16,7 @@ class EmptyStruct(Schema):
         return {}
 
     def is_subschema(self, other: Schema) -> bool:
-        if isinstance(other, (EmptyStruct, Struct)):
+        if isinstance(other, (EmptyStruct, Struct, Dictionary)):
             return True
 
         return False
