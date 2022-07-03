@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Tuple, Optional
-
-from seizento.identifier import Identifier
+from dataclasses import dataclass
+from typing import Tuple
 
 
 class PathComponent:
