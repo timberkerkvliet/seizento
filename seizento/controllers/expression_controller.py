@@ -1,6 +1,6 @@
 from typing import Dict
 
-from seizento.controllers.exceptions import Forbidden, NotFound
+from seizento.controllers.exceptions import Forbidden, NotFound, BadRequest
 
 from seizento.path import Path
 from seizento.repository import Repository
@@ -29,13 +29,19 @@ class ExpressionController:
         return serialize_expression(expression)
 
     async def set(self, data: Dict) -> None:
-        new_expression = parse_expression(data)
+        try:
+            new_expression = parse_expression(data)
+        except Exception as e:
+            raise BadRequest from e
 
         current_type = await self._repository.get_type(path=self._path)
         if current_type is None:
             raise KeyError
 
-        expression_type = await new_expression.get_schema(PathService(self._repository))
+        try:
+            expression_type = await new_expression.get_schema(PathService(self._repository))
+        except ValueError as e:
+            raise Forbidden from e
 
         if not expression_type.is_subschema(current_type):
             raise Forbidden

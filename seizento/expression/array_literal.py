@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Set, Tuple, TYPE_CHECKING
+from typing import Dict, Tuple, TYPE_CHECKING
 
-from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.array import Array, EmptyArray
 from seizento.expression.expression import Expression, ArgumentSpace
-from seizento.path import Path, PathComponent, LiteralComponent
+from seizento.path import PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
@@ -22,7 +21,14 @@ class ArrayLiteral(Expression):
         if len(self.values) == 0:
             return EmptyArray()
 
-        return Array(value_type=await self.values[0].get_schema(path_service))
+        schemas = {
+            await value.get_schema(path_service) for value in self.values
+        }
+
+        if len(schemas) > 1:
+            raise ValueError('Mixed types')
+
+        return Array(value_type=schemas.pop())
 
     async def get_argument_space(
         self,

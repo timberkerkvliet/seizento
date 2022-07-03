@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import Forbidden
+from seizento.controllers.exceptions import Forbidden, BadRequest
 from tests.test_interface.test_client import UnitTestClient
 
 
@@ -48,3 +48,9 @@ class TestArray(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/', ['a', 'b'])
+
+    async def test_set_mixing_types(self):
+        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/expression/', [1, 'b'])
