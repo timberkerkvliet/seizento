@@ -47,7 +47,7 @@ class PathReference(Expression):
             return result
 
         if isinstance(part, Identifier) and isinstance(value, list):
-            result = ArgumentSpace(values={part: set(range(len(value)))})
+            result = ArgumentSpace(values={part: set(str(x) for x in range(len(value)))})
             for val in value:
                 result = result.intersect(self._get_argument_space(val, parts[1:]))
 
