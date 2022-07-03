@@ -84,6 +84,3 @@ class PathReference(Expression):
 
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
-
-    def to_tree(self) -> DataTree:
-        return DataTree(root_data=self)

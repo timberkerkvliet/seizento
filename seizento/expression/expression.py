@@ -60,7 +60,3 @@ class Expression(ABC):
     @abstractmethod
     def supports_child_at(self, component: PathComponent) -> bool:
         pass
-
-    @abstractmethod
-    def to_tree(self) -> DataTree:
-        pass

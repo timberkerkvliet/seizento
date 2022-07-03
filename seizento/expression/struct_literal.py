@@ -50,12 +50,3 @@ class StructLiteral(Expression):
             return False
 
         return component.value in self.values
-
-    def to_tree(self) -> DataTree:
-        return DataTree(
-            root_data=self,
-            subtrees={
-                LiteralComponent(str(name)): expression.to_tree()
-                for name, expression in self.values.items()
-            }
-        )

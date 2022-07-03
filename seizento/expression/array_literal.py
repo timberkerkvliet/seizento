@@ -46,12 +46,3 @@ class ArrayLiteral(Expression):
             return False
 
         return component.value in {str(k) for k in range(len(self.values) + 1)}
-
-    def to_tree(self) -> DataTree:
-        return DataTree(
-            root_data=self,
-            subtrees={
-                LiteralComponent(str(k)): child_expression.to_tree()
-                for k, child_expression in enumerate(self.values)
-            }
-        )
