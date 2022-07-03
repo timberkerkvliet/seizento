@@ -54,3 +54,27 @@ class TestArray(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/', [1, 'b'])
+
+    async def test_array_of_structs(self):
+        await self.test_client.set(
+            '/schema/',
+            {'type': 'array', 'items': {
+                'type': 'object',
+                'properties': {
+                    'a': {'type': 'integer'},
+                    'b': {'type': 'string'}
+                }
+            }}
+        )
+
+        await self.test_client.set(
+            '/expression/',
+            [{'a': 5, 'b': 'hoi'}, {'a': 6, 'b': 'hey'}]
+        )
+
+        response = await self.test_client.get('/expression')
+
+        self.assertEqual(
+            response,
+            [{'a': 5, 'b': 'hoi'}, {'a': 6, 'b': 'hey'}]
+        )
