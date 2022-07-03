@@ -69,6 +69,8 @@ def parse_expression(value: Any) -> Expression:
             )
 
         return StructLiteral(values={x: parse_expression(y) for x, y in value.items()})
+    if isinstance(value, float):
+        return PrimitiveLiteral(value)
 
     if isinstance(value, int):
         return PrimitiveLiteral(value)

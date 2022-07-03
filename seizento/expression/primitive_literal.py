@@ -4,7 +4,7 @@ from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
-from seizento.schema.primitives import String, Integer, Boolean
+from seizento.schema.primitives import String, Integer, Boolean, Float
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
@@ -24,6 +24,8 @@ class PrimitiveLiteral(Expression):
             return Boolean()
         if isinstance(self.value, int):
             return Integer()
+        if isinstance(self.value, float):
+            return Float()
 
     async def get_argument_space(
         self,
