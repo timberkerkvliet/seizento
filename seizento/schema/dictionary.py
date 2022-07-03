@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 from seizento.path import PathComponent, PlaceHolder
 from seizento.schema.schema import Schema
@@ -21,3 +21,6 @@ class Dictionary(Schema):
 
     def supports_child_at(self, component: PathComponent) -> bool:
         return isinstance(component, PlaceHolder)
+
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
+        return None

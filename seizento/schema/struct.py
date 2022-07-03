@@ -24,6 +24,10 @@ class EmptyStruct(Schema):
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
 
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
+        return None
+
+
 
 @dataclass(frozen=True)
 class Struct(Schema):
@@ -64,3 +68,10 @@ class Struct(Schema):
 
     def __hash__(self):
         return hash(frozenset(tuple(x) for x in self.fields.items()))
+
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
+        if not isinstance(other, Struct):
+            return None
+
+        if self.single_value_type() == other.single_value_type():
+            return Dictionary(value_type=self.single_value_type())

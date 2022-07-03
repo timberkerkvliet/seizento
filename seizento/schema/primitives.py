@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 from seizento.path import PathComponent
 from seizento.schema.schema import Schema
@@ -17,6 +17,9 @@ class Primitive(Schema):
 
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
+
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
+        return None
 
 
 @dataclass(frozen=True)

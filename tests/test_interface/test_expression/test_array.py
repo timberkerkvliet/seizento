@@ -78,3 +78,26 @@ class TestArray(IsolatedAsyncioTestCase):
             response,
             [{'a': 5, 'b': 'hoi'}, {'a': 6, 'b': 'hey'}]
         )
+
+    async def test_array_of_dicts(self):
+        await self.test_client.set(
+            '/schema/',
+            {'type': 'array', 'items': {
+                'type': 'object',
+                'additionalProperties': {
+                    'type': 'string'
+                }
+            }}
+        )
+
+        await self.test_client.set(
+            '/expression/',
+            [{'a': 'hey', 'b': 'hoi'}, {'x': 'tea', 'y': 'coffee'}]
+        )
+
+        response = await self.test_client.get('/expression')
+
+        self.assertEqual(
+            response,
+            [{'a': 'hey', 'b': 'hoi'}, {'x': 'tea', 'y': 'coffee'}]
+        )

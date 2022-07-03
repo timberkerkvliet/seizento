@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from seizento.path import PathComponent
 
@@ -16,4 +17,8 @@ class Schema(ABC):
 
     @abstractmethod
     def supports_child_at(self, component: PathComponent) -> bool:
+        pass
+
+    @abstractmethod
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
         pass

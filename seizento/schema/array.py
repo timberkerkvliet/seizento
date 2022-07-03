@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from seizento.path import PathComponent, PlaceHolder
 from seizento.schema.schema import Schema
@@ -20,6 +20,9 @@ class EmptyArray(Schema):
     def supports_child_at(self, component: PathComponent) -> bool:
         return False
 
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
+        return None
+
 
 @dataclass(frozen=True)
 class Array(Schema):
@@ -37,3 +40,6 @@ class Array(Schema):
 
     def supports_child_at(self, component: PathComponent) -> bool:
         return isinstance(component, PlaceHolder)
+
+    def common_superschema(self, other: Schema) -> Optional[Schema]:
+        return None
