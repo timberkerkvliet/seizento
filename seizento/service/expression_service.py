@@ -35,8 +35,9 @@ class CircularReference(Exception):
 
 
 class PathService:
-    def __init__(self, repository: Repository):
+    def __init__(self, repository: Repository, visited: Set[Path] = None):
         self._repository = repository
+        self._visited = visited or set()
 
     async def get_argument_space(
         self,
@@ -49,14 +50,8 @@ class PathService:
 
         return await nearest_expression.expression.get_argument_space(path_service=self)
 
-    async def evaluate(
-        self,
-        path: Path,
-        visited: Set[Path] = None
-    ) -> Any:
-        visited = visited or set()
-
-        if path in visited:
+    async def evaluate(self, path: Path):
+        if path in self._visited:
             raise CircularReference
 
         nearest_expression = await find_nearest_expression(repository=self._repository, path=path)
@@ -68,7 +63,10 @@ class PathService:
 
         expression = nearest_expression.expression
 
-        evaluation = await expression.evaluate(path_service=self, arguments={})
+        evaluation = await expression.evaluate(
+            path_service=PathService(repository=self._repository, visited=self._visited | {path}),
+            arguments={}
+        )
 
         for index in indices:
             try:
