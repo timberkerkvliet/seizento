@@ -10,7 +10,7 @@ from seizento.path import Path, PathComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathEvaluator, PathService
+    from seizento.expression.path_service import PathService
 
 
 @dataclass(frozen=True)

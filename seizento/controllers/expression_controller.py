@@ -5,7 +5,7 @@ from seizento.controllers.exceptions import Forbidden, NotFound
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
-from seizento.service.expression_service import CircularReference, PathService
+from seizento.expression.path_service import CircularReference, PathService
 
 
 class ExpressionController:

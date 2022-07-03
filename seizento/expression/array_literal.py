@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Set, Any, Tuple, TYPE_CHECKING, FrozenSet
+from typing import Dict, Set, Tuple, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
@@ -11,7 +11,7 @@ from seizento.path import Path, PathComponent, LiteralComponent
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
-    from seizento.service.expression_service import PathService
+    from seizento.expression.path_service import PathService
 
 
 @dataclass(frozen=True)

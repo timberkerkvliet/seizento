@@ -2,7 +2,7 @@ from typing import Dict
 
 from seizento.path import Path
 from seizento.repository import Repository
-from seizento.service.expression_service import PathService
+from seizento.expression.path_service import PathService
 
 
 class EvaluationController:
