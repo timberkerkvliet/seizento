@@ -32,6 +32,13 @@ def serialize_expression(value: Expression) -> Any:
                           for x in value.reference) \
                + '}'
 
+    if isinstance(value, ParametrizedDictionary):
+        return {
+            '*parameter': value.parameter.name,
+            '*property': serialize_expression(value.key),
+            '*value': serialize_expression(value.value)
+        }
+
     raise TypeError(type(value))
 
 
