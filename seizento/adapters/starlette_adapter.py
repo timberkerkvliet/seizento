@@ -1,4 +1,3 @@
-from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -6,7 +5,7 @@ from seizento.controllers.exceptions import NotFound, BadRequest, Forbidden
 from seizento.controllers.resource_controller import ResourceController
 
 
-class FastAPIRequestHandler:
+class StarletteAdapter:
     def __init__(self, resource_controller: ResourceController):
         self._resource_controller = resource_controller
 
@@ -29,11 +28,3 @@ class FastAPIRequestHandler:
             return Response(status_code=401)
 
         return Response(result)
-
-
-def get_app(resource_controller: ResourceController) -> FastAPI:
-    app = FastAPI()
-    handler = FastAPIRequestHandler(resource_controller=resource_controller)
-    app.add_route(path='/', route=handler.handle)
-
-    return app
