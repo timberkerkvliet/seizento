@@ -46,7 +46,7 @@ class Struct(Schema):
 
     def is_subschema(self, other: Schema) -> bool:
         if isinstance(other, Dictionary):
-            return self.single_value_type() == other.value_type
+            return all(field_type.is_subschema(other.value_type) for field_type in self.fields.values())
 
         if not isinstance(other, Struct):
             return False
@@ -61,3 +61,6 @@ class Struct(Schema):
 
     def supports_child_at(self, component: PathComponent) -> bool:
         return isinstance(component, LiteralComponent)
+
+    def __hash__(self):
+        return hash(frozenset(tuple(x) for x in self.fields.items()))

@@ -68,3 +68,54 @@ class TestParametrizedDictionary(IsolatedAsyncioTestCase):
         )
         response = await self.test_client.get('/evaluation/projection')
         self.assertEqual(response, {'0': 1, '1': 2, '2': 3})
+
+    async def test_with_nested_object(self):
+        await self.test_client.set(
+            '/schema/',
+            {
+                'type': 'object',
+                'properties': {
+                    'fixed': {
+                        'type': 'object',
+                        'additionalProperties': {
+                            'type': 'object',
+                            'additionalProperties': {'type': 'integer'}
+                        }
+                    },
+                    'projection': {
+                        'type': 'object',
+                        'additionalProperties': {
+                            'type': 'object',
+                            'additionalProperties': {'type': 'integer'}
+                        }
+                    }
+                }
+            }
+        )
+        await self.test_client.set(
+            '/expression/',
+            {
+                'fixed': {
+                    'een': {'a': 1, 'b': 4},
+                    'twee': {'a': 2, 'b': 9},
+                    'drie': {'a': 0, 'b': 3}
+                },
+                'projection': {
+                    '*parameter': 'y',
+                    '*property': '{y}',
+                    '*value': {
+                        '*parameter': 'x',
+                        '*property': '{x}',
+                        '*value': '{/fixed/<x>/<y>}'
+                    }
+                }
+            }
+        )
+        response = await self.test_client.get('/evaluation/projection')
+        self.assertEqual(
+            response,
+            {
+                'a': {'een': 1, 'twee': 2, 'drie': 0},
+                'b': {'een': 4, 'twee': 9, 'drie': 3}
+            }
+        )
