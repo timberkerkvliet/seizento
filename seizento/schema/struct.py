@@ -25,8 +25,10 @@ class EmptyStruct(Schema):
         return False
 
     def common_superschema(self, other: Schema) -> Optional[Schema]:
-        return None
+        if isinstance(other, (EmptyStruct, Struct, Dictionary)):
+            return other
 
+        return None
 
 
 @dataclass(frozen=True)
@@ -70,6 +72,12 @@ class Struct(Schema):
         return hash(frozenset(tuple(x) for x in self.fields.items()))
 
     def common_superschema(self, other: Schema) -> Optional[Schema]:
+        if isinstance(other, EmptyStruct):
+            return self
+
+        if isinstance(other, Dictionary) and self.single_value_type() == other.value_type:
+            return other
+
         if not isinstance(other, Struct):
             return None
 

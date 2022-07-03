@@ -29,11 +29,10 @@ class ArrayLiteral(Expression):
             super_schema = schemas.pop()
             for schema in schemas:
                 super_schema = super_schema.common_superschema(schema)
+                if super_schema is None:
+                    raise ValueError('Mixed types')
 
-            if super_schema is not None:
-                return Array(value_type=super_schema)
-
-            raise ValueError('Mixed types')
+            return Array(value_type=super_schema)
 
         return Array(value_type=schemas.pop())
 

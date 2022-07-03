@@ -23,4 +23,4 @@ class Dictionary(Schema):
         return isinstance(component, PlaceHolder)
 
     def common_superschema(self, other: Schema) -> Optional[Schema]:
-        return None
+        return other.common_superschema(self)

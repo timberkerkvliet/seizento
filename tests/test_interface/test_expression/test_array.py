@@ -92,12 +92,12 @@ class TestArray(IsolatedAsyncioTestCase):
 
         await self.test_client.set(
             '/expression/',
-            [{'a': 'hey', 'b': 'hoi'}, {'x': 'tea', 'y': 'coffee'}]
+            [{'a': 'hey', 'b': 'hoi'}, {'x': 'tea', 'y': 'coffee'}, {}]
         )
 
         response = await self.test_client.get('/expression')
 
         self.assertEqual(
             response,
-            [{'a': 'hey', 'b': 'hoi'}, {'x': 'tea', 'y': 'coffee'}]
+            [{'a': 'hey', 'b': 'hoi'}, {'x': 'tea', 'y': 'coffee'}, {}]
         )
