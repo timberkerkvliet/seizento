@@ -26,7 +26,7 @@ def serialize_expression(value: Expression) -> Any:
         return '{' + value.reference.name + '}'
 
     if isinstance(value, PathReference):
-        return '{' \
+        return '{/' \
                + '/'.join(x.value if isinstance(x, LiteralComponent) else f'<{x.name}>'
                           for x in value.reference) \
                + '}'

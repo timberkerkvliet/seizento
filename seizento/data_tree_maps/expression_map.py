@@ -35,7 +35,10 @@ def expression_to_tree(value: Expression) -> DataTree:
 
     if isinstance(value, PathReference):
         return DataTree(
-            root_data={'type': 'PATH_REFERENCE', 'reference': value.reference}
+            root_data={
+                'type': 'PATH_REFERENCE',
+                'reference': serialize_expression(value)
+            }
         )
 
     if isinstance(value, ParametrizedDictionary):
@@ -77,7 +80,7 @@ def tree_to_expression(value: DataTree) -> Expression:
 
     if isinstance(root_data, dict) and root_data.get('type') == 'PATH_REFERENCE':
         ref = root_data['reference']
-        return PathReference(reference=ref)
+        return parse_expression(ref)
 
     if isinstance(root_data, dict) and root_data.get('type') == 'PARAMETRIZED_DICTIONARY':
         return ParametrizedDictionary(
