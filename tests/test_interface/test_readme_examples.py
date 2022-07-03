@@ -11,22 +11,22 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
         await self.test_client.set(
             '/schema',
             {
-                "type": "object",
-                "properties": {
-                    "products": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "id": {"type": "integer"},
-                                "name": {"type": "string"},
-                                "on_stock": {"type": "boolean"}
+                'type': 'object',
+                'properties': {
+                    'products': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'integer'},
+                                'name': {'type': 'string'},
+                                'on_stock': {'type': 'boolean'}
                             }
                         }
                     },
-                    "stock": {
-                        "type": "object",
-                        "additionalProperties":  {"type": "boolean"}
+                    'stock': {
+                        'type': 'object',
+                        'additionalProperties':  {'type': 'boolean'}
                     }
                 }
 
@@ -36,31 +36,27 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
         await self.test_client.set(
             '/expression/',
             {
-                "products": [
+                'products': [
                     {
-                        "id": 1,
-                        "name": "Boring product",
-                        "on_stock": True
+                        'id': 1,
+                        'name': 'Boring product',
+                        'on_stock': True
                     },
                     {
-                        "id": 2,
-                        "name": "Fancy product",
-                        "on_stock": False
+                        'id': 2,
+                        'name': 'Fancy product',
+                        'on_stock': False
                     }
                 ],
-                "stock": {
-                    "{products/<k>/name}": "{products/<k>/on_stock}"
+                'stock': {
+                    '{products/<k>/name}': '{products/<k>/on_stock}'
                 }
             }
-
         )
 
         result = await self.test_client.get('/evaluation/stock')
 
         self.assertDictEqual(
             result,
-            {
-                "Boring product": True,
-                "Fancy product": False
-            }
+            {'Boring product': True, 'Fancy product': False}
         )
