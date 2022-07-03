@@ -22,8 +22,8 @@ class ArgumentSpace:
                 **self.values,
                 **other.values,
                 **{
-                    k: v & other.values[k] for k, v in self.values.items()
-                    if k in other.values
+                    k: self.values[k] & other.values[k]
+                    for k in set(self.values) & set(other.values)
                 }
             }
         )
