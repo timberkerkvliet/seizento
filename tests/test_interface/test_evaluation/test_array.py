@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import Forbidden
+from seizento.controllers.exceptions import Forbidden, NotFound
 from tests.test_interface.test_client import UnitTestClient
 
 
@@ -28,3 +28,9 @@ class TestArray(IsolatedAsyncioTestCase):
         await self.test_client.set('/expression/', [1, 2, 3, 4])
         response = await self.test_client.get('/evaluation/1')
         self.assertEqual(response, 2)
+
+    async def test_non_existing_item(self):
+        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        await self.test_client.set('/expression/', [1, 2, 3, 4])
+        with self.assertRaises(NotFound):
+            await self.test_client.get('/evaluation/4')
