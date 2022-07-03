@@ -18,11 +18,11 @@ if TYPE_CHECKING:
 class ArrayLiteral(Expression):
     values: Tuple[Expression, ...]
 
-    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         if len(self.values) == 0:
             return EmptyArray()
 
-        return Array(value_type=self.values[0].get_schema(schemas))
+        return Array(value_type=await self.values[0].get_schema(path_service))
 
     async def get_argument_space(
         self,

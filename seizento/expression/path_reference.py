@@ -26,8 +26,8 @@ class PathReference(Expression):
             )
         )
 
-    def get_schema(self, schemas: dict[Path, Schema]) -> Schema:
-        return schemas[self.path]
+    async def get_schema(self, path_service: PathService) -> Schema:
+        return await path_service.get_schema(self.path)
 
     def _get_argument_space(self, value, parts) -> ArgumentSpace:
         if len(parts) == 0:

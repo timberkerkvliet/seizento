@@ -45,7 +45,7 @@ class ArgumentSpace:
 
 class Expression(ABC):
     @abstractmethod
-    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         pass
 
     @abstractmethod

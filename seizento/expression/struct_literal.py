@@ -17,12 +17,12 @@ if TYPE_CHECKING:
 class StructLiteral(Expression):
     values: Dict[str, Expression]
 
-    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         if len(self.values) == 0:
             return EmptyStruct()
 
         return Struct(
-            fields={Identifier(x): y.get_schema(schemas) for x, y in self.values.items()}
+            fields={Identifier(x): await y.get_schema(path_service) for x, y in self.values.items()}
         )
 
     async def get_argument_space(

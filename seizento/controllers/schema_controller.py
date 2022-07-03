@@ -1,6 +1,7 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
+from seizento.expression.path_service import PathService
 from seizento.schema.array import Array
 from seizento.schema.dictionary import Dictionary
 
@@ -54,12 +55,9 @@ class SchemaController:
         expression = await self._repository.get_expression(path=self._path)
 
         if expression is not None:
-            references = expression.get_path_references()
-            schemas = {
-                reference: await self._repository.get_type(reference)
-                for reference in references
-            }
-            if not expression.get_schema(schemas).is_subschema(new_schema):
+            current_schema = await expression.get_schema(PathService(self._repository))
+
+            if not current_schema.is_subschema(new_schema):
                 raise Forbidden
 
         await self._repository.set_type(

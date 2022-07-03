@@ -19,8 +19,8 @@ class ParametrizedDictionary(Expression):
     key: Expression
     value: Expression
 
-    def get_schema(self, schemas: Dict[Path, Schema]) -> Schema:
-        return Dictionary(value_type=self.value.get_schema(schemas))
+    async def get_schema(self, path_service: PathService) -> Schema:
+        return Dictionary(value_type=await self.value.get_schema(path_service))
 
     async def _internal_space(self, path_service: PathService) -> ArgumentSpace:
         key_space = await self.key.get_argument_space(path_service=path_service)

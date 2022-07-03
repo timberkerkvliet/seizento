@@ -5,6 +5,7 @@ from seizento.controllers.exceptions import NotFound
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path
 from seizento.repository import Repository
+from seizento.schema.schema import Schema
 
 
 @dataclass(frozen=True)
@@ -22,11 +23,10 @@ class PathService:
         self._repository = repository
         self._visited = visited or set()
 
-    @staticmethod
-    async def find_nearest_expression(repository: Repository, path: Path) -> NearestExpressionResult:
+    async def find_nearest_expression(self, path: Path) -> NearestExpressionResult:
         current_path = path
         while True:
-            expression = await repository.get_expression(current_path)
+            expression = await self._repository.get_expression(current_path)
             if expression is not None:
                 return NearestExpressionResult(
                     expression=expression,
@@ -39,11 +39,11 @@ class PathService:
             path = path.remove_last()
             continue
 
-    async def get_argument_space(
-        self,
-        path: Path
-    ) -> ArgumentSpace:
-        nearest_expression = await self.find_nearest_expression(repository=self._repository, path=path)
+    async def get_schema(self, path: Path) -> Schema:
+        return await self._repository.get_type(path)
+
+    async def get_argument_space(self, path: Path) -> ArgumentSpace:
+        nearest_expression = await self.find_nearest_expression(path=path)
 
         return await nearest_expression.expression.get_argument_space(path_service=self)
 
@@ -51,10 +51,9 @@ class PathService:
         if path in self._visited:
             raise CircularReference
 
-        nearest_expression = await self.find_nearest_expression(repository=self._repository, path=path)
+        nearest_expression = await self.find_nearest_expression(path=path)
 
         indices = [component.name for component in path.components[len(nearest_expression.path):]]
-
         expression = nearest_expression.expression
 
         evaluation = await expression.evaluate(
