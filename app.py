@@ -1,6 +1,3 @@
-import uuid
-from uuid import UUID
-
 from fastapi import FastAPI
 
 from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore

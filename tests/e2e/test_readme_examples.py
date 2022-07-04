@@ -1,14 +1,19 @@
 from unittest import IsolatedAsyncioTestCase
 
+from tests.e2e.e2e_test_client import E2ETestClient
 from tests.unit.unit_test_client import UnitTestClient
 
 
 class TestReadmeExample(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
-        self.test_client = UnitTestClient()
+    def setUp(self) -> None:
+        self.test_client = E2ETestClient()
+        self.test_client.__enter__()
+
+    def tearDown(self) -> None:
+        self.test_client.__exit__()
 
     async def test_first_case(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema',
             {
                 'type': 'object',
@@ -33,7 +38,7 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
             }
         )
 
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/',
             {
                 'products': [
@@ -56,7 +61,7 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
             }
         )
 
-        result = await self.test_client.get('/evaluation/stock')
+        result = self.test_client.get('/evaluation/stock')
 
         self.assertDictEqual(
             result,
