@@ -12,6 +12,19 @@ class DataTree:
     root_data: Any
     subtrees: Dict[PathComponent, DataTree] = field(default_factory=dict)
 
+    def get_all_paths(self) -> Dict[Path, Any]:
+        result = {EMPTY_PATH: self.root_data}
+
+        for component, subtree in self.subtrees.items():
+            result.update(
+                {
+                    path.insert_first(component): data
+                    for path, data in subtree.get_all_paths().items()
+                }
+            )
+
+        return result
+
     def delete_subtree(self, path: Path) -> DataTree:
         if path == EMPTY_PATH:
             raise ValueError
@@ -62,3 +75,21 @@ class DataTree:
                 raise KeyError
 
         return result
+
+
+def tree_from_paths(all_paths: Dict[Path, Any]) -> DataTree:
+    children = {path.first_component for path in all_paths if len(path) == 1}
+
+    return DataTree(
+        root_data=all_paths[EMPTY_PATH],
+        subtrees={
+            component: tree_from_paths(
+                all_paths={
+                    path.remove_first(): data
+                    for path, data in all_paths.items()
+                    if len(path) > 0 and path.first_component == component
+                }
+            )
+            for component in children
+        }
+    )

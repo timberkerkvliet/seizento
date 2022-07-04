@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
+from typing import Dict, Any
 
 import aiosqlite
 from aiosqlite import Connection
 
-from seizento.path import Path, EMPTY_PATH
-from seizento.data_tree import DataTree
+from seizento.path import Path, EMPTY_PATH, LiteralComponent
+from seizento.data_tree import DataTree, tree_from_paths
 from seizento.repository import DataTreeStoreTransaction
 from seizento.serializers.path_serializer import serialize_path, parse_path
 
@@ -35,50 +36,44 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
         await self._connection.commit()
         await self._connection.__aexit__(*args)
 
+    @staticmethod
+    def child_pattern(path: Path) -> str:
+        if len(path) == 0:
+            return '_%'
+
+        return serialize_path(path) + '/%'
+
     async def get_tree(self, path: Path) -> DataTree:
         result = await self._connection.execute(
             """
-            SELECT data FROM data WHERE path = ?
+            SELECT path, data FROM data WHERE path = ? OR path LIKE ?
             """,
-            (serialize_path(path),)
+            (serialize_path(path), self.child_pattern(path))
         )
-        root_data_result = await result.fetchone()
-        if root_data_result is None:
-            raise KeyError
+        all_paths = {
+            parse_path(row[0]).remove_from_start(len(path)): json.loads(row[1])
+            for row in await result.fetchall()
+        }
 
-        root_data = json.loads(root_data_result[0])
-
-        components_result = await self._connection.execute(
-            "SELECT path FROM data WHERE path LIKE ?",
-            (serialize_path(path) + '/%',)
-        ) if path != EMPTY_PATH else await self._connection.execute(
-            "SELECT path FROM data WHERE path != ''"
-        )
-
-        subpaths = {parse_path(row[0]) for row in await components_result.fetchall()}
-
-        return DataTree(
-            root_data=root_data,
-            subtrees={
-                subpath.last_component: await self.get_tree(path=subpath)
-                for subpath in subpaths
-            }
-        )
+        return tree_from_paths(all_paths)
 
     async def set_tree(self, path: Path, tree: DataTree) -> None:
         await self.delete_tree(path)
 
-        await self._connection.execute(
+        all_paths = tree.get_all_paths()
+
+        await self._connection.executemany(
             "INSERT INTO data (path, data) VALUES (?, ?)",
-            (serialize_path(path), json.dumps(tree.root_data))
+            [
+                (serialize_path(path + tree_path), json.dumps(data))
+                for tree_path, data in all_paths.items()
+            ]
         )
-        for component, subtree in tree.subtrees.items():
-            await self.set_tree(path=path.append(component), tree=subtree)
 
     async def delete_tree(self, path: Path) -> None:
         await self._connection.execute(
             "DELETE FROM data WHERE path=? OR path LIKE ?",
-            (serialize_path(path), serialize_path(path) + '/%')
+            (serialize_path(path), self.child_pattern(path))
         )
 
 
