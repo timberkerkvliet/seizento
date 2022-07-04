@@ -14,8 +14,7 @@ store = InMemoryDataTreeStore()
 
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
-        repository_factory=lambda: Repository(store.get_transaction()),
-        user_id=uuid.uuid4()
+        repository_factory=lambda: Repository(store.get_transaction())
     )
 )
 

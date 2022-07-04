@@ -12,11 +12,9 @@ from seizento.serializers.path_serializer import parse_path
 class ResourceController:
     def __init__(
         self,
-        repository_factory: Callable[[], Repository],
-        user_id: UUID
+        repository_factory: Callable[[], Repository]
     ):
         self._repository_factory = repository_factory
-        self._user_id = user_id
 
     @staticmethod
     def _get_controller(resource: str, repository: Repository):
