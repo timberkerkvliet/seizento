@@ -1,0 +1,6 @@
+FROM seizento-base
+
+COPY /seizento /seizento
+COPY /app.py /app.py
+
+ENTRYPOINT uvicorn app:app
