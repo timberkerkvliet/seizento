@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import NotFound, BadRequest
+from seizento.controllers.exceptions import NotFound, BadRequest, MethodNotAllowed
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -23,3 +23,11 @@ class TestGeneralErrors(IsolatedAsyncioTestCase):
     async def test_set_empty_type_data(self):
         with self.assertRaises(BadRequest):
             await self.test_client.set('/schema', {})
+
+    async def test_set_evaluation(self):
+        with self.assertRaises(MethodNotAllowed):
+            await self.test_client.set('/evaluation', {})
+
+    async def test_delete_evaluation(self):
+        with self.assertRaises(MethodNotAllowed):
+            await self.test_client.delete('/evaluation')
