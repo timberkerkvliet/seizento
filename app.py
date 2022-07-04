@@ -1,3 +1,4 @@
+import uuid
 from uuid import UUID
 
 from fastapi import FastAPI
@@ -14,8 +15,8 @@ store = FakeDataTreeStore()
 handler = StarletteAdapter(
     resource_controller=ResourceController(
         repository_factory=lambda: Repository(store.get_transaction()),
-        user_id=UUID()
+        user_id=uuid.uuid4()
     )
 )
 
-app.add_route(path='/', route=handler.handle)
+app.add_route(path='/{rest_of_path:path}', route=handler.handle, methods=['PUT', 'GET', 'DELETE'])

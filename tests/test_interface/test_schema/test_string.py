@@ -1,12 +1,12 @@
 from unittest import IsolatedAsyncioTestCase
 
 from seizento.controllers.exceptions import Forbidden
-from tests.test_interface.test_client import UnitTestClient
+from tests.test_interface.test_client import get_test_client
 
 
 class TestString(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
-        self.test_client = UnitTestClient()
+        self.test_client = get_test_client()
 
     async def test_set_string(self):
         await self.test_client.set(

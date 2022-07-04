@@ -1,3 +1,5 @@
+import json
+
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -12,11 +14,12 @@ class StarletteAdapter:
     async def handle(self, request: Request) -> Response:
         resource = request.url.path
         try:
-            if request.method == 'get':
+            if request.method == 'GET':
                 result = await self._resource_controller.get(resource=resource)
-            elif request.method == 'put':
-                result = await self._resource_controller.set(resource=resource, data=request.json())
-            elif request.method == 'delete':
+            elif request.method == 'PUT':
+                data = await request.json()
+                result = await self._resource_controller.set(resource=resource, data=data)
+            elif request.method == 'DELETE':
                 result = await self._resource_controller.delete(resource=resource)
             else:
                 return Response(status_code=405)
@@ -27,4 +30,4 @@ class StarletteAdapter:
         except Forbidden:
             return Response(status_code=401)
 
-        return Response(result)
+        return Response(json.dumps(result))
