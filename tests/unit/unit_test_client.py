@@ -8,8 +8,6 @@ from seizento.user import AccessRights
 
 
 class UnitTestClient:
-    ADMIN_TOKEN = 'admin'
-
     def __init__(self):
         store = InMemoryDataTreeStore()
         self.controller = ResourceController(
