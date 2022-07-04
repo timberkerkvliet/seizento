@@ -5,6 +5,7 @@ import jwt
 from seizento.controllers.evaluation_controller import EvaluationController
 from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
+from seizento.controllers.login_controller import LoginController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction, Restricted
 from seizento.serializers.path_serializer import parse_path
@@ -29,8 +30,7 @@ class ResourceController:
             )
         )
 
-    @staticmethod
-    def _get_controller(resource: str, repository: Repository):
+    def _get_controller(self, resource: str, repository: Repository):
         try:
             resource_path = parse_path(resource)
         except Exception as e:
@@ -51,6 +51,11 @@ class ResourceController:
             return EvaluationController(
                 repository=repository,
                 path=resource_path.remove_first()
+            )
+        if resource_type == 'login':
+            return LoginController(
+                repository=repository,
+                token_secret=self._token_secret
             )
 
         raise BadRequest

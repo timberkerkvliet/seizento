@@ -1,31 +1,39 @@
-import jwt
-
 from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
+from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
-from seizento.path import EMPTY_PATH
-from seizento.serializers.user_serializer import serialize_access_rights
-from seizento.user import AccessRights
 
 
 class UnitTestClient:
     def __init__(self):
         store = InMemoryDataTreeStore()
-        self.controller = ResourceController(
+        self.resource_controller = ResourceController(
             transaction_factory=lambda: store.get_transaction(),
             token_secret='test-secret'
         )
-        self.admin_token = jwt.encode(
-            payload=serialize_access_rights(
-                AccessRights(read_access={EMPTY_PATH}, write_access={EMPTY_PATH})
-            ),
-            key='test-secret'
+        self.login_controller = LoginController(
+            transaction_factory=lambda: store.get_transaction(),
+            token_secret='test-secret'
         )
+        self.token = None
+
+    async def login(self, data=None):
+        data = data or {
+            'user_id': '0fa45acc-bd98-4f01-ac85-996ead2e064f',
+            'password': 'admin'
+        }
+        self.token = await self.login_controller.login(data)
 
     async def get(self, resource: str):
-        return await self.controller.get(resource=resource, token=self.admin_token)
+        if self.token is None:
+            await self.login()
+        return await self.resource_controller.get(resource=resource, token=self.token)
 
     async def set(self, resource: str, data):
-        await self.controller.set(resource=resource, data=data, token=self.admin_token)
+        if self.token is None:
+            await self.login()
+        await self.resource_controller.set(resource=resource, data=data, token=self.token)
 
     async def delete(self, resource: str) -> None:
-        await self.controller.delete(resource=resource, token=self.admin_token)
+        if self.token is None:
+            await self.login()
+        await self.resource_controller.delete(resource=resource, token=self.token)

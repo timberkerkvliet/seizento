@@ -1,8 +1,11 @@
 from typing import Callable
+from uuid import UUID
 
-from seizento.path import Path
+from seizento.path import Path, LiteralComponent, EMPTY_PATH
 from seizento.data_tree import DataTree
 from seizento.repository import DataTreeStoreTransaction
+from seizento.serializers.user_serializer import serialize_user
+from seizento.user import User, AccessRights
 
 
 class InMemoryDataTreeStoreTransaction(DataTreeStoreTransaction):
@@ -29,7 +32,27 @@ class InMemoryDataTreeStoreTransaction(DataTreeStoreTransaction):
 
 class InMemoryDataTreeStore:
     def __init__(self):
-        self._tree = DataTree(root_data={})
+        admin = User(
+            id=UUID('0fa45acc-bd98-4f01-ac85-996ead2e064f'),
+            password='admin',
+            access_rights=AccessRights(
+                read_access={EMPTY_PATH},
+                write_access={EMPTY_PATH}
+            )
+        )
+        self._tree = DataTree(
+            root_data={},
+            subtrees={
+                LiteralComponent('user'): DataTree(
+                    root_data={},
+                    subtrees={
+                        LiteralComponent(str(admin.id)): DataTree(
+                            root_data=serialize_user(admin)
+                        )
+                    }
+                )
+            }
+        )
 
     def _set_state(self, tree: DataTree) -> None:
         self._tree = tree

@@ -5,7 +5,7 @@ from tests.unit.unit_test_client import UnitTestClient
 
 
 class TestString(IsolatedAsyncioTestCase):
-    def setUp(self) -> None:
+    async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
     async def test_set_string(self):
