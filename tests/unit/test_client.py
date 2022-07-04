@@ -1,12 +1,4 @@
-import os
 import uuid
-from multiprocessing import Process
-from time import sleep
-from urllib.parse import urljoin
-
-import requests
-from abc import ABC, abstractmethod
-
 from seizento.adapters.fake_data_tree_store import FakeDataTreeStore
 from seizento.controllers.resource_controller import ResourceController
 from seizento.repository import Repository
