@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from starlette.applications import Starlette
 
 from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
 from seizento.adapters.starlette_request_handler import StarletteRequestHandler
@@ -6,7 +6,7 @@ from seizento.controllers.resource_controller import ResourceController
 from seizento.repository import Repository
 
 
-app = FastAPI()
+app = Starlette()
 store = InMemoryDataTreeStore()
 
 handler = StarletteRequestHandler(
@@ -15,4 +15,4 @@ handler = StarletteRequestHandler(
     )
 )
 
-app.add_route(path='/{rest_of_path:path}', route=handler.handle, methods=['PUT', 'GET', 'DELETE'])
+app.add_route(path='/{rest_of_path:path}', route=handler.handle)
