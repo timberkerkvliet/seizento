@@ -2,11 +2,11 @@ from typing import Dict, Any, Callable
 from uuid import UUID
 
 from seizento.controllers.evaluation_controller import EvaluationController
-from seizento.controllers.exceptions import BadRequest
+from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.path import EMPTY_PATH
-from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction
+from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction, Restricted
 from seizento.serializers.path_serializer import parse_path
 from seizento.user import AccessRights
 
@@ -56,16 +56,25 @@ class ResourceController:
         async with self._repository_factory() as repository:
             controller = self._get_controller(resource=resource, repository=repository)
 
-            return await controller.get()
+            try:
+                return await controller.get()
+            except Restricted as e:
+                raise Unauthorized from e
 
     async def set(self, resource: str, data: Any) -> None:
         async with self._repository_factory() as repository:
             controller = self._get_controller(resource=resource, repository=repository)
 
-            await controller.set(data=data)
+            try:
+                await controller.set(data=data)
+            except Restricted as e:
+                raise Unauthorized from e
 
     async def delete(self, resource: str) -> None:
         async with self._repository_factory() as repository:
             controller = self._get_controller(resource=resource, repository=repository)
 
-            await controller.delete()
+            try:
+                await controller.delete()
+            except Restricted as e:
+                raise Unauthorized from e

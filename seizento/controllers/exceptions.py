@@ -12,3 +12,7 @@ class BadRequest(Exception):
 
 class MethodNotAllowed(Exception):
     pass
+
+
+class Unauthorized(Exception):
+    pass
