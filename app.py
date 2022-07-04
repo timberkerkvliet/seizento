@@ -1,13 +1,13 @@
 from starlette.applications import Starlette
 
-from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
+from seizento.adapters.sqllite_data_tree_store import SQLiteDataTreeStore
 from seizento.adapters.starlette_request_handler import StarletteRequestHandler
 from seizento.controllers.resource_controller import ResourceController
 from seizento.repository import Repository
 
 
 app = Starlette()
-store = InMemoryDataTreeStore()
+store = SQLiteDataTreeStore(db_path='/data.sql')
 
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(

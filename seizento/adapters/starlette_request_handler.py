@@ -28,6 +28,6 @@ class StarletteRequestHandler:
         except BadRequest as e:
             return JSONResponse(content=str(e), status_code=400)
         except Forbidden as e:
-            return JSONResponse(content=str(e), status_code=401)
+            return JSONResponse(content=str(e), status_code=403)
 
         return JSONResponse(content=result, status_code=200)
