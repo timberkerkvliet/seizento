@@ -1,5 +1,6 @@
 import os
 from multiprocessing import Process
+from time import sleep
 
 import requests
 
@@ -8,6 +9,7 @@ class E2ETestClient:
     def __enter__(self):
         self.process = Process(target=os.system, args=('python3 -m uvicorn app:app',))
         self.process.start()
+        sleep(0.5)
 
     def __exit__(self):
         self.process.kill()

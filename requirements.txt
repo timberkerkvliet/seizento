@@ -1,0 +1,4 @@
+aiosqlite==0.17.0
+starlette==0.20.4
+uvicorn==0.18.2
+requests==2.28.1
