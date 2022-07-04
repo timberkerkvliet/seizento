@@ -5,16 +5,26 @@ from seizento.controllers.evaluation_controller import EvaluationController
 from seizento.controllers.exceptions import BadRequest
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.schema_controller import SchemaController
-from seizento.repository import Repository
+from seizento.path import EMPTY_PATH
+from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction
 from seizento.serializers.path_serializer import parse_path
+from seizento.user import AccessRights
 
 
 class ResourceController:
     def __init__(
         self,
-        repository_factory: Callable[[], Repository]
+        transaction_factory: Callable[[], DataTreeStoreTransaction]
     ):
-        self._repository_factory = repository_factory
+        self._transaction_factory = transaction_factory
+
+    def _repository_factory(self) -> Repository:
+        return Repository(
+            transaction=RestrictedDataTreeStoreTransaction(
+                access_rights=AccessRights(read_access={EMPTY_PATH}, write_access={EMPTY_PATH}),
+                wrapped=self._transaction_factory()
+            )
+        )
 
     @staticmethod
     def _get_controller(resource: str, repository: Repository):
