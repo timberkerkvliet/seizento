@@ -33,9 +33,10 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
 
     async def get_tree(self, path: Path) -> DataTree:
         result = await self._connection.execute(
-            f"""
-            SELECT data FROM data WHERE path == '{serialize_path(path)}' 
             """
+            SELECT data FROM data WHERE path = ?
+            """,
+            serialize_path(path)
         )
         root_data_result = await result.fetchone()
         if root_data_result is None:
@@ -44,9 +45,8 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
         root_data = json.loads(root_data_result[0])
 
         components_result = await self._connection.execute(
-            f"""
-                SELECT path FROM data WHERE path LIKE '{serialize_path(path)}/%[^/]' 
-                """
+            "SELECT path FROM data WHERE path LIKE ?",
+            serialize_path(path) + '/%[^/]'
         )
 
         subpaths = {parse_path(row[0]) for row in await components_result.fetchall()}
@@ -59,23 +59,20 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
             }
         )
 
-
     async def set_tree(self, path: Path, tree: DataTree) -> None:
         await self.delete_tree(path)
 
         await self._connection.execute(
-            f"""
-            INSERT INTO data (path, data) VALUES ('{serialize_path(path)}', '{json.dumps(tree.root_data)}') 
-            """
+            "INSERT INTO data (path, data) VALUES (?, ?)",
+            (serialize_path(path), json.dumps(tree.root_data))
         )
         for component, subtree in tree.subtrees.items():
             await self.set_tree(path=path.append(component), tree=subtree)
 
     async def delete_tree(self, path: Path) -> None:
         await self._connection.execute(
-            f"""
-                    DELETE FROM data WHERE path LIKE '{serialize_path(path)}%' 
-                    """
+            "DELETE FROM data WHERE path=? OR path LIKE ?",
+            (serialize_path(path), serialize_path(path) + '/%')
         )
 
 
