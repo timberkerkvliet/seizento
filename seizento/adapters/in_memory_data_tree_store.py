@@ -5,7 +5,7 @@ from seizento.data_tree import DataTree
 from seizento.repository import DataTreeStoreTransaction
 
 
-class FakeDataTreeStoreTransaction(DataTreeStoreTransaction):
+class InMemoryDataTreeStoreTransaction(DataTreeStoreTransaction):
     def __init__(self, tree: DataTree, on_exit: Callable[[DataTree], None]):
         self._tree = tree
         self._on_exit = on_exit
@@ -27,15 +27,15 @@ class FakeDataTreeStoreTransaction(DataTreeStoreTransaction):
         self._tree = self._tree.delete_subtree(path=path)
 
 
-class FakeDataTreeStore:
+class InMemoryDataTreeStore:
     def __init__(self):
         self._tree = DataTree(root_data={})
 
     def _set_state(self, tree: DataTree) -> None:
         self._tree = tree
 
-    def get_transaction(self) -> FakeDataTreeStoreTransaction:
-        return FakeDataTreeStoreTransaction(
+    def get_transaction(self) -> InMemoryDataTreeStoreTransaction:
+        return InMemoryDataTreeStoreTransaction(
             tree=self._tree,
             on_exit=self._set_state
         )

@@ -3,14 +3,14 @@ from uuid import UUID
 
 from fastapi import FastAPI
 
-from seizento.adapters.fake_data_tree_store import FakeDataTreeStore
+from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
 from seizento.adapters.starlette_request_handler import StarletteRequestHandler
 from seizento.controllers.resource_controller import ResourceController
 from seizento.repository import Repository
 
 
 app = FastAPI()
-store = FakeDataTreeStore()
+store = InMemoryDataTreeStore()
 
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
