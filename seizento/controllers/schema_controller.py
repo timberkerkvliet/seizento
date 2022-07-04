@@ -2,12 +2,9 @@ from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.expression.path_service import PathService
-from seizento.schema.array import Array
-from seizento.schema.dictionary import Dictionary
 
-from seizento.schema.struct import Struct
 from seizento.schema.schema import Schema
-from seizento.path import Path, LiteralComponent, PlaceHolder
+from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.schema_serializer import parse_schema, serialize_schema
 
@@ -44,7 +41,7 @@ class SchemaController:
         if not self._path.empty:
             parent_type = await self._get_parent_type()
 
-            if not parent_type.supports_child_at(self._path.last_component):
+            if not parent_type.can_add_child(self._path.last_component):
                 raise Forbidden
 
         try:
@@ -66,4 +63,10 @@ class SchemaController:
         )
 
     async def delete(self) -> None:
+        if not self._path.empty:
+            parent_type = await self._get_parent_type()
+
+            if not parent_type.can_remove_child(self._path.last_component):
+                raise Forbidden
+
         await self._repository.delete_type(path=self._path)

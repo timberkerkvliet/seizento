@@ -16,7 +16,11 @@ class Schema(ABC):
         pass
 
     @abstractmethod
-    def supports_child_at(self, component: PathComponent) -> bool:
+    def can_add_child(self, component: PathComponent) -> bool:
+        pass
+
+    @abstractmethod
+    def can_remove_child(self, component: PathComponent) -> bool:
         pass
 
     @abstractmethod

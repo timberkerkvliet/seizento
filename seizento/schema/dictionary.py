@@ -19,8 +19,11 @@ class Dictionary(Schema):
 
         return self.value_type.is_subschema(other.value_type)
 
-    def supports_child_at(self, component: PathComponent) -> bool:
+    def can_add_child(self, component: PathComponent) -> bool:
         return isinstance(component, PlaceHolder)
+
+    def can_remove_child(self, component: PathComponent) -> bool:
+        return False
 
     def common_superschema(self, other: Schema) -> Optional[Schema]:
         return other.common_superschema(self)

@@ -15,7 +15,10 @@ class Primitive(Schema):
     def is_subschema(self, other: Schema) -> bool:
         return self == other
 
-    def supports_child_at(self, component: PathComponent) -> bool:
+    def can_add_child(self, component: PathComponent) -> bool:
+        return False
+
+    def can_remove_child(self, component: PathComponent) -> bool:
         return False
 
     def common_superschema(self, other: Schema) -> Optional[Schema]:

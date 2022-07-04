@@ -21,7 +21,10 @@ class EmptyStruct(Schema):
 
         return False
 
-    def supports_child_at(self, component: PathComponent) -> bool:
+    def can_add_child(self, component: PathComponent) -> bool:
+        return False
+
+    def can_remove_child(self, component: PathComponent) -> bool:
         return False
 
     def common_superschema(self, other: Schema) -> Optional[Schema]:
@@ -65,7 +68,10 @@ class Struct(Schema):
             for field, field_type in self.fields.items()
         )
 
-    def supports_child_at(self, component: PathComponent) -> bool:
+    def can_add_child(self, component: PathComponent) -> bool:
+        return isinstance(component, LiteralComponent)
+
+    def can_remove_child(self, component: PathComponent) -> bool:
         return isinstance(component, LiteralComponent)
 
     def __hash__(self):

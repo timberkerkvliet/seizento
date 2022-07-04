@@ -117,7 +117,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             {'type': 'object'}
         )
 
-    async def test_non_existing_field_type(self):
+    async def test_delete_non_existing_field_type(self):
         await self.test_client.set('/schema', {'type': 'object'})
         await self.test_client.delete('/schema/a')
 
