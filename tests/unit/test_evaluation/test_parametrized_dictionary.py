@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from tests.unit.test_client import UnitTestClient
+from tests.unit.unit_test_client import UnitTestClient
 
 
 class TestParametrizedDictionary(IsolatedAsyncioTestCase):

@@ -1,7 +1,7 @@
 from unittest import IsolatedAsyncioTestCase
 
 from seizento.controllers.exceptions import Forbidden
-from tests.unit.test_client import UnitTestClient
+from tests.unit.unit_test_client import UnitTestClient
 
 
 class TestSchemaChange(IsolatedAsyncioTestCase):
