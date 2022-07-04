@@ -7,7 +7,7 @@ from seizento.controllers.exceptions import NotFound, BadRequest, Forbidden
 from seizento.controllers.resource_controller import ResourceController
 
 
-class StarletteAdapter:
+class StarletteRequestHandler:
     def __init__(self, resource_controller: ResourceController):
         self._resource_controller = resource_controller
 
@@ -23,11 +23,11 @@ class StarletteAdapter:
                 result = await self._resource_controller.delete(resource=resource)
             else:
                 return Response(status_code=405)
-        except NotFound:
-            return Response(status_code=404)
-        except BadRequest:
-            return Response(status_code=400)
-        except Forbidden:
-            return Response(status_code=401)
+        except NotFound as e:
+            return Response(content=str(e), status_code=404)
+        except BadRequest as e:
+            return Response(content=str(e), status_code=400)
+        except Forbidden as e:
+            return Response(content=str(e), status_code=401)
 
-        return Response(json.dumps(result))
+        return Response(content=json.dumps(result), status_code=200)
