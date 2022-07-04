@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import json
 
 import aiosqlite
 from aiosqlite import Connection
 
-from seizento.path import Path
+from seizento.path import Path, EMPTY_PATH
 from seizento.data_tree import DataTree
 from seizento.repository import DataTreeStoreTransaction
 from seizento.serializers.path_serializer import serialize_path, parse_path
@@ -14,7 +16,7 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
         self._connection = connection
         self._ensured_table = ensured_table
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> SQLiteDataTreeStoreTransaction:
         await self._connection.__aenter__()
         if not self._ensured_table:
             await self._connection.execute(
@@ -27,6 +29,8 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
                 """
             )
 
+        return self
+
     async def __aexit__(self, *args):
         await self._connection.commit()
         await self._connection.__aexit__(*args)
@@ -36,7 +40,7 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
             """
             SELECT data FROM data WHERE path = ?
             """,
-            serialize_path(path)
+            (serialize_path(path),)
         )
         root_data_result = await result.fetchone()
         if root_data_result is None:
@@ -46,7 +50,9 @@ class SQLiteDataTreeStoreTransaction(DataTreeStoreTransaction):
 
         components_result = await self._connection.execute(
             "SELECT path FROM data WHERE path LIKE ?",
-            serialize_path(path) + '/%[^/]'
+            (serialize_path(path) + '/%',)
+        ) if path != EMPTY_PATH else await self._connection.execute(
+            "SELECT path FROM data WHERE path != ''"
         )
 
         subpaths = {parse_path(row[0]) for row in await components_result.fetchall()}
@@ -86,4 +92,3 @@ class SQLiteDataTreeStore:
             connection=aiosqlite.connect(self._db_path),
             ensured_table=self._ensured_table
         )
-
