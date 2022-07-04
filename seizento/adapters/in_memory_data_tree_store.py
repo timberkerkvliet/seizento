@@ -31,24 +31,14 @@ class InMemoryDataTreeStoreTransaction(DataTreeStoreTransaction):
 
 
 class InMemoryDataTreeStore:
-    def __init__(self):
-        admin = User(
-            id=UUID('0fa45acc-bd98-4f01-ac85-996ead2e064f'),
-            password='admin',
-            access_rights=AccessRights(
-                read_access={EMPTY_PATH},
-                write_access={EMPTY_PATH}
-            )
-        )
+    def __init__(self, admin_user: User):
         self._tree = DataTree(
             root_data={},
             subtrees={
                 LiteralComponent('user'): DataTree(
                     root_data={},
                     subtrees={
-                        LiteralComponent(str(admin.id)): DataTree(
-                            root_data=serialize_user(admin)
-                        )
+                        LiteralComponent(str(admin_user.id)): DataTree(root_data=serialize_user(admin_user))
                     }
                 )
             }
