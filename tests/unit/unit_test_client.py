@@ -11,11 +11,11 @@ class UnitTestClient:
 
         self.resource_controller = ResourceController(
             transaction_factory=lambda: store.get_transaction(),
-            token_secret='test-secret'
+            app_secret='test-secret'
         )
         self.login_controller = LoginController(
             transaction_factory=lambda: store.get_transaction(),
-            token_secret='test-secret'
+            app_secret='test-secret'
         )
         self.token = None
 

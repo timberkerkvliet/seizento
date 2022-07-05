@@ -19,16 +19,16 @@ async def set_admin():
 
 app = Starlette(on_startup=[set_admin])
 
-token_secret = secrets.token_hex(32)
+app_secret = secrets.token_hex(512)
 
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
         transaction_factory=lambda: store.get_transaction(),
-        token_secret=token_secret
+        app_secret=app_secret
     ),
     login_controller=LoginController(
         transaction_factory=lambda: store.get_transaction(),
-        token_secret=token_secret
+        app_secret=app_secret
     )
 )
 

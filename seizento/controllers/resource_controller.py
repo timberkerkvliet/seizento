@@ -18,10 +18,10 @@ class ResourceController:
     def __init__(
         self,
         transaction_factory: Callable[[], DataTreeStoreTransaction],
-        token_secret: str
+        app_secret: str
     ):
         self._transaction_factory = transaction_factory
-        self._token_secret = token_secret
+        self._app_secret = app_secret
 
     def _repository_factory(self, token: str) -> Repository:
         return Repository(
@@ -64,7 +64,7 @@ class ResourceController:
     def _get_access_rights(self, token: str) -> AccessRights:
         try:
             return parse_access_rights(
-                jwt.decode(jwt=token, key=self._token_secret, algorithms='HS256')
+                jwt.decode(jwt=token, key=self._app_secret, algorithms='HS256')
             )
         except Exception as e:
             raise Unauthorized

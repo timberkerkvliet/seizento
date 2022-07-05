@@ -15,10 +15,10 @@ class LoginController:
     def __init__(
         self,
         transaction_factory: Callable[[], DataTreeStoreTransaction],
-        token_secret: str
+        app_secret: str
     ):
         self._transaction_factory = transaction_factory
-        self._token_secret = token_secret
+        self._app_secret = app_secret
 
     async def login(self, data) -> str:
         repository = Repository(transaction=self._transaction_factory())
@@ -31,5 +31,5 @@ class LoginController:
 
             return jwt.encode(
                 payload=serialize_access_rights(user.access_rights),
-                key=self._token_secret
+                key=self._app_secret
             )
