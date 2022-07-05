@@ -11,7 +11,7 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
     def tearDown(self) -> None:
         self.test_client.__exit__()
 
-    async def test_first_case(self):
+    async def test_products_example_set_literals(self):
         self.test_client.set(
             '/schema',
             {
@@ -27,19 +27,13 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
                                 'on_stock': {'type': 'boolean'}
                             }
                         }
-                    },
-                    'stock': {
-                        'type': 'object',
-                        'additionalProperties':  {'type': 'boolean'}
                     }
                 }
 
             }
         )
 
-        self.test_client.set(
-            '/expression/',
-            {
+        literal = {
                 'products': [
                     {
                         'id': 1,
@@ -51,18 +45,61 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
                         'name': 'Fancy product',
                         'on_stock': False
                     }
-                ],
-                'stock': {
-                    '*parameter': 'k',
-                    '*property': '{products/<k>/name}',
-                    '*value': '{products/<k>/on_stock}'
+                ]
+            }
+
+        self.test_client.set('/expression/', literal)
+
+        result = self.test_client.get('/evaluation')
+
+        self.assertDictEqual(literal, result)
+
+    async def test_products_example_set_projection(self):
+        self.test_client.set(
+            '/schema',
+            {
+                'type': 'object',
+                'properties': {
+                    'products': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'integer'},
+                                'name': {'type': 'string'},
+                                'on_stock': {'type': 'boolean'}
+                            }
+                        }
+                    }
                 }
+
+            }
+        )
+        self.test_client.set(
+            '/schema/stock',
+            {
+                "type": "object",
+                "additionalProperties": {
+                    {"type": "boolean"}
+                }
+            }
+        )
+
+        self.test_client.set(
+            '/expression/stock',
+            {
+                "*parameter": "k",
+                "*property": "{products/<k>/name}",
+                "*value": "{products/<k>/on_stock}"
             }
         )
 
         result = self.test_client.get('/evaluation/stock')
 
         self.assertDictEqual(
-            result,
-            {'Boring product': True, 'Fancy product': False}
+            {
+                "Boring product": True,
+                "Fancy product": False
+            },
+            result
         )

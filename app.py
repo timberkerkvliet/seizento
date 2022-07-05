@@ -1,4 +1,4 @@
-import asyncio
+import secrets
 
 from starlette.applications import Starlette
 
@@ -11,6 +11,7 @@ from seizento.user import ADMIN_USER
 
 store = SQLiteDataTreeStore(db_path='/db.sql')
 
+
 async def set_admin():
     repository = Repository(transaction=store.get_transaction())
     async with repository:
@@ -18,14 +19,16 @@ async def set_admin():
 
 app = Starlette(on_startup=[set_admin])
 
+token_secret = secrets.token_hex(32)
+
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
         transaction_factory=lambda: store.get_transaction(),
-        token_secret='my-secret'
+        token_secret=token_secret
     ),
     login_controller=LoginController(
         transaction_factory=lambda: store.get_transaction(),
-        token_secret='my-secret'
+        token_secret=token_secret
     )
 )
 
