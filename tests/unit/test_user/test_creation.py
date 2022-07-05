@@ -68,3 +68,18 @@ class TestUserCreation(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Unauthorized):
             await self.test_client.login({'user_id': 'timber', 'password': 'not-my-password'})
+
+    async def test_cannot_access_other_user(self):
+        await self.test_client.set(
+            '/user/timber',
+            {
+                'password': 'my-password',
+                'access_rights': {
+                    'read_access': ['user/timber'],
+                    'write_access': ['user/timber']
+                }
+            }
+        )
+        await self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
+        with self.assertRaises(Unauthorized):
+            await self.test_client.get('user/admin/access_rights')
