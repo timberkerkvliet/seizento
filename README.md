@@ -60,7 +60,7 @@ Then we can set an expression to define our desired values with a PUT request to
 {
     "*parameter": "k",
     "*property": "{products/<k>/name}"
-    "*value": "{products/<k>/stock}"
+    "*value": "{products/<k>/on_stock}"
 }
 ```
 
