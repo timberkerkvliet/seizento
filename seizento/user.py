@@ -56,6 +56,7 @@ class User:
             access_rights=self.access_rights
         )
 
+
 ADMIN_USER = User(
     id=Identifier('admin'),
     password=HashedPassword.from_password('admin'),

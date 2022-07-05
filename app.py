@@ -6,16 +6,9 @@ from seizento.adapters.sqllite_data_tree_store import SQLiteDataTreeStore
 from seizento.adapters.starlette_request_handler import StarletteRequestHandler
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
-from seizento.repository import Repository
-from seizento.user import ADMIN_USER
+from seizento.setup import set_admin
 
 store = SQLiteDataTreeStore(db_path='/db.sql')
-
-
-async def set_admin():
-    repository = Repository(transaction=store.get_transaction())
-    async with repository:
-        await repository.set_user(ADMIN_USER)
 
 app_secret = secrets.token_hex(512)
 
@@ -30,7 +23,11 @@ handler = StarletteRequestHandler(
     )
 )
 
-app = Starlette(on_startup=[set_admin])
+
+async def on_startup():
+    await set_admin(store.get_transaction())
+
+app = Starlette(on_startup=[on_startup])
 app.add_route(
     path='/{rest_of_path:path}',
     route=handler.handle,
