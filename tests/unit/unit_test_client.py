@@ -1,24 +1,13 @@
-from uuid import UUID
-
 from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
-from seizento.identifier import Identifier
-from seizento.path import EMPTY_PATH
-from seizento.user import User, AccessRights, HashedPassword
+
+from seizento.user import ADMIN_USER
 
 
 class UnitTestClient:
     def __init__(self):
-        self.admin_user = User(
-            id=Identifier('admin'),
-            password=HashedPassword.from_password('admin'),
-            access_rights=AccessRights(
-                read_access={EMPTY_PATH},
-                write_access={EMPTY_PATH}
-            )
-        )
-        store = InMemoryDataTreeStore(admin_user=self.admin_user)
+        store = InMemoryDataTreeStore(admin_user=ADMIN_USER)
 
         self.resource_controller = ResourceController(
             transaction_factory=lambda: store.get_transaction(),
