@@ -86,4 +86,8 @@ class TestUserCreation(IsolatedAsyncioTestCase):
 
     async def test_cannot_access_password(self):
         with self.assertRaises(NotFound):
-            await self.test_client.get('user/timber/password')
+            await self.test_client.get('user/admin/password')
+
+    async def test_cannot_access_complete_user(self):
+        with self.assertRaises(NotFound):
+            await self.test_client.get('user/admin')

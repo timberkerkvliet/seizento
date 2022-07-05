@@ -30,6 +30,9 @@ class UserController:
 
         user = await self._repository.get_user(user_id)
 
+        if len(self._path) == 1:
+            raise NotFound
+
         second_component = self._path.remove_first().first_component
 
         if not isinstance(second_component, LiteralComponent) or second_component.value != 'access_rights':
