@@ -5,6 +5,7 @@ from uuid import UUID
 
 from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
 from seizento.expression.expression import Expression
+from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
 from seizento.schema.schema import Schema
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
@@ -105,7 +106,7 @@ class Repository:
             tree=expression_to_tree(value)
         )
 
-    async def get_user(self, user_id: UUID) -> Optional[User]:
+    async def get_user(self, user_id: Identifier) -> Optional[User]:
         try:
             data_tree = await self._transaction.get_tree(
                 path=Path(components=(LiteralComponent('user'), LiteralComponent(str(user_id))))

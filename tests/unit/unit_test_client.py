@@ -3,6 +3,7 @@ from uuid import UUID
 from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
+from seizento.identifier import Identifier
 from seizento.path import EMPTY_PATH
 from seizento.user import User, AccessRights
 
@@ -10,7 +11,7 @@ from seizento.user import User, AccessRights
 class UnitTestClient:
     def __init__(self):
         self.admin_user = User(
-            id=UUID('0fa45acc-bd98-4f01-ac85-996ead2e064f'),
+            id=Identifier('admin'),
             password='admin',
             access_rights=AccessRights(
                 read_access={EMPTY_PATH},

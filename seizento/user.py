@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Set
-from uuid import UUID
 
+from seizento.identifier import Identifier
 from seizento.path import Path
 
 
@@ -19,6 +19,6 @@ class AccessRights:
 
 @dataclass(frozen=True)
 class User:
-    id: UUID
+    id: Identifier
     password: str
     access_rights: AccessRights

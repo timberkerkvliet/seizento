@@ -11,4 +11,5 @@ class Identifier:
         if not self.name.replace('_', '').replace('-', '').isalnum():
             raise ValueError(f'Invalid identifier: {self.name}')
 
-
+    def __str__(self):
+        return self.name

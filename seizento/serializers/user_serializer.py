@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from seizento.identifier import Identifier
 from seizento.serializers.path_serializer import serialize_path, parse_path
 from seizento.user import User, AccessRights
 
@@ -21,7 +22,7 @@ def serialize_access_rights(access_rights: AccessRights):
 
 def parse_user(val) -> User:
     return User(
-        id=UUID(val['id']),
+        id=Identifier(val['id']),
         password=val['password'],
         access_rights=parse_access_rights(val['access_rights'])
     )

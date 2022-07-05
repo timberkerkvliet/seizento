@@ -4,6 +4,7 @@ from uuid import UUID
 import jwt
 
 from seizento.controllers.exceptions import MethodNotAllowed, Unauthorized
+from seizento.identifier import Identifier
 from seizento.path import Path
 from seizento.repository import Repository, DataTreeStoreTransaction
 from seizento.expression.path_service import PathService
@@ -23,7 +24,7 @@ class LoginController:
         repository = Repository(transaction=self._transaction_factory())
 
         async with repository:
-            user = await repository.get_user(UUID(data['user_id']))
+            user = await repository.get_user(Identifier(data['user_id']))
 
             if user is None or user.password != data['password']:
                 raise Unauthorized
