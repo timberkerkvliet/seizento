@@ -48,3 +48,10 @@ class User:
     id: Identifier
     password: HashedPassword
     access_rights: AccessRights
+
+    def with_new_password(self, password: HashedPassword) -> User:
+        return User(
+            id=self.id,
+            password=password,
+            access_rights=self.access_rights
+        )

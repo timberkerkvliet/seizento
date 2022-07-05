@@ -7,6 +7,7 @@ from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.schema_controller import SchemaController
+from seizento.controllers.user_controller import UserController
 from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction, Restricted
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
@@ -52,10 +53,10 @@ class ResourceController:
                 repository=repository,
                 path=resource_path.remove_first()
             )
-        if resource_type == 'login':
-            return LoginController(
+        if resource_type == 'user':
+            return UserController(
                 repository=repository,
-                token_secret=self._token_secret
+                path=resource_path.remove_first()
             )
 
         raise BadRequest
