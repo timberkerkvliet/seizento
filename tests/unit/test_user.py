@@ -91,3 +91,9 @@ class TestUser(IsolatedAsyncioTestCase):
     async def test_cannot_access_complete_user(self):
         with self.assertRaises(NotFound):
             await self.test_client.get('user/admin')
+
+    async def test_admin_can_delete_itself(self):
+        await self.test_client.delete('user/admin')
+
+        with self.assertRaises(Unauthorized):
+            await self.test_client.login({'user_id': 'admin', 'password': 'admin'})

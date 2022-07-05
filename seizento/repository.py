@@ -121,3 +121,8 @@ class Repository:
             path=Path(components=(LiteralComponent('user'), LiteralComponent(str(user.id)))),
             tree=DataTree(root_data=serialize_user(user))
         )
+
+    async def delete_user(self, user_id: Identifier) -> None:
+        await self._transaction.delete_tree(
+            path=Path(components=(LiteralComponent('user'), LiteralComponent(str(user_id)))),
+        )

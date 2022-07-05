@@ -63,4 +63,12 @@ class UserController:
         )
 
     async def delete(self) -> None:
-        raise MethodNotAllowed
+        try:
+            user_id = self._get_user_id()
+        except Exception as e:
+            raise BadRequest from e
+
+        if len(self._path) > 1:
+            raise BadRequest
+
+        await self._repository.delete_user(user_id)
