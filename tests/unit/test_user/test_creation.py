@@ -83,3 +83,7 @@ class TestUserCreation(IsolatedAsyncioTestCase):
         await self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
         with self.assertRaises(Unauthorized):
             await self.test_client.get('user/admin/access_rights')
+
+    async def test_cannot_access_password(self):
+        with self.assertRaises(NotFound):
+            await self.test_client.get('user/timber/password')
