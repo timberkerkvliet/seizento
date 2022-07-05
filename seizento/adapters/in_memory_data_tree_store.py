@@ -1,11 +1,10 @@
 from typing import Callable
-from uuid import UUID
 
-from seizento.path import Path, LiteralComponent, EMPTY_PATH
+from seizento.path import Path, LiteralComponent
 from seizento.data_tree import DataTree
 from seizento.repository import DataTreeStoreTransaction
 from seizento.serializers.user_serializer import serialize_user
-from seizento.user import User, AccessRights
+from seizento.user import User
 
 
 class InMemoryDataTreeStoreTransaction(DataTreeStoreTransaction):

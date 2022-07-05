@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import json
-from typing import Dict, Any
 
 import aiosqlite
 from aiosqlite import Connection
 
-from seizento.path import Path, EMPTY_PATH, LiteralComponent
+from seizento.path import Path
 from seizento.data_tree import DataTree, tree_from_paths
 from seizento.repository import DataTreeStoreTransaction
 from seizento.serializers.path_serializer import serialize_path, parse_path
