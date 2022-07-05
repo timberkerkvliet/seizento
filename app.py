@@ -17,8 +17,6 @@ async def set_admin():
     async with repository:
         await repository.set_user(ADMIN_USER)
 
-app = Starlette(on_startup=[set_admin])
-
 app_secret = secrets.token_hex(512)
 
 handler = StarletteRequestHandler(
@@ -32,4 +30,9 @@ handler = StarletteRequestHandler(
     )
 )
 
-app.add_route(path='/{rest_of_path:path}', route=handler.handle, methods=['POST', 'GET', 'PUT', 'DELETE'])
+app = Starlette(on_startup=[set_admin])
+app.add_route(
+    path='/{rest_of_path:path}',
+    route=handler.handle,
+    methods=['POST', 'GET', 'PUT', 'DELETE']
+)
