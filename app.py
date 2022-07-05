@@ -1,18 +1,32 @@
+import asyncio
+
 from starlette.applications import Starlette
 
 from seizento.adapters.sqllite_data_tree_store import SQLiteDataTreeStore
 from seizento.adapters.starlette_request_handler import StarletteRequestHandler
+from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
+from seizento.repository import Repository
+from seizento.user import ADMIN_USER
 
+store = SQLiteDataTreeStore(db_path='/db.sql')
 
-app = Starlette()
-store = SQLiteDataTreeStore(db_path='/data.sql')
+async def set_admin():
+    repository = Repository(transaction=store.get_transaction())
+    async with repository:
+        await repository.set_user(ADMIN_USER)
+
+app = Starlette(on_startup=[set_admin])
 
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
         transaction_factory=lambda: store.get_transaction(),
         token_secret='my-secret'
+    ),
+    login_controller=LoginController(
+        transaction_factory=lambda: store.get_transaction(),
+        token_secret='my-secret'
     )
 )
 
-app.add_route(path='/{rest_of_path:path}', route=handler.handle, methods=['GET', 'PUT', 'DELETE'])
+app.add_route(path='/{rest_of_path:path}', route=handler.handle, methods=['POST', 'GET', 'PUT', 'DELETE'])

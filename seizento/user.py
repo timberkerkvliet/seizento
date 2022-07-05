@@ -7,7 +7,7 @@ from typing import Set, Union
 import bcrypt as bcrypt
 
 from seizento.identifier import Identifier
-from seizento.path import Path
+from seizento.path import Path, EMPTY_PATH
 
 
 @dataclass(frozen=True)
@@ -55,3 +55,12 @@ class User:
             password=password,
             access_rights=self.access_rights
         )
+
+ADMIN_USER = User(
+    id=Identifier('admin'),
+    password=HashedPassword.from_password('admin'),
+    access_rights=AccessRights(
+        read_access={EMPTY_PATH},
+        write_access={EMPTY_PATH}
+    )
+)

@@ -1,7 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
 from tests.e2e.e2e_test_client import E2ETestClient
-from tests.unit.unit_test_client import UnitTestClient
 
 
 class TestReadmeExample(IsolatedAsyncioTestCase):
