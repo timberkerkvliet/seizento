@@ -70,7 +70,7 @@ Suppose we extend schema by a PUT request to  `/schema/stock` with payload:
 
 This creates a `stock` property in addition to the already existing `products` property in the root schema.
 
-Then we can set an expression to define our desired values with a PUT request to `/expression/stock`:
+Then we can set an expression to base the values on the values we have set for `products` with a PUT request to `/expression/stock`:
 
 ```
 {
