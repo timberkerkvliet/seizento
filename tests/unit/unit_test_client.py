@@ -5,14 +5,14 @@ from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
 from seizento.identifier import Identifier
 from seizento.path import EMPTY_PATH
-from seizento.user import User, AccessRights
+from seizento.user import User, AccessRights, HashedPassword
 
 
 class UnitTestClient:
     def __init__(self):
         self.admin_user = User(
             id=Identifier('admin'),
-            password='admin',
+            password=HashedPassword.from_password('admin'),
             access_rights=AccessRights(
                 read_access={EMPTY_PATH},
                 write_access={EMPTY_PATH}
@@ -32,8 +32,8 @@ class UnitTestClient:
 
     async def login(self, data=None):
         data = data or {
-            'user_id': str(self.admin_user.id),
-            'password': self.admin_user.password
+            'user_id': 'admin',
+            'password': 'admin'
         }
         self.token = await self.login_controller.login(data)
 

@@ -26,7 +26,7 @@ class LoginController:
         async with repository:
             user = await repository.get_user(Identifier(data['user_id']))
 
-            if user is None or user.password != data['password']:
+            if user is None or not user.password.check_password(data['password']):
                 raise Unauthorized
 
             return jwt.encode(

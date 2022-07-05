@@ -2,13 +2,13 @@ from uuid import UUID
 
 from seizento.identifier import Identifier
 from seizento.serializers.path_serializer import serialize_path, parse_path
-from seizento.user import User, AccessRights
+from seizento.user import User, AccessRights, HashedPassword
 
 
 def serialize_user(user: User):
     return {
         'id': str(user.id),
-        'password': user.password,
+        'password': str(user.password),
         'access_rights': serialize_access_rights(user.access_rights)
     }
 
@@ -23,7 +23,7 @@ def serialize_access_rights(access_rights: AccessRights):
 def parse_user(val) -> User:
     return User(
         id=Identifier(val['id']),
-        password=val['password'],
+        password=HashedPassword.from_string(val['password']),
         access_rights=parse_access_rights(val['access_rights'])
     )
 
