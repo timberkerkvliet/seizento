@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import NotFound, Unauthorized
+from seizento.controllers.exceptions import NotFound, Unauthorized, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -22,39 +22,28 @@ class TestUser(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/user/timber/access_rights')
 
         self.assertDictEqual(
-            {
-                'read_access': [''],
-                'write_access': ['']
-            },
+            {'read_access': [''], 'write_access': ['']},
             response
         )
 
-    async def test_reset_own_password(self):
-        await self.test_client.set(
-            '/user/timber',
-            {
-                'password': 'my-password',
-                'access_rights': {
-                    'read_access': ['user/timber'],
-                    'write_access': ['user/timber']
-                }
-            }
-        )
-        await self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
-        await self.test_client.set('/user/timber/password', 'new-password')
-        await self.test_client.login({'user_id': 'timber', 'password': 'new-password'})
+    async def test_cannot_login_with_old_password_after_admin_password_reset(self):
+        await self.test_client.login({'user_id': 'admin', 'password': 'admin'})
+        await self.test_client.set('/user/admin/password', 'new-password')
 
-        response = await self.test_client.get('user/timber/access_rights')
+        with self.assertRaises(Unauthorized):
+            await self.test_client.login({'user_id': 'admin', 'password': 'admin'})
 
-        self.assertDictEqual(
-            {
-                'read_access': ['user/timber'],
-                'write_access': ['user/timber']
-            },
-            response
-        )
+    async def test_can_login_with_new_password_after_admin_password_reset(self):
+        await self.test_client.login({'user_id': 'admin', 'password': 'admin'})
+        await self.test_client.set('/user/admin/password', 'new-password')
 
-    async def test_wrong_password(self):
+        await self.test_client.login({'user_id': 'admin', 'password': 'new-password'})
+
+        response = await self.test_client.get('/user/admin/access_rights')
+
+        self.assertDictEqual({'read_access': [''], 'write_access': ['']},response)
+
+    async def test_new_user_cannot_login_with_wrong_password(self):
         await self.test_client.set(
             '/user/timber',
             {
@@ -92,8 +81,6 @@ class TestUser(IsolatedAsyncioTestCase):
         with self.assertRaises(NotFound):
             await self.test_client.get('user/admin')
 
-    async def test_admin_can_delete_itself(self):
-        await self.test_client.delete('user/admin')
-
-        with self.assertRaises(Unauthorized):
-            await self.test_client.login({'user_id': 'admin', 'password': 'admin'})
+    async def test_admin_cannot_delete_itself(self):
+        with self.assertRaises(Forbidden):
+            await self.test_client.delete('user/admin')

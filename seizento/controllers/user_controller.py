@@ -1,12 +1,12 @@
 from typing import Dict
 
-from seizento.controllers.exceptions import MethodNotAllowed, BadRequest, NotFound
+from seizento.controllers.exceptions import MethodNotAllowed, BadRequest, NotFound, Forbidden
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
 from seizento.repository import Repository
 from seizento.expression.path_service import PathService
 from seizento.serializers.user_serializer import serialize_access_rights, parse_access_rights
-from seizento.user import User, HashedPassword
+from seizento.user import User, HashedPassword, ADMIN_USER
 
 
 class UserController:
@@ -67,6 +67,9 @@ class UserController:
             user_id = self._get_user_id()
         except Exception as e:
             raise BadRequest from e
+
+        if user_id == ADMIN_USER.id:
+            raise Forbidden
 
         if len(self._path) > 1:
             raise BadRequest
