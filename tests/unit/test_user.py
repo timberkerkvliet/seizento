@@ -13,10 +13,7 @@ class TestUser(IsolatedAsyncioTestCase):
             '/user/timber',
             {
                 'password': 'my-password',
-                'access_rights': {
-                    'read_access': [''],
-                    'write_access': ['']
-                }
+                'access_rights': {'read_access': [''], 'write_access': ['']}
             }
         )
         response = await self.test_client.get('/user/timber/access_rights')
@@ -37,11 +34,10 @@ class TestUser(IsolatedAsyncioTestCase):
         await self.test_client.login({'user_id': 'admin', 'password': 'admin'})
         await self.test_client.set('/user/admin/password', 'new-password')
 
-        await self.test_client.login({'user_id': 'admin', 'password': 'new-password'})
-
-        response = await self.test_client.get('/user/admin/access_rights')
-
-        self.assertDictEqual({'read_access': [''], 'write_access': ['']},response)
+        try:
+            await self.test_client.login({'user_id': 'admin', 'password': 'new-password'})
+        except Exception:
+            self.fail()
 
     async def test_new_user_cannot_login_with_wrong_password(self):
         await self.test_client.set(
@@ -84,3 +80,32 @@ class TestUser(IsolatedAsyncioTestCase):
     async def test_admin_cannot_delete_itself(self):
         with self.assertRaises(Forbidden):
             await self.test_client.delete('user/admin')
+
+    async def test_user_not_found_after_deletion(self):
+        await self.test_client.set(
+            '/user/timber',
+            {
+                'password': 'my-password',
+                'access_rights': {'read_access': [''], 'write_access': ['']}
+            }
+        )
+        await self.test_client.delete('/user/timber')
+
+        with self.assertRaises(NotFound):
+            await self.test_client.get('/user/timber')
+
+    async def test_token_still_works_after_user_deletion(self):
+        await self.test_client.set(
+            '/user/timber',
+            {
+                'password': 'my-password',
+                'access_rights': {'read_access': [''], 'write_access': ['']}
+            }
+        )
+        await self.test_client.login(data={'user_id': 'timber', 'password': 'my-password'})
+        await self.test_client.delete('/user/timber')
+
+        try:
+            await self.test_client.get('/user/admin/access_rights')
+        except Exception:
+            self.fail()
