@@ -24,12 +24,7 @@ class ResourceController:
         self._app_secret = app_secret
 
     def _repository_factory(self, token: str) -> Repository:
-        return Repository(
-            transaction=RestrictedDataTreeStoreTransaction(
-                access_rights=self._get_access_rights(token=token),
-                wrapped=self._transaction_factory()
-            )
-        )
+        return Repository(transaction=self._transaction_factory())
 
     def _get_controller(self, resource: str, repository: Repository):
         try:
@@ -70,6 +65,15 @@ class ResourceController:
             raise Unauthorized
 
     async def get(self, resource: str, token: str) -> Dict:
+        access_rights = self._get_access_rights(token)
+        try:
+            resource_path = parse_path(resource)
+        except Exception as e:
+            raise BadRequest from e
+
+        if not access_rights.can_read(resource_path):
+            raise Unauthorized
+
         async with self._repository_factory(token) as repository:
             controller = self._get_controller(resource=resource, repository=repository)
 
