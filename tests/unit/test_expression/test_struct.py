@@ -128,3 +128,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         await self.test_client.set('/expression', {'a': 19})
         await self.test_client.set('/schema/b', {'type': 'string'})
         await self.test_client.set('/expression/b', 'hallo')
+
+        response = await self.test_client.get('expression')
+
+        self.assertDictEqual({'a': 19, 'b': 'hallo'}, response)
