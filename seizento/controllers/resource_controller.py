@@ -5,11 +5,10 @@ import jwt
 from seizento.controllers.evaluation_controller import EvaluationController
 from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
-from seizento.controllers.login_controller import LoginController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
 from seizento.path import Path
-from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction, Restricted
+from seizento.repository import Repository, DataTreeStoreTransaction
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
 from seizento.user import AccessRights

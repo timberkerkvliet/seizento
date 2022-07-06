@@ -27,40 +27,6 @@ class DataTreeStoreTransaction(AbstractAsyncContextManager):
         ...
 
 
-class Restricted(Exception):
-    pass
-
-
-class RestrictedDataTreeStoreTransaction(DataTreeStoreTransaction):
-    def __init__(self, wrapped: DataTreeStoreTransaction, access_rights: AccessRights):
-        self._wrapped = wrapped
-        self._access_rights = access_rights
-
-    async def __aenter__(self):
-        return await self._wrapped.__aenter__()
-
-    async def __aexit__(self, *args):
-        return await self._wrapped.__aexit__(*args)
-
-    async def get_tree(self, path: Path) -> DataTree:
-        if not self._access_rights.can_read(path):
-            raise Restricted
-
-        return await self._wrapped.get_tree(path=path)
-
-    async def set_tree(self, path: Path, tree: DataTree) -> None:
-        if not self._access_rights.can_write(path):
-            raise Restricted
-
-        return await self._wrapped.set_tree(path=path, tree=tree)
-
-    async def delete_tree(self, path: Path) -> None:
-        if not self._access_rights.can_write(path):
-            raise Restricted
-
-        return await self._wrapped.delete_tree(path=path)
-
-
 class Repository:
     def __init__(self, transaction: DataTreeStoreTransaction):
         self._transaction = transaction
