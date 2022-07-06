@@ -19,14 +19,14 @@ class SchemaController:
         self._path = path
 
     async def _get_target_type(self) -> Schema:
-        result = await self._repository.get_type(path=self._path)
+        result = await self._repository.get_schema(path=self._path)
         if result is None:
             raise NotFound
 
         return result
 
     async def _get_parent_type(self) -> Schema:
-        result = await self._repository.get_type(path=self._path.remove_last())
+        result = await self._repository.get_schema(path=self._path.remove_last())
         if result is None:
             raise NotFound
 
@@ -57,7 +57,7 @@ class SchemaController:
             if not current_schema.is_subschema(new_schema):
                 raise Forbidden
 
-        await self._repository.set_type(
+        await self._repository.set_schema(
             path=self._path,
             value=new_schema
         )

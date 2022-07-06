@@ -73,23 +73,23 @@ class Repository:
     async def __aexit__(self, *args):
         await self._transaction.__aexit__(*args)
 
-    async def get_type(self, path: Path) -> Optional[Schema]:
+    async def get_schema(self, path: Path) -> Optional[Schema]:
         try:
-            data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('type')))
+            data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('schema')))
         except KeyError:
             return None
 
         return tree_to_schema(data_tree)
 
-    async def set_type(self, path: Path, value: Schema) -> None:
+    async def set_schema(self, path: Path, value: Schema) -> None:
         await self._transaction.set_tree(
-            path=path.insert_first(LiteralComponent('type')),
+            path=path.insert_first(LiteralComponent('schema')),
             tree=schema_to_tree(value)
         )
 
     async def delete_type(self, path: Path) -> None:
         await self._transaction.delete_tree(
-            path=path.insert_first(LiteralComponent('type'), )
+            path=path.insert_first(LiteralComponent('schema'), )
         )
 
     async def get_expression(self, path: Path) -> Optional[Expression]:

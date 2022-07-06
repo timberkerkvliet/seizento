@@ -40,7 +40,7 @@ class PathService:
             continue
 
     async def get_schema(self, path: Path) -> Schema:
-        return await self._repository.get_type(path)
+        return await self._repository.get_schema(path)
 
     async def get_argument_space(self, path: Path) -> ArgumentSpace:
         nearest_expression = await self.find_nearest_expression(path=path)

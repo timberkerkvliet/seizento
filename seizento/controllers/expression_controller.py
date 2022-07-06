@@ -34,7 +34,7 @@ class ExpressionController:
         except Exception as e:
             raise BadRequest from e
 
-        current_type = await self._repository.get_type(path=self._path)
+        current_type = await self._repository.get_schema(path=self._path)
         if current_type is None:
             raise KeyError
 
