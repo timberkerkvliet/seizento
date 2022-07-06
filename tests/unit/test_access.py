@@ -29,32 +29,32 @@ class TestAccess(IsolatedAsyncioTestCase):
         )
         await self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
 
-    async def test_can_get(self):
+    async def test_get_schema__has_read_access__no_authorization_error(self):
         try:
             await self.test_client.get('schema/thing')
         except Unauthorized:
             self.fail()
 
-    async def test_can_set(self):
+    async def test_set_schema__has_write_access__no_authorization_error(self):
         try:
             await self.test_client.set('schema/thing', {'type': 'integer'})
         except Unauthorized:
             self.fail()
 
-    async def test_can_delete(self):
+    async def test_delete_schema__has_write_access__no_authorization_error(self):
         try:
             await self.test_client.delete('schema/thing')
         except Unauthorized:
             self.fail()
 
-    async def test_cannot_get_other(self):
+    async def test_get_schema__no_read_access__authorization_error(self):
         with self.assertRaises(Unauthorized):
             await self.test_client.get('schema/other-thing')
 
-    async def test_cannot_set_other(self):
+    async def test_set_schema__no_write_access__authorization_error(self):
         with self.assertRaises(Unauthorized):
             await self.test_client.set('schema/other-thing', {'type': 'integer'})
 
-    async def test_cannot_delete_other(self):
+    async def test_delete_schema__no_write_access__authorization_error(self):
         with self.assertRaises(Unauthorized):
             await self.test_client.delete('schema/other-thing')
