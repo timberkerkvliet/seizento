@@ -46,7 +46,4 @@ class StructLiteral(Expression):
         }
 
     def supports_child_at(self, component: PathComponent) -> bool:
-        if not isinstance(component, LiteralComponent):
-            return False
-
-        return component.value in self.values
+        return isinstance(component, LiteralComponent)

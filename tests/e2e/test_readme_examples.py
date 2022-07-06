@@ -75,13 +75,28 @@ class TestReadmeExample(IsolatedAsyncioTestCase):
 
             }
         )
+
+        literal = {
+                'products': [
+                    {
+                        'id': 1,
+                        'name': 'Boring product',
+                        'on_stock': True
+                    },
+                    {
+                        'id': 2,
+                        'name': 'Fancy product',
+                        'on_stock': False
+                    }
+                ]
+            }
+
+        self.test_client.set('/expression/', literal)
         self.test_client.set(
             '/schema/stock',
             {
                 "type": "object",
-                "additionalProperties": {
-                    {"type": "boolean"}
-                }
+                "additionalProperties": {"type": "boolean"}
             }
         )
 

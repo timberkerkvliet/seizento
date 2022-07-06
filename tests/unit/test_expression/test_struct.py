@@ -122,3 +122,9 @@ class TestStruct(IsolatedAsyncioTestCase):
         await self.test_client.set('/schema/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
         with self.assertRaises(NotFound):
             await self.test_client.set('/expression/a', 99)
+
+    async def test_add_field_after_expression_has_been_set(self):
+        await self.test_client.set('/schema/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
+        await self.test_client.set('/expression', {'a': 19})
+        await self.test_client.set('/schema/b', {'type': 'string'})
+        await self.test_client.set('/expression/b', 'hallo')
