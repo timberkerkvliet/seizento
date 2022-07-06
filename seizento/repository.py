@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
 from typing import Optional
-from uuid import UUID
 
 from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
 from seizento.expression.expression import Expression
