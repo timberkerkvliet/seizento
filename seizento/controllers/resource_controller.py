@@ -8,6 +8,7 @@ from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
+from seizento.path import Path
 from seizento.repository import Repository, DataTreeStoreTransaction, RestrictedDataTreeStoreTransaction, Restricted
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
@@ -23,15 +24,8 @@ class ResourceController:
         self._transaction_factory = transaction_factory
         self._app_secret = app_secret
 
-    def _repository_factory(self, token: str) -> Repository:
-        return Repository(transaction=self._transaction_factory())
-
-    def _get_controller(self, resource: str, repository: Repository):
-        try:
-            resource_path = parse_path(resource)
-        except Exception as e:
-            raise BadRequest from e
-
+    @staticmethod
+    def _get_controller(resource_path: Path, repository: Repository):
         resource_type = resource_path.first_component.value
         if resource_type == 'schema':
             return SchemaController(
@@ -64,7 +58,7 @@ class ResourceController:
         except Exception as e:
             raise Unauthorized
 
-    async def get(self, resource: str, token: str) -> Dict:
+    async def _execute(self, resource: str, token: str, action):
         access_rights = self._get_access_rights(token)
         try:
             resource_path = parse_path(resource)
@@ -74,46 +68,33 @@ class ResourceController:
         if not access_rights.can_read(resource_path):
             raise Unauthorized
 
-        async with self._repository_factory(token) as repository:
-            controller = self._get_controller(resource=resource, repository=repository)
+        repository = Repository(transaction=self._transaction_factory())
+
+        async with repository:
+            controller = self._get_controller(resource_path=resource_path, repository=repository)
 
             try:
-                return await controller.get()
+                return await action(controller)
             except Restricted as e:
                 raise Unauthorized from e
+
+    async def get(self, resource: str, token: str) -> Dict:
+        return await self._execute(
+            resource=resource,
+            token=token,
+            action=lambda controller: controller.get()
+        )
 
     async def set(self, resource: str, data: Any, token: str) -> None:
-        access_rights = self._get_access_rights(token)
-        try:
-            resource_path = parse_path(resource)
-        except Exception as e:
-            raise BadRequest from e
-
-        if not access_rights.can_write(resource_path):
-            raise Unauthorized
-
-        async with self._repository_factory(token) as repository:
-            controller = self._get_controller(resource=resource, repository=repository)
-
-            try:
-                await controller.set(data=data)
-            except Restricted as e:
-                raise Unauthorized from e
+        return await self._execute(
+            resource=resource,
+            token=token,
+            action=lambda controller: controller.set(data)
+        )
 
     async def delete(self, resource: str, token: str) -> None:
-        access_rights = self._get_access_rights(token)
-        try:
-            resource_path = parse_path(resource)
-        except Exception as e:
-            raise BadRequest from e
-
-        if not access_rights.can_write(resource_path):
-            raise Unauthorized
-
-        async with self._repository_factory(token) as repository:
-            controller = self._get_controller(resource=resource, repository=repository)
-
-            try:
-                await controller.delete()
-            except Restricted as e:
-                raise Unauthorized from e
+        return await self._execute(
+            resource=resource,
+            token=token,
+            action=lambda controller: controller.delete()
+        )
