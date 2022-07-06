@@ -23,7 +23,7 @@ class TestAccess(IsolatedAsyncioTestCase):
                 'type': 'object',
                 'properties': {
                     'thing': {'type': 'string'},
-                    'other-ting': {'type': 'integer'}
+                    'other-thing': {'type': 'integer'}
                 }
             }
         )
