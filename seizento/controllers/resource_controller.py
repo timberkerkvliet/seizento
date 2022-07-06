@@ -1,4 +1,4 @@
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, Awaitable
 
 import jwt
 
@@ -58,43 +58,48 @@ class ResourceController:
         except Exception as e:
             raise Unauthorized
 
-    async def _execute(self, resource: str, token: str, action):
+    async def _execute(
+        self,
+        resource: str,
+        token: str,
+        action: Callable[[Any],Awaitable],
+        authorized: Callable[[AccessRights, Path], bool]
+    ):
         access_rights = self._get_access_rights(token)
         try:
             resource_path = parse_path(resource)
         except Exception as e:
             raise BadRequest from e
 
-        if not access_rights.can_read(resource_path):
+        if not authorized(access_rights, resource_path):
             raise Unauthorized
 
         repository = Repository(transaction=self._transaction_factory())
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)
-
-            try:
-                return await action(controller)
-            except Restricted as e:
-                raise Unauthorized from e
+            return await action(controller)
 
     async def get(self, resource: str, token: str) -> Dict:
         return await self._execute(
             resource=resource,
             token=token,
-            action=lambda controller: controller.get()
+            action=lambda controller: controller.get(),
+            authorized=lambda access_rights, path: access_rights.can_read(path)
         )
 
     async def set(self, resource: str, data: Any, token: str) -> None:
         return await self._execute(
             resource=resource,
             token=token,
-            action=lambda controller: controller.set(data)
+            action=lambda controller: controller.set(data),
+            authorized=lambda access_rights, path: access_rights.can_write(path)
         )
 
     async def delete(self, resource: str, token: str) -> None:
         return await self._execute(
             resource=resource,
             token=token,
-            action=lambda controller: controller.delete()
+            action=lambda controller: controller.delete(),
+            authorized=lambda access_rights, path: access_rights.can_write(path)
         )
