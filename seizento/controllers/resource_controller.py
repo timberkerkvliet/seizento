@@ -57,48 +57,48 @@ class ResourceController:
         except Exception as e:
             raise Unauthorized
 
-    async def _execute(
-        self,
-        resource: str,
-        token: str,
-        action: Callable[[Any],Awaitable],
-        authorized: Callable[[AccessRights, Path], bool]
-    ):
-        access_rights = self._get_access_rights(token)
+    @staticmethod
+    def _get_resource_path(resource: str) -> Path:
         try:
-            resource_path = parse_path(resource)
+            return parse_path(resource)
         except Exception as e:
             raise BadRequest from e
 
-        if not authorized(access_rights, resource_path):
+    async def get(self, resource: str, token: str) -> Dict:
+        access_rights = self._get_access_rights(token)
+        resource_path = self._get_resource_path(resource)
+
+        if not access_rights.can_read(resource_path):
             raise Unauthorized
 
         repository = Repository(transaction=self._transaction_factory())
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)
-            return await action(controller)
-
-    async def get(self, resource: str, token: str) -> Dict:
-        return await self._execute(
-            resource=resource,
-            token=token,
-            action=lambda controller: controller.get(),
-            authorized=lambda access_rights, path: access_rights.can_read(path)
-        )
+            return await controller.get()
 
     async def set(self, resource: str, data: Any, token: str) -> None:
-        return await self._execute(
-            resource=resource,
-            token=token,
-            action=lambda controller: controller.set(data),
-            authorized=lambda access_rights, path: access_rights.can_write(path)
-        )
+        access_rights = self._get_access_rights(token)
+        resource_path = self._get_resource_path(resource)
+
+        if not access_rights.can_write(resource_path):
+            raise Unauthorized
+
+        repository = Repository(transaction=self._transaction_factory())
+
+        async with repository:
+            controller = self._get_controller(resource_path=resource_path, repository=repository)
+            await controller.set(data)
 
     async def delete(self, resource: str, token: str) -> None:
-        return await self._execute(
-            resource=resource,
-            token=token,
-            action=lambda controller: controller.delete(),
-            authorized=lambda access_rights, path: access_rights.can_write(path)
-        )
+        access_rights = self._get_access_rights(token)
+        resource_path = self._get_resource_path(resource)
+
+        if not access_rights.can_write(resource_path):
+            raise Unauthorized
+
+        repository = Repository(transaction=self._transaction_factory())
+
+        async with repository:
+            controller = self._get_controller(resource_path=resource_path, repository=repository)
+            await controller.delete()
