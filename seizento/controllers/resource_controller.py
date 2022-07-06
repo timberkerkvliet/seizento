@@ -83,6 +83,15 @@ class ResourceController:
                 raise Unauthorized from e
 
     async def set(self, resource: str, data: Any, token: str) -> None:
+        access_rights = self._get_access_rights(token)
+        try:
+            resource_path = parse_path(resource)
+        except Exception as e:
+            raise BadRequest from e
+
+        if not access_rights.can_write(resource_path):
+            raise Unauthorized
+
         async with self._repository_factory(token) as repository:
             controller = self._get_controller(resource=resource, repository=repository)
 
@@ -92,6 +101,15 @@ class ResourceController:
                 raise Unauthorized from e
 
     async def delete(self, resource: str, token: str) -> None:
+        access_rights = self._get_access_rights(token)
+        try:
+            resource_path = parse_path(resource)
+        except Exception as e:
+            raise BadRequest from e
+
+        if not access_rights.can_write(resource_path):
+            raise Unauthorized
+
         async with self._repository_factory(token) as repository:
             controller = self._get_controller(resource=resource, repository=repository)
 

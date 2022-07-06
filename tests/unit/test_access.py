@@ -35,11 +35,14 @@ class TestAccess(IsolatedAsyncioTestCase):
         except Unauthorized:
             self.fail()
 
-    async def test_cannot_access(self):
+    async def test_cannot_get_other(self):
         with self.assertRaises(Unauthorized):
             await self.test_client.get('schema/other-thing')
 
+    async def test_cannot_set_other(self):
+        with self.assertRaises(Unauthorized):
+            await self.test_client.set('schema/other-thing', {'type': 'integer'})
 
-
-
-
+    async def test_cannot_delete_other(self):
+        with self.assertRaises(Unauthorized):
+            await self.test_client.delete('schema/other-thing')
