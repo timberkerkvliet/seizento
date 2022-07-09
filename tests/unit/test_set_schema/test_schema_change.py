@@ -8,19 +8,6 @@ class TestSchemaChange(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_change(self):
-        await self.test_client.set(
-            '/schema/',
-            {'type': 'string'}
-        )
-        await self.test_client.set(
-            '/schema/',
-            {'type': 'integer'}
-        )
-
-        response = await self.test_client.get('/schema/')
-        self.assertDictEqual(response, {'type': 'integer'})
-
     async def test_change_to_integer_after_string_expression_has_set(self):
         await self.test_client.set('/schema/', {'type': 'string'})
         await self.test_client.set('/expression/', 'hey')

@@ -4,7 +4,7 @@ from seizento.controllers.exceptions import Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestInteger(IsolatedAsyncioTestCase):
+class TestSetIntegerSchema(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
@@ -40,3 +40,12 @@ class TestInteger(IsolatedAsyncioTestCase):
                 '/schema/~',
                 {'type': 'integer'}
             )
+
+    async def test_can_set_integer_if_string_is_set(self):
+        await self.test_client.set('/schema/', {'type': 'string'})
+
+        try:
+            await self.test_client.set('/schema/', {'type': 'integer'})
+        except Forbidden:
+            self.fail()
+
