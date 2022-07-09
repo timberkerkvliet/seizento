@@ -55,16 +55,14 @@ def serialize_schema(value: Schema) -> Any:
 def parse_schema(value: Any) -> Schema:
     name = value['type']
 
-    if isinstance(name, list) and 'null' in name and len(name) == 2:
-        optional_type = {x for x in name if x != 'null'}.pop()
-        if optional_type == NAMES[String]:
-            return String(optional=True)
-        if optional_type == NAMES[Integer]:
-            return Integer(optional=True)
-        if optional_type == NAMES[Float]:
-            return Float(optional=True)
-        if optional_type == NAMES[Boolean]:
-            return Boolean(optional=True)
+    if set(name) == {'null', NAMES[String]}:
+        return String(optional=True)
+    if set(name) == {'null', NAMES[Integer]}:
+        return Integer(optional=True)
+    if set(name) == {'null', NAMES[Float]}:
+        return Float(optional=True)
+    if set(name) == {'null', NAMES[Boolean]}:
+        return Boolean(optional=True)
 
     if name == NAMES[String]:
         return String()
