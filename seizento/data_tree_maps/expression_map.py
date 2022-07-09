@@ -110,4 +110,7 @@ def tree_to_expression(value: DataTree) -> Expression:
     if isinstance(root_data, float):
         return PrimitiveLiteral(root_data)
 
+    if root_data is None:
+        return PrimitiveLiteral(None)
+
     raise TypeError

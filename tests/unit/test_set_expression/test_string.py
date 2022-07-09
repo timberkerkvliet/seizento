@@ -8,7 +8,7 @@ class TestString(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_and_get_literal(self):
+    async def test_set_literal(self):
         await self.test_client.set('/schema/', {'type': 'string'})
         await self.test_client.set(
             '/expression/',
@@ -16,6 +16,13 @@ class TestString(IsolatedAsyncioTestCase):
         )
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, 'a literal string')
+
+    async def test_set_null(self):
+        await self.test_client.set('/schema/', {'type': ['string', 'null']})
+        await self.test_client.set('/expression/', None)
+
+        response = await self.test_client.get('/expression/')
+        self.assertEqual(response, None)
 
     async def test_set_wrong_literal(self):
         await self.test_client.set('/schema/', {'type': 'string'})

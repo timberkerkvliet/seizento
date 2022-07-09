@@ -78,6 +78,9 @@ def parse_expression(value: Any) -> Expression:
     if isinstance(value, bool):
         return PrimitiveLiteral(value)
 
+    if value is None:
+        return PrimitiveLiteral(None)
+
     if isinstance(value, str):
         if value[0] == '{' and value[1] != '{' and value[-1] == '}':
             return parse_reference(value[1:-1])
