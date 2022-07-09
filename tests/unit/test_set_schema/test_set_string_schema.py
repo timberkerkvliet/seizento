@@ -4,24 +4,18 @@ from seizento.controllers.exceptions import Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestString(IsolatedAsyncioTestCase):
+class TestSetStringSchema(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
     async def test_set_string(self):
-        await self.test_client.set(
-            '/schema/',
-            {'type': 'string'}
-        )
+        await self.test_client.set('/schema/', {'type': 'string'})
 
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'string'})
 
     async def test_set_optional_string(self):
-        await self.test_client.set(
-            '/schema/',
-            {'type': ['string', 'null']}
-        )
+        await self.test_client.set('/schema/', {'type': ['string', 'null']})
 
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': ['string', 'null']})
@@ -52,10 +46,7 @@ class TestString(IsolatedAsyncioTestCase):
             self.fail()
 
     async def test_cannot_set_child(self):
-        await self.test_client.set(
-            '/schema/',
-            {'type': 'string'}
-        )
+        await self.test_client.set('/schema/', {'type': 'string'})
 
         with self.assertRaises(Forbidden):
             await self.test_client.set(
@@ -64,10 +55,7 @@ class TestString(IsolatedAsyncioTestCase):
             )
 
     async def test_cannot_set_placeholder_child(self):
-        await self.test_client.set(
-            '/schema/',
-            {'type': 'string'}
-        )
+        await self.test_client.set('/schema/', {'type': 'string'})
 
         with self.assertRaises(Forbidden):
             await self.test_client.set(
