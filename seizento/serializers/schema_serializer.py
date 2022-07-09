@@ -21,6 +21,9 @@ NAMES = {
 
 
 def serialize_schema(value: Schema) -> Any:
+    if isinstance(value, String) and value.optional:
+        return {'type': ['string', 'null']}
+
     result = {'type': NAMES[type(value)]}
 
     if isinstance(value, Struct):
@@ -42,6 +45,11 @@ def serialize_schema(value: Schema) -> Any:
 
 def parse_schema(value: Any) -> Schema:
     name = value['type']
+
+    if isinstance(name, list) and 'null' in name and len(name) == 2:
+        optional_type = {x for x in name if x != 'null'}.pop()
+        if optional_type == NAMES[String]:
+            return String(optional=True)
 
     if name == NAMES[String]:
         return String()

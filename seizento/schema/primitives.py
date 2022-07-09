@@ -27,22 +27,22 @@ class Primitive(Schema):
 
 @dataclass(frozen=True)
 class String(Primitive):
-    pass
+    optional: bool = False
 
 
 @dataclass(frozen=True)
 class Boolean(Primitive):
-    pass
+    optional: bool = False
 
 
 @dataclass(frozen=True)
 class Float(Primitive):
-    pass
+    optional: bool = False
 
 
 @dataclass(frozen=True)
 class Integer(Primitive):
-    pass
+    optional: bool = False
 
 
 @dataclass(frozen=True)
