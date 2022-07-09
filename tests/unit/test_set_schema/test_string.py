@@ -35,12 +35,21 @@ class TestString(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_set_null_after_string_literal_has_been_set(self):
+    async def test_set_string_after_null_has_been_set(self):
         await self.test_client.set('/schema/', {'type': ['null', 'string']})
         await self.test_client.set('/expression', None)
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/schema', {'type': 'string'})
+
+    async def test_set_string_after_string_literal_has_been_set(self):
+        await self.test_client.set('/schema/', {'type': ['null', 'string']})
+        await self.test_client.set('/expression', 'a string')
+
+        try:
+            await self.test_client.set('/schema', {'type': 'string'})
+        except Forbidden:
+            self.fail()
 
     async def test_cannot_set_child(self):
         await self.test_client.set(
