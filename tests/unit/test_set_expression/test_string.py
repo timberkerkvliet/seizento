@@ -24,6 +24,11 @@ class TestString(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, None)
 
+    async def test_cannot_set_null_if_non_optional(self):
+        await self.test_client.set('/schema/', {'type': 'string'})
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/expression/', None)
+
     async def test_set_wrong_literal(self):
         await self.test_client.set('/schema/', {'type': 'string'})
         with self.assertRaises(Forbidden):
