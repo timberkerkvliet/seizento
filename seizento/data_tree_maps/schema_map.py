@@ -4,7 +4,7 @@ from seizento.schema.schema import Schema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array
 from seizento.schema.dictionary import Dictionary
-from seizento.schema.primitives import String, Boolean, Integer, Float
+from seizento.schema.primitives import String, Boolean, Integer, Float, Null
 from seizento.data_tree import DataTree
 
 
@@ -15,7 +15,8 @@ NAMES = {
     String: 'STRING',
     Integer: 'INTEGER',
     Float: 'FLOAT',
-    Boolean: 'BOOLEAN'
+    Boolean: 'BOOLEAN',
+    Null: 'NULL'
 }
 
 
@@ -53,6 +54,8 @@ def tree_to_schema(value: DataTree) -> Schema:
         return Float()
     if name == 'BOOLEAN':
         return Boolean()
+    if name == 'NULL':
+        return Null()
     if name in {'ARRAY', 'DICTIONARY'}:
         value_type = value.get_subtree(Path(components=(PlaceHolder(),)))
 

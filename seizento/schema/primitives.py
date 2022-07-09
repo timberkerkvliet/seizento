@@ -44,3 +44,7 @@ class Float(Primitive):
 class Integer(Primitive):
     pass
 
+
+@dataclass(frozen=True)
+class Null(Primitive):
+    pass

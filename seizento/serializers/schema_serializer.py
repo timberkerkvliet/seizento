@@ -5,7 +5,7 @@ from seizento.schema.schema import Schema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array
 from seizento.schema.dictionary import Dictionary
-from seizento.schema.primitives import String, Boolean, Integer, Float
+from seizento.schema.primitives import String, Boolean, Integer, Float, Null
 
 
 NAMES = {
@@ -15,7 +15,8 @@ NAMES = {
     String: 'string',
     Integer: 'integer',
     Float: 'number',
-    Boolean: 'boolean'
+    Boolean: 'boolean',
+    Null: 'null'
 }
 
 
@@ -50,6 +51,8 @@ def parse_schema(value: Any) -> Schema:
         return Float()
     if name == NAMES[Boolean]:
         return Boolean()
+    if name == NAMES[Null]:
+        return Null()
     if name == NAMES[Array]:
         value_type = value['items']
         return Array(value_type=parse_schema(value_type))
