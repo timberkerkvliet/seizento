@@ -24,6 +24,9 @@ def serialize_schema(value: Schema) -> Any:
     if isinstance(value, String) and value.optional:
         return {'type': ['string', 'null']}
 
+    if isinstance(value, Boolean) and value.optional:
+        return {'type': ['boolean', 'null']}
+
     result = {'type': NAMES[type(value)]}
 
     if isinstance(value, Struct):
@@ -50,6 +53,12 @@ def parse_schema(value: Any) -> Schema:
         optional_type = {x for x in name if x != 'null'}.pop()
         if optional_type == NAMES[String]:
             return String(optional=True)
+        if optional_type == NAMES[Integer]:
+            return Integer(optional=True)
+        if optional_type == NAMES[Float]:
+            return Float(optional=True)
+        if optional_type == NAMES[Boolean]:
+            return Boolean(optional=True)
 
     if name == NAMES[String]:
         return String()

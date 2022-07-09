@@ -43,6 +43,11 @@ def schema_to_tree(value: Schema) -> DataTree:
             root_data={'type': 'OPTIONAL_STRING' if value.optional else 'STRING'}
         )
 
+    if isinstance(value, Boolean):
+        return DataTree(
+            root_data={'type': 'OPTIONAL_BOOLEAN' if value.optional else 'BOOLEAN'}
+        )
+
     return DataTree(root_data={'type': NAMES[type(value)]})
 
 
@@ -55,6 +60,8 @@ def tree_to_schema(value: DataTree) -> Schema:
         return String()
     if name == 'OPTIONAL_STRING':
         return String(optional=True)
+    if name == 'OPTIONAL_BOOLEAN':
+        return Boolean(optional=True)
     if name == 'INTEGER':
         return Integer()
     if name == 'FLOAT':
