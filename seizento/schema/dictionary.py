@@ -9,10 +9,6 @@ from seizento.schema.schema import Schema
 class Dictionary(Schema):
     value_type: Schema
 
-    @property
-    def default_value(self) -> Dict:
-        return {}
-
     def is_subschema(self, other: Schema) -> bool:
         if not isinstance(other, Dictionary):
             return False

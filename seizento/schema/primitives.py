@@ -8,10 +8,6 @@ T = TypeVar('T')
 
 
 class Primitive(Schema):
-    @property
-    def default_value(self):
-        return None
-
     def is_subschema(self, other: Schema) -> bool:
         return self == other
 

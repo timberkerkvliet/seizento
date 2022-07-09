@@ -38,13 +38,6 @@ class EmptyStruct(Schema):
 class Struct(Schema):
     fields: Dict[Identifier, Schema]
 
-    @property
-    def default_value(self) -> Optional[Dict]:
-        return {
-            field.name: field_type.default_value
-            for field, field_type in self.fields.items()
-        }
-
     def single_value_type(self) -> Optional[Schema]:
         schemas = set(self.fields.values())
 

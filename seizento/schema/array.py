@@ -31,10 +31,6 @@ class EmptyArray(Schema):
 class Array(Schema):
     value_type: Schema
 
-    @property
-    def default_value(self) -> List:
-        return []
-
     def is_subschema(self, other: Schema) -> bool:
         if not isinstance(other, Array):
             return False
