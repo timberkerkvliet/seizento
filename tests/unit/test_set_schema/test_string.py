@@ -26,6 +26,15 @@ class TestString(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': ['string', 'null']})
 
+    async def test_set_optional_string_after_string_literal_has_been_set(self):
+        await self.test_client.set('/schema/', {'type': 'string'})
+        await self.test_client.set('/expression', 'my string')
+
+        try:
+            await self.test_client.set('/schema', {'type': ['string', 'null']})
+        except Forbidden:
+            self.fail()
+
     async def test_cannot_set_child(self):
         await self.test_client.set(
             '/schema/',

@@ -29,6 +29,12 @@ class Primitive(Schema):
 class String(Primitive):
     optional: bool = False
 
+    def is_subschema(self, other: Schema) -> bool:
+        if not self.optional:
+            return isinstance(other, String)
+
+        return isinstance(other, (Null, String))
+
 
 @dataclass(frozen=True)
 class Boolean(Primitive):
@@ -47,4 +53,11 @@ class Integer(Primitive):
 
 @dataclass(frozen=True)
 class Null(Primitive):
-    pass
+    def is_subschema(self, other: Schema) -> bool:
+        if isinstance(other, Null):
+            return True
+
+        if isinstance(other, String) and other.optional:
+            return True
+
+        return False
