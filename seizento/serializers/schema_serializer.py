@@ -27,6 +27,12 @@ def serialize_schema(value: Schema) -> Any:
     if isinstance(value, Boolean) and value.optional:
         return {'type': ['boolean', 'null']}
 
+    if isinstance(value, Float) and value.optional:
+        return {'type': ['number', 'null']}
+
+    if isinstance(value, Integer) and value.optional:
+        return {'type': ['integer', 'null']}
+
     result = {'type': NAMES[type(value)]}
 
     if isinstance(value, Struct):

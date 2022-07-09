@@ -8,7 +8,7 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_string(self):
+    async def test_set_integer(self):
         await self.test_client.set(
             '/schema/',
             {'type': 'integer'}
@@ -16,6 +16,12 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
 
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'integer'})
+
+    async def test_set_optional_integer(self):
+        await self.test_client.set('/schema/', {'type': ['integer', 'null']})
+
+        response = await self.test_client.get('/schema/')
+        self.assertDictEqual(response, {'type': ['integer', 'null']})
 
     async def test_cannot_set_child(self):
         await self.test_client.set(
