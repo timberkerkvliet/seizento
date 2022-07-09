@@ -7,7 +7,7 @@ class TestStruct(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_When_struct_schema_is_set_Then_get_schema_back(self):
+    async def test_set_struct_schema_is_persisted(self):
         schema = {
             'type': 'object',
             'properties': {
@@ -20,7 +20,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/schema/')
         self.assertDictEqual(response, schema)
 
-    async def test_Given_a_struct_schema_when_schema_is_reset_Then_get_new_schema_back(self):
+    async def test_reset_struct_schema_is_persisted(self):
         await self.test_client.set(
             '/schema/',
             {
@@ -45,33 +45,6 @@ class TestStruct(IsolatedAsyncioTestCase):
                 'properties': {
                     'b': {'type': 'integer'}
                 }
-            }
-        )
-
-    async def test_Given_a_struct_schema_when_field_schema_is_reset_Then_get_changed_schema_back(self):
-        await self.test_client.set(
-            '/schema/',
-            {
-                'type': 'object',
-                'properties': {'a': {'type': 'number'}, 'b': {'type': 'string'}}
-            }
-        )
-
-        await self.test_client.set(
-            '/schema/a',
-            {'type': 'integer'}
-        )
-
-        response = await self.test_client.get('/schema/')
-        self.assertDictEqual(
-            response,
-            {
-                'type': 'object',
-                'properties': {
-                    'a': {'type': 'integer'},
-                    'b': {'type': 'string'}
-                }
-
             }
         )
 

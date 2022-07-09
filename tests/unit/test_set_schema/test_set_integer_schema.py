@@ -56,3 +56,26 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
         with self.assertRaises(Forbidden):
             await self.test_client.set('/schema/', {'type': 'integer'})
 
+    async def test_set_struct_field_to_integer(self):
+        await self.test_client.set(
+            '/schema/',
+            {
+                'type': 'object',
+                'properties': {'a': {'type': 'number'}, 'b': {'type': 'string'}}
+            }
+        )
+
+        await self.test_client.set('/schema/a', {'type': 'integer'})
+
+        response = await self.test_client.get('/schema/')
+        self.assertDictEqual(
+            response,
+            {
+                'type': 'object',
+                'properties': {
+                    'a': {'type': 'integer'},
+                    'b': {'type': 'string'}
+                }
+
+            }
+        )
