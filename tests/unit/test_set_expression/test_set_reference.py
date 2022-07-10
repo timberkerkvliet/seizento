@@ -4,7 +4,7 @@ from seizento.controllers.exceptions import Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestReference(IsolatedAsyncioTestCase):
+class TestSetReference(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
