@@ -8,7 +8,8 @@ class Identifier:
     name: str
 
     def __post_init__(self):
-        if not self.name.replace('_', '').replace('-', '').isalnum():
+        normalized = self.name.replace('_', '').replace('-', '')
+        if not normalized.isalnum() or not normalized.isascii():
             raise ValueError(f'Invalid identifier: {self.name}')
 
     def __str__(self):

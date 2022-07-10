@@ -96,10 +96,10 @@ class TestStruct(IsolatedAsyncioTestCase):
         self.assertDictEqual(response, new_schema)
 
     async def test_non_allowed_field_names(self):
-        names = ['hey^', 'with a space', 'sdf(', 'sd&', '@asd', '!sfa', 'sdf?', '$#%']
+        names = ['^', ' ', '(', '&', '@', '!', '?', '$', '#', '/', '{', 'é']
 
         for name in names:
-            with self.subTest():
+            with self.subTest(msg=name):
                 with self.assertRaises(BadRequest):
                     await self.test_client.set(
                         '/schema',
