@@ -4,17 +4,17 @@ from seizento.controllers.exceptions import Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestArray(IsolatedAsyncioTestCase):
+class TestSetArray(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_and_get_literal(self):
+    async def test_set_literal(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
         await self.test_client.set('/expression/', [1, 2, 3, 4])
         response = await self.test_client.get('/expression/')
         self.assertEqual(response, [1, 2, 3, 4])
 
-    async def test_set_and_empty_literal(self):
+    async def test_set_empty_array(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
         await self.test_client.set('/expression/', [])
 
@@ -55,7 +55,7 @@ class TestArray(IsolatedAsyncioTestCase):
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/', [1, 'b'])
 
-    async def test_array_of_structs(self):
+    async def test_set_array_of_structs(self):
         await self.test_client.set(
             '/schema/',
             {'type': 'array', 'items': {
@@ -79,7 +79,7 @@ class TestArray(IsolatedAsyncioTestCase):
             [{'a': 5, 'b': 'hoi'}, {'a': 6, 'b': 'hey'}]
         )
 
-    async def test_array_of_dicts(self):
+    async def test_set_array_of_dicts(self):
         await self.test_client.set(
             '/schema/',
             {'type': 'array', 'items': {
