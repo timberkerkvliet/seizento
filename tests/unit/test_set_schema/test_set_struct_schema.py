@@ -74,7 +74,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             }
         )
 
-    async def test_allowed_change(self):
+    async def test_extending_fields(self):
         await self.test_client.set(
             '/schema/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
@@ -107,6 +107,15 @@ class TestStruct(IsolatedAsyncioTestCase):
     async def test_set_struct_from_dict(self):
         await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         await self.test_client.set('/expression', {'a': 'a'})
+
+        try:
+            await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+        except Forbidden:
+            self.fail()
+
+    async def test_set_struct_from_dict_if_empty_is_set(self):
+        await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        await self.test_client.set('/expression', {})
 
         try:
             await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
