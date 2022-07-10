@@ -113,9 +113,9 @@ class TestStruct(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_set_struct_from_impossible_dict(self):
+    async def test_set_struct_from_non_matching_dict(self):
         await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        await self.test_client.set('/expression', {'a nong identifier': 'a'})
+        await self.test_client.set('/expression', {'b': 'b'})
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
