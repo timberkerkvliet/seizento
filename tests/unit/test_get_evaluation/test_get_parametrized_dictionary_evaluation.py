@@ -3,7 +3,7 @@ from unittest import IsolatedAsyncioTestCase
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestParametrizedDictionary(IsolatedAsyncioTestCase):
+class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 

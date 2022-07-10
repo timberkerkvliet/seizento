@@ -4,7 +4,7 @@ from seizento.controllers.exceptions import NotFound
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestDictionary(IsolatedAsyncioTestCase):
+class TestGetDictionaryEvaluation(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 

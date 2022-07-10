@@ -1,11 +1,24 @@
 from unittest import IsolatedAsyncioTestCase
 
+from seizento.controllers.exceptions import NotFound
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestSchemaChange(IsolatedAsyncioTestCase):
-    def setUp(self) -> None:
+class TestGetStructEvaluation(IsolatedAsyncioTestCase):
+    async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
+
+    async def test_not_found_before_set(self):
+        await self.test_client.set(
+            '/schema/',
+            {
+                'type': 'object',
+                'properties': {'a': {'type': 'integer'}}
+            }
+        )
+
+        with self.assertRaises(NotFound):
+            await self.test_client.get('/evaluation/')
 
     async def test_evaluation_after_change(self):
         await self.test_client.set(

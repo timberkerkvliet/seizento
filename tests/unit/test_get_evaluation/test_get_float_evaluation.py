@@ -5,7 +5,7 @@ from seizento.controllers.exceptions import NotFound
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestFloat(IsolatedAsyncioTestCase):
+class TestGetFloatEvaluation(IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         self.test_client = UnitTestClient()
 
