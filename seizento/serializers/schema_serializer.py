@@ -37,7 +37,7 @@ def serialize_schema(value: Schema) -> Any:
 
     if isinstance(value, Struct):
         fields = {
-            field.name: serialize_schema(field_type)
+            field: serialize_schema(field_type)
             for field, field_type in value.fields.items()
         }
         if len(fields) > 0:
@@ -82,7 +82,7 @@ def parse_schema(value: Any) -> Schema:
         properties = value.get('properties') or {}
         return Struct(
             fields={
-                Identifier(field): parse_schema(subtype)
+                field: parse_schema(subtype)
                 for field, subtype in properties.items()
             }
         )

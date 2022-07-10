@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import BadRequest
+from seizento.controllers.exceptions import BadRequest, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -96,12 +96,26 @@ class TestStruct(IsolatedAsyncioTestCase):
         self.assertDictEqual(response, new_schema)
 
     async def test_non_allowed_field_names(self):
-        names = ['^', ' ', '(', '&', '@', '!', '?', '$', '#', '/', '{', 'é']
+        try:
+            await self.test_client.set(
+                '/schema',
+                {'type': 'object', 'properties': {'^ (&@a9.?$#/{é': {'type': 'string'}}}
+            )
+        except BadRequest:
+            self.fail()
 
-        for name in names:
-            with self.subTest(msg=name):
-                with self.assertRaises(BadRequest):
-                    await self.test_client.set(
-                        '/schema',
-                        {'type': 'object', 'properties': {name: {'type': 'string'}}}
-                    )
+    async def test_set_struct_from_dict(self):
+        await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        await self.test_client.set('/expression', {'a': 'a'})
+
+        try:
+            await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+        except Forbidden:
+            self.fail()
+
+    async def test_set_struct_from_impossible_dict(self):
+        await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        await self.test_client.set('/expression', {'a nong identifier': 'a'})
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})

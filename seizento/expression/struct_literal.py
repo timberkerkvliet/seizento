@@ -22,7 +22,7 @@ class StructLiteral(Expression):
             return EmptyStruct()
 
         return Struct(
-            fields={Identifier(x): await y.get_schema(path_service) for x, y in self.values.items()}
+            fields={x: await y.get_schema(path_service) for x, y in self.values.items()}
         )
 
     async def get_argument_space(

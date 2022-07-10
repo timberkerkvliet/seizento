@@ -36,7 +36,7 @@ class EmptyStruct(Schema):
 
 @dataclass(frozen=True)
 class Struct(Schema):
-    fields: Dict[Identifier, Schema]
+    fields: Dict[str, Schema]
 
     def single_value_type(self) -> Optional[Schema]:
         schemas = set(self.fields.values())

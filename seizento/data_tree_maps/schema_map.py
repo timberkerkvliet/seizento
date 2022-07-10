@@ -25,7 +25,7 @@ def schema_to_tree(value: Schema) -> DataTree:
         return DataTree(
             root_data={'type': NAMES[type(value)]},
             subtrees={
-                LiteralComponent(field.name): schema_to_tree(field_type)
+                LiteralComponent(field): schema_to_tree(field_type)
                 for field, field_type in value.fields.items()
             }
         )
@@ -101,7 +101,7 @@ def tree_to_schema(value: DataTree) -> Schema:
 
         return Struct(
             fields={
-                Identifier(component.value): tree_to_schema(subtree)
+                component.value: tree_to_schema(subtree)
                 for component, subtree in subtrees.items()
             }
         )
