@@ -146,6 +146,37 @@ class TestStruct(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
+    async def test_cannot_set_struct_from_dict_with_nested(self):
+        await self.test_client.set(
+            '/schema',
+            {
+                'type': 'object',
+                'additionalProperties': {
+                    'type': 'object',
+                    'properties': {
+                        'a': {'type': 'string'},
+                        'b': {'type': 'integer'}
+                    }
+                }
+            }
+        )
+        await self.test_client.set('/expression', {'Ti': {'a': 'string'}})
+
+        with self.assertRaises(Forbidden):
+            await self.test_client.set(
+                '/schema',
+                {
+                    'type': 'object',
+                    'additionalProperties': {
+                        'type': 'object',
+                        'properties': {
+                            'a': {'type': 'integer'},
+                            'c': {'type': 'integer'}
+                        }
+                    }
+                }
+            )
+
     async def test_set_struct_from_dict_if_empty_is_set(self):
         await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         await self.test_client.set('/expression', {})
