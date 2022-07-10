@@ -95,7 +95,7 @@ class TestStruct(IsolatedAsyncioTestCase):
 
         self.assertDictEqual(response, new_schema)
 
-    async def test_non_allowed_field_names(self):
+    async def test_set_field_name_with_special_chars(self):
         try:
             await self.test_client.set(
                 '/schema',
