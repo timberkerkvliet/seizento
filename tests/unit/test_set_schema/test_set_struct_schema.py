@@ -1,5 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
+from seizento.controllers.exceptions import BadRequest
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -48,7 +49,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             }
         )
 
-    async def test_Given_an_empty_struct_When_add_fields_Then_get_added_fields_back(self):
+    async def test_adding_fields(self):
         await self.test_client.set('schema/', {'type': 'object'})
 
         await self.test_client.set(
@@ -73,27 +74,6 @@ class TestStruct(IsolatedAsyncioTestCase):
             }
         )
 
-    async def test_Given_a_struct_schema_When_delete_field_Then_get_schema_without_field_back(self):
-        await self.test_client.set('schema/', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
-
-        await self.test_client.delete('/schema/a')
-
-        response = await self.test_client.get('/schema/')
-        self.assertDictEqual(
-            response,
-            {'type': 'object'}
-        )
-
-    async def test_Given_an_empty_struct_schema_When_nonexisting_field_deleted_Then_get_same_schema_back(self):
-        await self.test_client.set('/schema', {'type': 'object'})
-        await self.test_client.delete('/schema/a')
-
-        response = await self.test_client.get('/schema/')
-        self.assertDictEqual(
-            response,
-            {'type': 'object'}
-        )
-
     async def test_allowed_change(self):
         await self.test_client.set(
             '/schema/',
@@ -114,3 +94,14 @@ class TestStruct(IsolatedAsyncioTestCase):
         response = await self.test_client.get('/schema')
 
         self.assertDictEqual(response, new_schema)
+
+    async def test_non_allowed_field_names(self):
+        names = ['hey^', 'with a space', 'sdf(', 'sd&', '@asd', '!sfa', 'sdf?', '$#%']
+
+        for name in names:
+            with self.subTest():
+                with self.assertRaises(BadRequest):
+                    await self.test_client.set(
+                        '/schema',
+                        {'type': 'object', 'properties': {name: {'type': 'string'}}}
+                    )
