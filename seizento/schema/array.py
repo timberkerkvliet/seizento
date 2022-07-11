@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from seizento.path import PathComponent, PlaceHolder
+from seizento.path import PathComponent
 from seizento.schema.schema import Schema
 
 

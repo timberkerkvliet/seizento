@@ -7,7 +7,7 @@ from seizento.expression.array_literal import ArrayLiteral
 from seizento.expression.struct_literal import StructLiteral
 from seizento.expression.path_reference import PathReference
 from seizento.identifier import Identifier
-from seizento.path import EMPTY_PATH, Path, LiteralComponent, PlaceHolder
+from seizento.path import EMPTY_PATH, Path, LiteralComponent
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
 from seizento.serializers.path_serializer import serialize_path, parse_path
 

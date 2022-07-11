@@ -6,7 +6,8 @@ from typing import Set, TYPE_CHECKING, Union
 from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
-from seizento.path import Path, PathComponent, LiteralComponent, PlaceHolder, EMPTY_PATH
+from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH
+from seizento.schema.new_schema import NewSchema
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
@@ -26,7 +27,7 @@ class PathReference(Expression):
             )
         )
 
-    async def get_schema(self, path_service: PathService) -> Schema:
+    async def get_schema(self, path_service: PathService) -> NewSchema:
         return await path_service.get_schema(self.path)
 
     def _get_argument_space(self, value, parts) -> ArgumentSpace:

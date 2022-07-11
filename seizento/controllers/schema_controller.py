@@ -54,7 +54,7 @@ class SchemaController:
         if expression is not None:
             current_schema = await expression.get_schema(PathService(self._repository))
 
-            if not current_schema.is_subschema(new_schema):
+            if not current_schema.is_stricter_than(new_schema):
                 raise Forbidden
 
         await self._repository.set_schema(

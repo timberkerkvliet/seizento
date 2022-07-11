@@ -6,7 +6,8 @@ from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.dictionary import Dictionary
 from seizento.expression.expression import Expression, ArgumentSpace
-from seizento.path import Path, PathComponent, PlaceHolder
+from seizento.path import Path, PathComponent
+from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
@@ -19,8 +20,11 @@ class ParametrizedDictionary(Expression):
     key: Expression
     value: Expression
 
-    async def get_schema(self, path_service: PathService) -> Schema:
-        return Dictionary(value_type=await self.value.get_schema(path_service))
+    async def get_schema(self, path_service: PathService) -> NewSchema:
+        return ProperSchema(
+            types={DataType.OBJECT},
+            additional_properties=await self.value.get_schema(path_service)
+        )
 
     async def _internal_space(self, path_service: PathService) -> ArgumentSpace:
         key_space = await self.key.get_argument_space(path_service=path_service)

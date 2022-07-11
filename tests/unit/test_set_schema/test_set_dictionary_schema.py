@@ -23,7 +23,7 @@ class TestDictionary(IsolatedAsyncioTestCase):
             {'type': 'object', 'additionalProperties': {'type': 'string'}}
         )
         await self.test_client.set(
-            '/schema/~',
+            '/schema/~properties',
             {'type': 'integer'}
         )
 

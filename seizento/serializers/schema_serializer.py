@@ -1,7 +1,7 @@
 from typing import Any
 
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema
+from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array
 from seizento.schema.dictionary import Dictionary
@@ -20,74 +20,45 @@ NAMES = {
 }
 
 
-def serialize_schema(value: Schema) -> Any:
-    if isinstance(value, String) and value.optional:
-        return {'type': ['string', 'null']}
+def serialize_schema(value: NewSchema) -> Any:
+    result = {}
 
-    if isinstance(value, Boolean) and value.optional:
-        return {'type': ['boolean', 'null']}
+    if len(value.get_types()) == 1:
+        result['type'] = value.get_types().pop().value
 
-    if isinstance(value, Float) and value.optional:
-        return {'type': ['number', 'null']}
+    if len(value.get_types()) > 1:
+        result['type'] = [data_type.value for data_type in value.types]
 
-    if isinstance(value, Integer) and value.optional:
-        return {'type': ['integer', 'null']}
-
-    result = {'type': NAMES[type(value)]}
-
-    if isinstance(value, Struct):
-        fields = {
-            field: serialize_schema(field_type)
-            for field, field_type in value.fields.items()
+    if len(value.get_properties()) > 0:
+        result['properties'] = {
+            prop: serialize_schema(schema)
+            for prop, schema in value.get_properties().items()
         }
-        if len(fields) > 0:
-            result['properties'] = fields
 
-    if isinstance(value, Array):
-        result['items'] = serialize_schema(value.value_type)
+    if not value.get_items().empty:
+        result['items'] = serialize_schema(value.get_items())
 
-    if isinstance(value, Dictionary):
-        result['additionalProperties'] = serialize_schema(value.value_type)
+    if not value.get_additional_properties().empty:
+        result['additionalProperties'] = serialize_schema(value.get_additional_properties())
 
     return result
 
 
-def parse_schema(value: Any) -> Schema:
-    name = value['type']
+def parse_schema(value: Any) -> NewSchema:
+    if 'type' not in value:
+        types = set()
+    elif isinstance(value['type'], list):
+        types = {DataType(val) for val in value['type']}
+    else:
+        types = {DataType(value['type'])}
 
-    if set(name) == {'null', NAMES[String]}:
-        return String(optional=True)
-    if set(name) == {'null', NAMES[Integer]}:
-        return Integer(optional=True)
-    if set(name) == {'null', NAMES[Float]}:
-        return Float(optional=True)
-    if set(name) == {'null', NAMES[Boolean]}:
-        return Boolean(optional=True)
-
-    if name == NAMES[String]:
-        return String()
-    if name == NAMES[Integer]:
-        return Integer()
-    if name == NAMES[Float]:
-        return Float()
-    if name == NAMES[Boolean]:
-        return Boolean()
-    if name == NAMES[Null]:
-        return Null()
-    if name == NAMES[Array]:
-        value_type = value['items']
-        return Array(value_type=parse_schema(value_type))
-
-    if name == NAMES[Struct] and 'additionalProperties' not in value:
-        properties = value.get('properties') or {}
-        return Struct(
-            fields={
-                field: parse_schema(subtype)
-                for field, subtype in properties.items()
-            }
-        )
-
-    if name == NAMES[Dictionary]:
-        return Dictionary(value_type=parse_schema(value['additionalProperties']))
-
-    raise TypeError
+    return ProperSchema(
+        types=types,
+        additional_properties=parse_schema(value['additionalProperties'])
+        if 'additionalProperties' in value else EmptySchema(),
+        properties={
+            prop: parse_schema(val)
+            for prop, val in value['properties'].items()
+        } if 'properties' in value else {},
+        items=parse_schema(value['items']) if 'items' in value else EmptySchema()
+    )

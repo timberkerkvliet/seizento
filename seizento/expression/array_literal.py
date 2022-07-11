@@ -7,6 +7,7 @@ from seizento.identifier import Identifier
 from seizento.schema.array import Array, EmptyArray
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import PathComponent, LiteralComponent
+from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema
 from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
@@ -17,24 +18,18 @@ if TYPE_CHECKING:
 class ArrayLiteral(Expression):
     values: Tuple[Expression, ...]
 
-    async def get_schema(self, path_service: PathService) -> Schema:
-        if len(self.values) == 0:
-            return EmptyArray()
-
+    async def get_schema(self, path_service: PathService) -> NewSchema:
         schemas = {
             await value.get_schema(path_service) for value in self.values
         }
+        item_schema = EmptySchema()
+        for schema in schemas:
+            item_schema = item_schema.union(schema)
 
-        if len(schemas) > 1:
-            super_schema = schemas.pop()
-            for schema in schemas:
-                super_schema = super_schema.common_superschema(schema)
-                if super_schema is None:
-                    raise ValueError('Mixed types')
-
-            return Array(value_type=super_schema)
-
-        return Array(value_type=schemas.pop())
+        return ProperSchema(
+            types={DataType.ARRAY},
+            items=item_schema
+        )
 
     async def get_argument_space(
         self,

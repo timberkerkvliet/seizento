@@ -5,6 +5,7 @@ from seizento.controllers.exceptions import NotFound
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path
 from seizento.repository import Repository
+from seizento.schema.new_schema import NewSchema
 from seizento.schema.schema import Schema
 
 
@@ -39,7 +40,7 @@ class PathService:
             path = path.remove_last()
             continue
 
-    async def get_schema(self, path: Path) -> Schema:
+    async def get_schema(self, path: Path) -> NewSchema:
         return await self._repository.get_schema(path)
 
     async def get_argument_space(self, path: Path) -> ArgumentSpace:

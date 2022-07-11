@@ -4,6 +4,7 @@ from typing import Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
+from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
 from seizento.schema.struct import Struct, EmptyStruct
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, LiteralComponent
@@ -17,12 +18,14 @@ if TYPE_CHECKING:
 class StructLiteral(Expression):
     values: Dict[str, Expression]
 
-    async def get_schema(self, path_service: PathService) -> Schema:
-        if len(self.values) == 0:
-            return EmptyStruct()
+    async def get_schema(self, path_service: PathService) -> NewSchema:
 
-        return Struct(
-            fields={x: await y.get_schema(path_service) for x, y in self.values.items()}
+        return ProperSchema(
+            types={DataType.OBJECT},
+            properties={
+                prop: await expression.get_schema(path_service)
+                for prop, expression in self.values.items()
+            }
         )
 
     async def get_argument_space(

@@ -18,7 +18,7 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         await self.test_client.set('/schema/', {'type': ['string', 'null']})
 
         response = await self.test_client.get('/schema/')
-        self.assertDictEqual(response, {'type': ['string', 'null']})
+        self.assertEqual(set(response['type']), {'string', 'null'})
 
     async def test_set_optional_string_after_string_literal_has_been_set(self):
         await self.test_client.set('/schema/', {'type': 'string'})
@@ -45,20 +45,24 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_cannot_set_child(self):
+    async def test_can_set_child(self):
         await self.test_client.set('/schema/', {'type': 'string'})
 
-        with self.assertRaises(Forbidden):
+        try:
             await self.test_client.set(
                 '/schema/a',
                 {'type': 'integer'}
             )
+        except Forbidden:
+            self.fail()
 
-    async def test_cannot_set_placeholder_child(self):
+    async def test_can_set_placeholder_child(self):
         await self.test_client.set('/schema/', {'type': 'string'})
 
-        with self.assertRaises(Forbidden):
+        try:
             await self.test_client.set(
                 '/schema/~',
                 {'type': 'integer'}
             )
+        except Forbidden:
+            self.fail()

@@ -18,7 +18,12 @@ class LiteralComponent(PathComponent):
 
 
 @dataclass(frozen=True)
-class PlaceHolder(PathComponent):
+class IndexPlaceHolder(PathComponent):
+    pass
+
+
+@dataclass(frozen=True)
+class PropertyPlaceHolder(PathComponent):
     pass
 
 

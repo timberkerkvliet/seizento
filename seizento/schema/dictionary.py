@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Optional
 
-from seizento.path import PathComponent, PlaceHolder
+from seizento.path import PathComponent
 from seizento.schema.schema import Schema
 
 
@@ -16,7 +16,7 @@ class Dictionary(Schema):
         return self.value_type.is_subschema(other.value_type)
 
     def can_add_child(self, component: PathComponent) -> bool:
-        return isinstance(component, PlaceHolder)
+        return False
 
     def can_remove_child(self, component: PathComponent) -> bool:
         return False
