@@ -5,7 +5,7 @@ from typing import Dict, Set, Any, TYPE_CHECKING
 
 from seizento.identifier import Identifier
 from seizento.path import PathComponent
-from seizento.schema.new_schema import NewSchema
+from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService
@@ -38,7 +38,7 @@ class ArgumentSpace:
 
 class Expression(ABC):
     @abstractmethod
-    async def get_schema(self, path_service: PathService) -> NewSchema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         pass
 
     @abstractmethod

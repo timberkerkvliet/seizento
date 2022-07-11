@@ -7,7 +7,7 @@ from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
 from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH
-from seizento.schema.new_schema import NewSchema
+from seizento.schema.schema import Schema
 
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ class PathReference(Expression):
             )
         )
 
-    async def get_schema(self, path_service: PathService) -> NewSchema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         schema = await path_service.get_schema(self.path)
         if schema is None:
             raise Exception

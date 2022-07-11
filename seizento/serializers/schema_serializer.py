@@ -1,10 +1,10 @@
 from typing import Any
 
 from seizento.identifier import Identifier
-from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
+from seizento.schema.schema import Schema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
 
 
-def serialize_schema(value: NewSchema) -> Any:
+def serialize_schema(value: Schema) -> Any:
     result = {}
 
     if len(value.get_types()) == 1:
@@ -28,7 +28,7 @@ def serialize_schema(value: NewSchema) -> Any:
     return result
 
 
-def parse_schema(value: Any) -> NewSchema:
+def parse_schema(value: Any) -> Schema:
     if value is False:
         return ImpossibleSchema()
 

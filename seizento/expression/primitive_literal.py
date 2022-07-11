@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.identifier import Identifier
-from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
+from seizento.schema.schema import Schema, ProperSchema, DataType
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class PrimitiveLiteral(Expression):
     value: Union[str, int, float, bool, None]
 
-    async def get_schema(self, path_service: PathService) -> NewSchema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         if isinstance(self.value, str):
             return ProperSchema(types={DataType.STRING})
         if isinstance(self.value, bool):

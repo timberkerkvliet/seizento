@@ -7,7 +7,7 @@ from seizento.identifier import Identifier
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import PathComponent, LiteralComponent
-from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
+from seizento.schema.schema import Schema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
 
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class ArrayLiteral(Expression):
     values: Tuple[Expression, ...]
 
-    async def get_schema(self, path_service: PathService) -> NewSchema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         schemas = [
             await value.get_schema(path_service) for value in self.values
         ]

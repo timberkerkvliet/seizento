@@ -6,7 +6,7 @@ from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
-from seizento.schema.new_schema import NewSchema
+from seizento.schema.schema import Schema
 
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
 from seizento.data_tree import DataTree
@@ -39,7 +39,7 @@ class Repository:
     async def __aexit__(self, *args):
         await self._transaction.__aexit__(*args)
 
-    async def get_schema(self, path: Path) -> Optional[NewSchema]:
+    async def get_schema(self, path: Path) -> Optional[Schema]:
         try:
             data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('schema')))
         except KeyError:
@@ -47,7 +47,7 @@ class Repository:
 
         return tree_to_schema(data_tree)
 
-    async def set_schema(self, path: Path, value: NewSchema) -> None:
+    async def set_schema(self, path: Path, value: Schema) -> None:
         await self._transaction.set_tree(
             path=path.insert_first(LiteralComponent('schema')),
             tree=schema_to_tree(value)

@@ -7,7 +7,7 @@ from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
 from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH
-from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
+from seizento.schema.schema import Schema, ProperSchema, DataType
 
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class ParameterReference(Expression):
     reference: Identifier
 
-    async def get_schema(self, path_service: PathService) -> NewSchema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         return ProperSchema(types={DataType.STRING})
 
     async def get_argument_space(

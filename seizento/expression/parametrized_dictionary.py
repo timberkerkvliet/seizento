@@ -7,7 +7,7 @@ from seizento.identifier import Identifier
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, PropertyPlaceHolder
-from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
+from seizento.schema.schema import Schema, ProperSchema, DataType
 
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ class ParametrizedDictionary(Expression):
     key: Expression
     value: Expression
 
-    async def get_schema(self, path_service: PathService) -> NewSchema:
+    async def get_schema(self, path_service: PathService) -> Schema:
         return ProperSchema(
             types={DataType.OBJECT},
             additional_properties=await self.value.get_schema(path_service)

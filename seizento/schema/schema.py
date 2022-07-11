@@ -18,21 +18,21 @@ class DataType(Enum):
     ARRAY = 'array'
 
 
-class NewSchema:
+class Schema:
     @abstractmethod
     def get_types(self) -> Set[DataType]:
         pass
 
     @abstractmethod
-    def get_properties(self) -> Dict[str, NewSchema]:
+    def get_properties(self) -> Dict[str, Schema]:
         pass
 
     @abstractmethod
-    def get_additional_properties(self) -> NewSchema:
+    def get_additional_properties(self) -> Schema:
         pass
 
     @abstractmethod
-    def get_items(self) -> NewSchema:
+    def get_items(self) -> Schema:
         pass
 
     @property
@@ -41,32 +41,32 @@ class NewSchema:
         pass
 
     @abstractmethod
-    def conforms_to(self, other: NewSchema):
+    def conforms_to(self, other: Schema):
         pass
 
     @abstractmethod
-    def union(self, other: NewSchema):
+    def union(self, other: Schema):
         return other
 
 
 @dataclass(frozen=True)
-class EmptySchema(NewSchema):
-    def conforms_to(self, other: NewSchema):
+class EmptySchema(Schema):
+    def conforms_to(self, other: Schema):
         return other.empty
 
-    def union(self, other: NewSchema):
+    def union(self, other: Schema):
         return self
 
     def get_types(self) -> Set[DataType]:
         return set()
 
-    def get_properties(self) -> Dict[str, NewSchema]:
+    def get_properties(self) -> Dict[str, Schema]:
         return {}
 
-    def get_additional_properties(self) -> NewSchema:
+    def get_additional_properties(self) -> Schema:
         return self
 
-    def get_items(self) -> NewSchema:
+    def get_items(self) -> Schema:
         return self
 
     def empty(self) -> bool:
@@ -74,23 +74,23 @@ class EmptySchema(NewSchema):
 
 
 @dataclass(frozen=True)
-class ImpossibleSchema(NewSchema):
-    def conforms_to(self, other: NewSchema):
+class ImpossibleSchema(Schema):
+    def conforms_to(self, other: Schema):
         return True
 
-    def union(self, other: NewSchema):
+    def union(self, other: Schema):
         return other
 
     def get_types(self) -> Set[DataType]:
         return set()
 
-    def get_properties(self) -> Dict[str, NewSchema]:
+    def get_properties(self) -> Dict[str, Schema]:
         return {}
 
-    def get_additional_properties(self) -> NewSchema:
+    def get_additional_properties(self) -> Schema:
         return self
 
-    def get_items(self) -> NewSchema:
+    def get_items(self) -> Schema:
         return self
 
     def empty(self) -> bool:
@@ -98,25 +98,25 @@ class ImpossibleSchema(NewSchema):
 
 
 @dataclass(frozen=True)
-class ProperSchema(NewSchema):
+class ProperSchema(Schema):
     types: Set[DataType]
-    properties: Dict[str, NewSchema] = field(default_factory=dict)
-    additional_properties: NewSchema = field(default_factory=EmptySchema)
-    items: NewSchema = field(default_factory=EmptySchema)
+    properties: Dict[str, Schema] = field(default_factory=dict)
+    additional_properties: Schema = field(default_factory=EmptySchema)
+    items: Schema = field(default_factory=EmptySchema)
 
-    def get_items(self) -> NewSchema:
+    def get_items(self) -> Schema:
         return self.items
 
     def get_types(self) -> Set[DataType]:
         return self.types
 
-    def get_additional_properties(self) -> NewSchema:
+    def get_additional_properties(self) -> Schema:
         return self.additional_properties
 
-    def get_properties(self) -> Dict[str, NewSchema]:
+    def get_properties(self) -> Dict[str, Schema]:
         return self.properties
 
-    def conforms_to(self, other: NewSchema) -> bool:
+    def conforms_to(self, other: Schema) -> bool:
         if not self.types <= other.get_types() or not self.items.conforms_to(other.get_items()):
             return False
 
@@ -133,7 +133,7 @@ class ProperSchema(NewSchema):
 
         return True
 
-    def union(self, other: NewSchema) -> NewSchema:
+    def union(self, other: Schema) -> Schema:
         return ProperSchema(
             types=self.types | other.get_types(),
             properties={

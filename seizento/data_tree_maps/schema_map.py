@@ -1,11 +1,11 @@
 
 from seizento.path import LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder
-from seizento.schema.new_schema import NewSchema, EmptySchema, ProperSchema, DataType
+from seizento.schema.schema import Schema, EmptySchema, ProperSchema, DataType
 
 from seizento.data_tree import DataTree
 
 
-def schema_to_tree(value: NewSchema) -> DataTree:
+def schema_to_tree(value: Schema) -> DataTree:
     subtrees = {
         LiteralComponent(field): schema_to_tree(field_type)
         for field, field_type in value.get_properties().items()
@@ -25,7 +25,7 @@ def schema_to_tree(value: NewSchema) -> DataTree:
     )
 
 
-def tree_to_schema(value: DataTree) -> NewSchema:
+def tree_to_schema(value: DataTree) -> Schema:
     root_data = value.root_data
     subtrees = value.subtrees
     return ProperSchema(
