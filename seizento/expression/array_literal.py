@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from typing import Dict, Tuple, TYPE_CHECKING
 
 from seizento.identifier import Identifier
-from seizento.schema.array import Array, EmptyArray
+
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import PathComponent, LiteralComponent
 from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
-from seizento.schema.schema import Schema
+
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

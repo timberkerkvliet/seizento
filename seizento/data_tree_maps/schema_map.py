@@ -1,24 +1,8 @@
-from seizento.identifier import Identifier
-from seizento.path import Path, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder
+
+from seizento.path import LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder
 from seizento.schema.new_schema import NewSchema, EmptySchema, ProperSchema, DataType
-from seizento.schema.schema import Schema
-from seizento.schema.struct import Struct
-from seizento.schema.array import Array
-from seizento.schema.dictionary import Dictionary
-from seizento.schema.primitives import String, Boolean, Integer, Float, Null
+
 from seizento.data_tree import DataTree
-
-
-NAMES = {
-    Struct: 'STRUCT',
-    Dictionary: 'DICTIONARY',
-    Array: 'ARRAY',
-    String: 'STRING',
-    Integer: 'INTEGER',
-    Float: 'FLOAT',
-    Boolean: 'BOOLEAN',
-    Null: 'NULL'
-}
 
 
 def schema_to_tree(value: NewSchema) -> DataTree:

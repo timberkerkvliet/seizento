@@ -4,10 +4,10 @@ from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.identifier import Identifier
 from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
-from seizento.schema.primitives import String, Integer, Boolean, Float, Null
+
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent
-from seizento.schema.schema import Schema
+
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

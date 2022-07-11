@@ -6,7 +6,6 @@ from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.schema.new_schema import NewSchema
-from seizento.schema.schema import Schema
 
 
 @dataclass(frozen=True)

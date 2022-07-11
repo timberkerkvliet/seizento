@@ -3,11 +3,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Set, Any, TYPE_CHECKING
 
-from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
-from seizento.path import Path, PathComponent
+from seizento.path import PathComponent
 from seizento.schema.new_schema import NewSchema
-from seizento.schema.schema import Schema
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

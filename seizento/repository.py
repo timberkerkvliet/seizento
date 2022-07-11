@@ -7,11 +7,11 @@ from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
 from seizento.schema.new_schema import NewSchema
-from seizento.schema.schema import Schema
+
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
 from seizento.data_tree import DataTree
 from seizento.serializers.user_serializer import parse_user, serialize_user
-from seizento.user import User, AccessRights
+from seizento.user import User
 
 
 class DataTreeStoreTransaction(AbstractAsyncContextManager):

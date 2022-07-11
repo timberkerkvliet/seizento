@@ -9,7 +9,7 @@ from seizento.expression.struct_literal import StructLiteral
 from seizento.expression.path_reference import PathReference
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
-from seizento.schema.struct import EmptyStruct
+
 from seizento.serializers.path_serializer import parse_path
 
 

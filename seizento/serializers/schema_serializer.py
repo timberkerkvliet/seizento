@@ -2,22 +2,6 @@ from typing import Any
 
 from seizento.identifier import Identifier
 from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
-from seizento.schema.struct import Struct
-from seizento.schema.array import Array
-from seizento.schema.dictionary import Dictionary
-from seizento.schema.primitives import String, Boolean, Integer, Float, Null
-
-
-NAMES = {
-    Struct: 'object',
-    Dictionary: 'object',
-    Array: 'array',
-    String: 'string',
-    Integer: 'integer',
-    Float: 'number',
-    Boolean: 'boolean',
-    Null: 'null'
-}
 
 
 def serialize_schema(value: NewSchema) -> Any:

@@ -5,10 +5,10 @@ from typing import Dict, Set, TYPE_CHECKING
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
 from seizento.schema.new_schema import NewSchema, ProperSchema, DataType, ImpossibleSchema
-from seizento.schema.struct import Struct, EmptyStruct
+
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, LiteralComponent
-from seizento.schema.schema import Schema
+
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

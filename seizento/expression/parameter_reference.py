@@ -8,8 +8,7 @@ from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
 from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH
 from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
-from seizento.schema.primitives import String
-from seizento.schema.schema import Schema
+
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

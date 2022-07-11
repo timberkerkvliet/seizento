@@ -4,11 +4,11 @@ from typing import Dict, Set, Any, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
-from seizento.schema.dictionary import Dictionary
+
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, PropertyPlaceHolder
 from seizento.schema.new_schema import NewSchema, ProperSchema, DataType
-from seizento.schema.schema import Schema
+
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

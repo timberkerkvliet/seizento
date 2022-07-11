@@ -4,7 +4,6 @@ from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.expression.path_service import PathService
 from seizento.schema.new_schema import NewSchema
 
-from seizento.schema.schema import Schema
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.serializers.schema_serializer import parse_schema, serialize_schema

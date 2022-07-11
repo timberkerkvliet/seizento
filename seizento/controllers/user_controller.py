@@ -1,10 +1,9 @@
 from typing import Dict
 
-from seizento.controllers.exceptions import MethodNotAllowed, BadRequest, NotFound, Forbidden
+from seizento.controllers.exceptions import BadRequest, NotFound, Forbidden
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
 from seizento.repository import Repository
-from seizento.expression.path_service import PathService
 from seizento.serializers.user_serializer import serialize_access_rights, parse_access_rights
 from seizento.user import User, HashedPassword, ADMIN_USER
 
