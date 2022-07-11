@@ -7,7 +7,7 @@ from seizento.expression.array_literal import ArrayLiteral
 from seizento.expression.struct_literal import StructLiteral
 from seizento.expression.path_reference import PathReference
 from seizento.identifier import Identifier
-from seizento.path import EMPTY_PATH, Path, LiteralComponent
+from seizento.path import EMPTY_PATH, Path, LiteralComponent, PropertyPlaceHolder
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
 from seizento.serializers.path_serializer import serialize_path, parse_path
 
@@ -58,7 +58,7 @@ def expression_to_tree(value: Expression) -> DataTree:
                 'key': serialize_expression(value.key)
             },
             subtrees={
-                PlaceHolder(): expression_to_tree(value.value)
+                PropertyPlaceHolder(): expression_to_tree(value.value)
             }
         )
 
@@ -98,7 +98,7 @@ def tree_to_expression(value: DataTree) -> Expression:
         return ParametrizedDictionary(
             key=parse_expression(root_data['key']),
             parameter=Identifier(root_data['parameter']),
-            value=tree_to_expression(value.subtrees[PlaceHolder()])
+            value=tree_to_expression(value.subtrees[PropertyPlaceHolder()])
         )
 
     if isinstance(root_data, int):

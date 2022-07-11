@@ -78,7 +78,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
             }
         )
         await self.test_client.set(
-            '/expression/projection/~',
+            '/expression/projection/~properties',
             '{/alternative/<k>}'
         )
         response = await self.test_client.get('/expression/projection')

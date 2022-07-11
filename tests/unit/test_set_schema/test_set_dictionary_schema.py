@@ -31,7 +31,13 @@ class TestDictionary(IsolatedAsyncioTestCase):
         self.assertDictEqual(response,  {'type': 'object', 'additionalProperties': {'type': 'integer'}})
 
     async def test_set_dict_from_struct(self):
-        await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+        await self.test_client.set(
+            '/schema',
+            {
+                'type': 'object',
+                'properties': {'a': {'type': 'string'}}
+            }
+        )
         await self.test_client.set('/expression', {'a': 'a'})
 
         try:

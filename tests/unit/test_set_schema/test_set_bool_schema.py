@@ -18,28 +18,32 @@ class TestSetBoolSchema(IsolatedAsyncioTestCase):
         await self.test_client.set('/schema/', {'type': ['boolean', 'null']})
 
         response = await self.test_client.get('/schema/')
-        self.assertDictEqual(response, {'type': ['boolean', 'null']})
+        self.assertEqual(set(response['type']), {'boolean', 'null'})
 
-    async def test_cannot_set_child(self):
+    async def test_can_set_child(self):
         await self.test_client.set(
             '/schema/',
             {'type': 'boolean'}
         )
 
-        with self.assertRaises(Forbidden):
+        try:
             await self.test_client.set(
                 '/schema/a',
                 {'type': 'integer'}
             )
+        except Forbidden:
+            self.fail()
 
-    async def test_cannot_set_placeholder_child(self):
+    async def test_can_set_placeholder_child(self):
         await self.test_client.set(
             '/schema/',
             {'type': 'boolean'}
         )
 
-        with self.assertRaises(Forbidden):
+        try:
             await self.test_client.set(
-                '/schema/~',
+                '/schema/~items',
                 {'type': 'integer'}
             )
+        except Forbidden:
+            self.fail()

@@ -22,13 +22,17 @@ class PathReference(Expression):
     def path(self) -> Path:
         return Path(
             components=tuple(
-                x if isinstance(x, LiteralComponent) else PlaceHolder()
+                x if isinstance(x, LiteralComponent) else LiteralComponent('0')
                 for x in self.reference
             )
         )
 
     async def get_schema(self, path_service: PathService) -> NewSchema:
-        return await path_service.get_schema(self.path)
+        schema = await path_service.get_schema(self.path)
+        if schema is None:
+            raise Exception
+
+        return schema
 
     def _get_argument_space(self, value, parts) -> ArgumentSpace:
         if len(parts) == 0:

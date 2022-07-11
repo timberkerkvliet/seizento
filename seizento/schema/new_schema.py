@@ -12,7 +12,7 @@ class DataType(Enum):
     NULL = 'null'
     STRING = 'string'
     BOOL = 'boolean'
-    FLOAT = 'float'
+    FLOAT = 'number'
     INTEGER = 'integer'
     OBJECT = 'object'
     ARRAY = 'array'
@@ -41,7 +41,7 @@ class NewSchema:
         pass
 
     @abstractmethod
-    def is_stricter_than(self, other: NewSchema):
+    def conforms_to(self, other: NewSchema):
         pass
 
     @abstractmethod
@@ -51,8 +51,32 @@ class NewSchema:
 
 @dataclass(frozen=True)
 class EmptySchema(NewSchema):
-    def is_stricter_than(self, other: NewSchema):
+    def conforms_to(self, other: NewSchema):
         return other.empty
+
+    def union(self, other: NewSchema):
+        return self
+
+    def get_types(self) -> Set[DataType]:
+        return set()
+
+    def get_properties(self) -> Dict[str, NewSchema]:
+        return {}
+
+    def get_additional_properties(self) -> NewSchema:
+        return self
+
+    def get_items(self) -> NewSchema:
+        return self
+
+    def empty(self) -> bool:
+        return True
+
+
+@dataclass(frozen=True)
+class ImpossibleSchema(NewSchema):
+    def conforms_to(self, other: NewSchema):
+        return True
 
     def union(self, other: NewSchema):
         return other
@@ -70,7 +94,7 @@ class EmptySchema(NewSchema):
         return self
 
     def empty(self) -> bool:
-        return True
+        return False
 
 
 @dataclass(frozen=True)
@@ -92,15 +116,22 @@ class ProperSchema(NewSchema):
     def get_properties(self) -> Dict[str, NewSchema]:
         return self.properties
 
-    def is_stricter_than(self, other: NewSchema) -> bool:
-        return self.types <= other.get_types() \
-            and set(self.properties.keys()) >= set(other.get_properties().keys()) \
-            and all(
-                self.properties[prop].is_stricter_than(schema)
-                for prop, schema in other.get_properties().items()
-            ) \
-            and self.additional_properties.is_stricter_than(other.get_additional_properties()) \
-            and self.items.is_stricter_than(other.get_items())
+    def conforms_to(self, other: NewSchema) -> bool:
+        if not self.types <= other.get_types() or not self.items.conforms_to(other.get_items()):
+            return False
+
+        for prop, schema in self.properties.items():
+            if prop in other.get_properties():
+                if not schema.conforms_to(other.get_properties()[prop]):
+                    return False
+            else:
+                if not schema.conforms_to(other.get_additional_properties()):
+                    return False
+
+        if not self.additional_properties.conforms_to(other.get_additional_properties()):
+            return False
+
+        return True
 
     def union(self, other: NewSchema) -> NewSchema:
         return ProperSchema(

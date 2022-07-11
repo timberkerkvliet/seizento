@@ -21,8 +21,10 @@ class TestGeneralErrors(IsolatedAsyncioTestCase):
             await self.test_client.get('/hoi-daar-allemaal')
 
     async def test_set_empty_type_data(self):
-        with self.assertRaises(BadRequest):
+        try:
             await self.test_client.set('/schema', {})
+        except BadRequest:
+            self.fail()
 
     async def test_set_evaluation(self):
         with self.assertRaises(MethodNotAllowed):

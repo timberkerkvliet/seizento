@@ -2,6 +2,7 @@ from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.expression.path_service import PathService
+from seizento.schema.new_schema import NewSchema
 
 from seizento.schema.schema import Schema
 from seizento.path import Path
@@ -18,14 +19,14 @@ class SchemaController:
         self._repository = repository
         self._path = path
 
-    async def _get_target_type(self) -> Schema:
+    async def _get_target_type(self) -> NewSchema:
         result = await self._repository.get_schema(path=self._path)
         if result is None:
             raise NotFound
 
         return result
 
-    async def _get_parent_type(self) -> Schema:
+    async def _get_parent_type(self) -> NewSchema:
         result = await self._repository.get_schema(path=self._path.remove_last())
         if result is None:
             raise NotFound
@@ -54,7 +55,7 @@ class SchemaController:
         if expression is not None:
             current_schema = await expression.get_schema(PathService(self._repository))
 
-            if not current_schema.is_stricter_than(new_schema):
+            if not current_schema.conforms_to(new_schema):
                 raise Forbidden
 
         await self._repository.set_schema(

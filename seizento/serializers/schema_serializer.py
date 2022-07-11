@@ -1,7 +1,7 @@
 from typing import Any
 
 from seizento.identifier import Identifier
-from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema
+from seizento.schema.new_schema import NewSchema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
 from seizento.schema.struct import Struct
 from seizento.schema.array import Array
 from seizento.schema.dictionary import Dictionary
@@ -45,6 +45,9 @@ def serialize_schema(value: NewSchema) -> Any:
 
 
 def parse_schema(value: Any) -> NewSchema:
+    if value is False:
+        return ImpossibleSchema()
+
     if 'type' not in value:
         types = set()
     elif isinstance(value['type'], list):
