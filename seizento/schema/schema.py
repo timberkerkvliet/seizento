@@ -151,9 +151,3 @@ class ProperSchema(Schema):
                and len(self.properties) == 0 \
                and self.additional_properties.empty \
                and self.items.empty
-
-    def can_add_child(self, component: PathComponent) -> bool:
-        return True
-
-    def can_remove_child(self, component: PathComponent) -> bool:
-        return True

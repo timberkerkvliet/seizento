@@ -41,7 +41,7 @@ class SchemaController:
         if not self._path.empty:
             parent_type = await self._get_parent_type()
 
-            if not parent_type.can_add_child(self._path.last_component):
+            if parent_type is None:
                 raise Forbidden
 
         try:
@@ -66,7 +66,7 @@ class SchemaController:
         if not self._path.empty:
             parent_type = await self._get_parent_type()
 
-            if not parent_type.can_remove_child(self._path.last_component):
+            if parent_type is None:
                 raise Forbidden
 
         await self._repository.delete_type(path=self._path)
