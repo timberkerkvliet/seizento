@@ -6,14 +6,17 @@ from seizento.schema.types import DataType
 
 
 def serialize_constraint(value: Constraint) -> Any:
-    if value == NotAllowed:
+    if value == NotAllowed():
         return False
-    if value == EverythingAllowed:
+    if value == EverythingAllowed():
         return True
 
     assert isinstance(value, Schema)
 
     result = {}
+
+    if len(value.types) == 0:
+        raise ValueError
 
     if len(value.types) == 1:
         result['type'] = value.types.pop().value
