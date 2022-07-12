@@ -44,6 +44,9 @@ def tree_to_constraint(value: DataTree) -> Constraint:
     if root_data is True:
         return EverythingAllowed()
 
+    if not isinstance(root_data, dict):
+        raise ValueError
+
     subtrees = value.subtrees
     return Schema(
         types={DataType(val) for val in root_data['type']},

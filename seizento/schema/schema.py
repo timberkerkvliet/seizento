@@ -4,12 +4,12 @@ from dataclasses import dataclass, field
 from typing import Set, Dict
 
 from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
-from seizento.schema.types import DataType
+from seizento.schema.types import DataType, ALL_TYPES
 
 
 @dataclass(frozen=True)
 class Schema(Constraint):
-    types: Set[DataType]
+    types: Set[DataType] = field(default_factory=lambda: ALL_TYPES)
     properties: Dict[str, Constraint] = field(default_factory=dict)
     additional_properties: Constraint = field(default_factory=EverythingAllowed)
     items: Constraint = field(default_factory=EverythingAllowed)

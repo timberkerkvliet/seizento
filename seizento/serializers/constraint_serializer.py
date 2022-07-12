@@ -1,9 +1,8 @@
 from typing import Any
 
-from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, Schema
+from seizento.schema.schema import Schema
 from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
-from seizento.schema.types import DataType, ALL_TYPES
+from seizento.schema.types import DataType
 
 
 def serialize_constraint(value: Constraint) -> Any:
@@ -45,20 +44,24 @@ def parse_constraint(value: Any) -> Constraint:
     if value is True:
         return EverythingAllowed()
 
-    if 'type' not in value:
-        types = ALL_TYPES
-    elif isinstance(value['type'], list):
-        types = {DataType(val) for val in value['type']}
-    else:
-        types = {DataType(value['type'])}
+    kwargs = {}
 
-    return Schema(
-        types=types,
-        additional_properties=parse_constraint(value['additionalProperties'])
-        if 'additionalProperties' in value else EverythingAllowed(),
-        properties={
+    if 'type' in value:
+        if isinstance(value['type'], list):
+            kwargs['types'] = {DataType(val) for val in value['type']}
+        else:
+            kwargs['types'] = {DataType(value['type'])}
+
+    if 'additionalProperties' in value:
+        kwargs['additional_properties'] = parse_constraint(value['additionalProperties'])
+
+    if 'properties' in value:
+        kwargs['properties'] = {
             prop: parse_constraint(val)
             for prop, val in value['properties'].items()
-        } if 'properties' in value else {},
-        items=parse_constraint(value['items']) if 'items' in value else EverythingAllowed()
-    )
+        }
+
+    if 'items' in value:
+        kwargs['items'] = parse_constraint(value['items'])
+
+    return Schema(**kwargs)
