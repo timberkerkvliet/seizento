@@ -4,7 +4,7 @@ from typing import Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, ProperSchema, DataType, ImpossibleSchema
+from seizento.schema.schema import Schema, Schema, DataType, NotAllowed
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, LiteralComponent
@@ -20,13 +20,13 @@ class StructLiteral(Expression):
 
     async def get_schema(self, path_service: PathService) -> Schema:
 
-        return ProperSchema(
+        return Schema(
             types={DataType.OBJECT},
             properties={
                 prop: await expression.get_schema(path_service)
                 for prop, expression in self.values.items()
             },
-            additional_properties=ImpossibleSchema()
+            additional_properties=NotAllowed()
         )
 
     async def get_argument_space(

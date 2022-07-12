@@ -1,10 +1,17 @@
 from typing import Any
 
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
+from seizento.schema.schema import Schema, DataType, Schema, NotAllowed, EverythingAllowed, Constraint, ALL_TYPES
 
 
-def serialize_schema(value: Schema) -> Any:
+def serialize_constraint(value: Constraint) -> Any:
+    if value == NotAllowed:
+        return False
+    if value == EverythingAllowed:
+        return True
+
+    assert isinstance(value, Schema)
+
     result = {}
 
     if len(value.get_types()) == 1:
@@ -15,37 +22,41 @@ def serialize_schema(value: Schema) -> Any:
 
     if len(value.get_properties()) > 0:
         result['properties'] = {
-            prop: serialize_schema(schema)
-            for prop, schema in value.get_properties().items()
+            prop: serialize_constraint(constraint)
+            for prop, constraint in value.get_properties().items()
+            if not constraint.is_empty()
         }
 
-    if not value.get_items().empty:
-        result['items'] = serialize_schema(value.get_items())
+    if not value.items.is_empty():
+        result['items'] = serialize_constraint(value.get_items())
 
-    if not value.get_additional_properties().empty:
-        result['additionalProperties'] = serialize_schema(value.get_additional_properties())
+    if not value.additional_properties.is_empty():
+        result['additionalProperties'] = serialize_constraint(value.get_additional_properties())
 
     return result
 
 
-def parse_schema(value: Any) -> Schema:
+def parse_constraint(value: Any) -> Constraint:
     if value is False:
-        return ImpossibleSchema()
+        return NotAllowed()
+
+    if value is True:
+        return EverythingAllowed()
 
     if 'type' not in value:
-        types = set()
+        types = ALL_TYPES
     elif isinstance(value['type'], list):
         types = {DataType(val) for val in value['type']}
     else:
         types = {DataType(value['type'])}
 
-    return ProperSchema(
+    return Schema(
         types=types,
-        additional_properties=parse_schema(value['additionalProperties'])
-        if 'additionalProperties' in value else EmptySchema(),
+        additional_properties=parse_constraint(value['additionalProperties'])
+        if 'additionalProperties' in value else EverythingAllowed(),
         properties={
-            prop: parse_schema(val)
+            prop: parse_constraint(val)
             for prop, val in value['properties'].items()
         } if 'properties' in value else {},
-        items=parse_schema(value['items']) if 'items' in value else EmptySchema()
+        items=parse_constraint(value['items']) if 'items' in value else EverythingAllowed()
     )

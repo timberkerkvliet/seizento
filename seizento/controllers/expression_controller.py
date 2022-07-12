@@ -43,7 +43,7 @@ class ExpressionController:
         except ValueError as e:
             raise Forbidden from e
 
-        if not expression_type.conforms_to(current_type):
+        if not expression_type.satisfies(current_type):
             raise Forbidden
 
         if not self._path.empty:

@@ -6,7 +6,7 @@ from seizento.schema.schema import Schema
 
 from seizento.path import Path
 from seizento.repository import Repository
-from seizento.serializers.schema_serializer import parse_schema, serialize_schema
+from seizento.serializers.schema_serializer import parse_constraint, serialize_constraint
 
 
 class SchemaController:
@@ -35,7 +35,7 @@ class SchemaController:
     async def get(self) -> Dict:
         target_type = await self._get_target_type()
 
-        return serialize_schema(target_type)
+        return serialize_constraint(target_type)
 
     async def set(self, data: Dict) -> None:
         if not self._path.empty:
@@ -45,16 +45,19 @@ class SchemaController:
                 raise Forbidden
 
         try:
-            new_schema = parse_schema(data)
+            new_schema = parse_constraint(data)
         except Exception as e:
             raise BadRequest from e
+
+        if not isinstance(new_schema, Schema):
+            raise BadRequest
 
         expression = await self._repository.get_expression(path=self._path)
 
         if expression is not None:
             current_schema = await expression.get_schema(PathService(self._repository))
 
-            if not current_schema.conforms_to(new_schema):
+            if not current_schema.satisfies(new_schema):
                 raise Forbidden
 
         await self._repository.set_schema(

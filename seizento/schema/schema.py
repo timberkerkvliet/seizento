@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Set, Dict, Optional, Union
-
-from seizento.path import PathComponent
+from typing import Set, Dict
 
 
 class DataType(Enum):
@@ -18,136 +16,121 @@ class DataType(Enum):
     ARRAY = 'array'
 
 
-class Schema:
+ALL_TYPES = {
+    DataType.NULL,
+    DataType.STRING,
+    DataType.BOOL,
+    DataType.FLOAT,
+    DataType.INTEGER,
+    DataType.OBJECT,
+    DataType.ARRAY
+}
+
+
+class Constraint(ABC):
     @abstractmethod
-    def get_types(self) -> Set[DataType]:
-        pass
+    def satisfies(self, other: Constraint):
+        ...
 
     @abstractmethod
-    def get_properties(self) -> Dict[str, Schema]:
-        pass
+    def union(self, other: Constraint) -> Constraint:
+        ...
 
     @abstractmethod
-    def get_additional_properties(self) -> Schema:
-        pass
-
-    @abstractmethod
-    def get_items(self) -> Schema:
-        pass
-
-    @property
-    @abstractmethod
-    def empty(self) -> bool:
-        pass
-
-    @abstractmethod
-    def conforms_to(self, other: Schema):
-        pass
-
-    @abstractmethod
-    def union(self, other: Schema):
-        return other
+    def is_empty(self) -> bool:
+        ...
 
 
 @dataclass(frozen=True)
-class EmptySchema(Schema):
-    def conforms_to(self, other: Schema):
-        return other.empty
+class EverythingAllowed(Constraint):
+    def satisfies(self, other: Constraint):
+        return other.is_empty()
 
-    def union(self, other: Schema):
+    def union(self, other: Constraint):
         return self
 
-    def get_types(self) -> Set[DataType]:
-        return set()
-
-    def get_properties(self) -> Dict[str, Schema]:
-        return {}
-
-    def get_additional_properties(self) -> Schema:
-        return self
-
-    def get_items(self) -> Schema:
-        return self
-
-    def empty(self) -> bool:
+    def is_empty(self) -> bool:
         return True
 
 
 @dataclass(frozen=True)
-class ImpossibleSchema(Schema):
-    def conforms_to(self, other: Schema):
+class NotAllowed(Constraint):
+    def satisfies(self, other: Constraint):
         return True
 
-    def union(self, other: Schema):
+    def union(self, other: Constraint) -> Constraint:
         return other
 
-    def get_types(self) -> Set[DataType]:
-        return set()
-
-    def get_properties(self) -> Dict[str, Schema]:
-        return {}
-
-    def get_additional_properties(self) -> Schema:
-        return self
-
-    def get_items(self) -> Schema:
-        return self
-
-    def empty(self) -> bool:
+    def is_empty(self) -> bool:
         return False
 
 
 @dataclass(frozen=True)
-class ProperSchema(Schema):
+class Schema(Constraint):
     types: Set[DataType]
-    properties: Dict[str, Schema] = field(default_factory=dict)
-    additional_properties: Schema = field(default_factory=EmptySchema)
-    items: Schema = field(default_factory=EmptySchema)
+    properties: Dict[str, Constraint] = field(default_factory=dict)
+    additional_properties: Constraint = field(default_factory=EverythingAllowed)
+    items: Constraint = field(default_factory=EverythingAllowed)
 
-    def get_items(self) -> Schema:
+    def get_items(self) -> Constraint:
         return self.items
 
     def get_types(self) -> Set[DataType]:
         return self.types
 
-    def get_additional_properties(self) -> Schema:
+    def get_additional_properties(self) -> Constraint:
         return self.additional_properties
 
-    def get_properties(self) -> Dict[str, Schema]:
+    def get_properties(self) -> Dict[str, Constraint]:
         return self.properties
 
-    def conforms_to(self, other: Schema) -> bool:
-        if not self.types <= other.get_types() or not self.items.conforms_to(other.get_items()):
+    def satisfies(self, other: Constraint) -> bool:
+        if other == EverythingAllowed():
+            return True
+        if other == NotAllowed():
+            return False
+
+        assert isinstance(other, Schema)
+
+        if not self.types <= other.get_types():
+            return False
+
+        if not self.items.satisfies(other.get_items()):
             return False
 
         for prop, schema in self.properties.items():
-            if prop in other.get_properties():
-                if not schema.conforms_to(other.get_properties()[prop]):
+            if prop in other.properties:
+                if not schema.satisfies(other.get_properties()[prop]):
                     return False
             else:
-                if not schema.conforms_to(other.get_additional_properties()):
+                if not schema.satisfies(other.additional_properties):
                     return False
 
-        if not self.additional_properties.conforms_to(other.get_additional_properties()):
+        if not self.additional_properties.satisfies(other.get_additional_properties()):
             return False
 
         return True
 
-    def union(self, other: Schema) -> Schema:
-        return ProperSchema(
-            types=self.types | other.get_types(),
-            properties={
-                prop: schema.union(other.get_properties()[prop])
-                for prop, schema in self.properties.items()
-                if prop in other.get_properties()
-            },
-            additional_properties=self.additional_properties.union(other.get_additional_properties()),
-            items=self.items.union(other.get_items())
-        )
+    def union(self, other: Constraint) -> Constraint:
+        if other == EverythingAllowed():
+            return other
+        if other == NotAllowed():
+            return self
 
-    @property
-    def empty(self) -> bool:
+        if isinstance(other, Schema):
+            return Schema(
+                types=self.types | other.types,
+                properties={
+                    prop: schema.union(other.properties[prop])
+                    for prop, schema in self.properties.items()
+                    if prop in other.properties
+                },
+                additional_properties=self.additional_properties.union(other.additional_properties),
+                items=self.items.union(other.items)
+            )
+
+    def is_empty(self) -> bool:
         return len(self.types) == 0 \
-               and len(self.properties) == 0 \
-               and self.additional_properties.empty \
-               and self.items.empty
+           and all(constraint.is_empty() for constraint in self.properties.values()) == 0 \
+           and self.additional_properties.is_empty() \
+           and self.items.is_empty()

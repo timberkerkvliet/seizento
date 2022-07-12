@@ -2,7 +2,7 @@ from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
 from typing import Optional
 
-from seizento.data_tree_maps.schema_map import schema_to_tree, tree_to_schema
+from seizento.data_tree_maps.schema_map import constraint_to_tree, tree_to_constraint
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
@@ -45,12 +45,17 @@ class Repository:
         except KeyError:
             return None
 
-        return tree_to_schema(data_tree)
+        constraint = tree_to_constraint(data_tree)
+
+        if not isinstance(constraint, Schema):
+            raise Exception
+
+        return constraint
 
     async def set_schema(self, path: Path, value: Schema) -> None:
         await self._transaction.set_tree(
             path=path.insert_first(LiteralComponent('schema')),
-            tree=schema_to_tree(value)
+            tree=constraint_to_tree(value)
         )
 
     async def delete_type(self, path: Path) -> None:

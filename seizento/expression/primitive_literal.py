@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, ProperSchema, DataType
+from seizento.schema.schema import Schema, DataType
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent
@@ -19,15 +19,15 @@ class PrimitiveLiteral(Expression):
 
     async def get_schema(self, path_service: PathService) -> Schema:
         if isinstance(self.value, str):
-            return ProperSchema(types={DataType.STRING})
+            return Schema(types={DataType.STRING})
         if isinstance(self.value, bool):
-            return ProperSchema(types={DataType.BOOL})
+            return Schema(types={DataType.BOOL})
         if isinstance(self.value, int):
-            return ProperSchema(types={DataType.INTEGER})
+            return Schema(types={DataType.INTEGER})
         if isinstance(self.value, float):
-            return ProperSchema(types={DataType.FLOAT})
+            return Schema(types={DataType.FLOAT})
         if self.value is None:
-            return ProperSchema(types={DataType.NULL})
+            return Schema(types={DataType.NULL})
 
     async def get_argument_space(
         self,

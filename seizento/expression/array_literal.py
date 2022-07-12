@@ -7,7 +7,7 @@ from seizento.identifier import Identifier
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import PathComponent, LiteralComponent
-from seizento.schema.schema import Schema, DataType, ProperSchema, EmptySchema, ImpossibleSchema
+from seizento.schema.schema import Schema, DataType, Schema, NotAllowed, EverythingAllowed
 
 
 if TYPE_CHECKING:
@@ -22,11 +22,11 @@ class ArrayLiteral(Expression):
         schemas = [
             await value.get_schema(path_service) for value in self.values
         ]
-        item_schema = ImpossibleSchema()
+        item_schema = NotAllowed()
         for schema in schemas:
             item_schema = item_schema.union(schema)
 
-        return ProperSchema(
+        return Schema(
             types={DataType.ARRAY},
             items=item_schema
         )
