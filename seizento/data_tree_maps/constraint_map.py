@@ -8,9 +8,9 @@ from seizento.data_tree import DataTree
 
 
 def constraint_to_tree(value: Constraint) -> DataTree:
-    if value == NotAllowed:
+    if value == NotAllowed():
         return DataTree(root_data=False)
-    if value == EverythingAllowed:
+    if value == EverythingAllowed():
         return DataTree(root_data=True)
 
     assert isinstance(value, Schema)

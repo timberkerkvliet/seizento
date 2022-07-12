@@ -14,7 +14,8 @@ class TestStruct(IsolatedAsyncioTestCase):
             'properties': {
                 'a': {'type': 'string'},
                 'b': {'type': 'integer'}
-            }
+            },
+            'additionalProperties': False
         }
         await self.test_client.set('/schema/', schema)
 
@@ -26,7 +27,8 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/schema/',
             {
                 'type': 'object',
-                'properties': {'a': {'type': 'number'}}
+                'properties': {'a': {'type': 'number'}},
+                'additionalProperties': False
             }
         )
 
@@ -34,7 +36,8 @@ class TestStruct(IsolatedAsyncioTestCase):
             '/schema/',
             {
                 'type': 'object',
-                'properties': {'b': {'type': 'integer'}}
+                'properties': {'b': {'type': 'integer'}},
+                'additionalProperties': False
             }
         )
 
@@ -45,12 +48,13 @@ class TestStruct(IsolatedAsyncioTestCase):
                 'type': 'object',
                 'properties': {
                     'b': {'type': 'integer'}
-                }
+                },
+                'additionalProperties': False
             }
         )
 
     async def test_adding_fields(self):
-        await self.test_client.set('schema/', {'type': 'object'})
+        await self.test_client.set('schema/', {'type': 'object', 'additionalProperties': False})
 
         await self.test_client.set(
             '/schema/c',
@@ -69,15 +73,15 @@ class TestStruct(IsolatedAsyncioTestCase):
                 'properties': {
                     'c': {'type': 'integer'},
                     'd': {'type': 'string'}
-                }
-
+                },
+                'additionalProperties': False
             }
         )
 
     async def test_extending_fields(self):
         await self.test_client.set(
             '/schema/',
-            {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
+            {'type': 'object', 'properties': {'a': {'type': 'integer'}}, 'additionalProperties': False}
         )
         await self.test_client.set('/expression/',  {'a': 900})
 
@@ -86,7 +90,8 @@ class TestStruct(IsolatedAsyncioTestCase):
             'properties': {
                 'a': {'type': 'integer'},
                 'b': {'type': 'integer'}
-            }
+            },
+            'additionalProperties': False
         }
 
         await self.test_client.set('/schema/', new_schema)
@@ -99,7 +104,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         try:
             await self.test_client.set(
                 '/schema',
-                {'type': 'object', 'properties': {'^ (&@a9.?$#/{é': {'type': 'string'}}}
+                {'type': 'object', 'properties': {'^ (&@a9.?$#/{é': {'type': 'string'}}, 'additionalProperties': False}
             )
         except BadRequest:
             self.fail()
@@ -109,7 +114,14 @@ class TestStruct(IsolatedAsyncioTestCase):
         await self.test_client.set('/expression', {'a': 'a'})
 
         try:
-            await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+            await self.test_client.set(
+                '/schema',
+                {
+                    'type': 'object',
+                    'properties': {'a': {'type': 'string'}},
+                    'additionalProperties': False
+                }
+            )
         except Forbidden:
             self.fail()
 
@@ -123,7 +135,8 @@ class TestStruct(IsolatedAsyncioTestCase):
                     'properties': {
                         'a': {'type': 'string'},
                         'b': {'type': 'integer'}
-                    }
+                    },
+                    'additionalProperties': False
                 }
             }
         )
@@ -139,7 +152,8 @@ class TestStruct(IsolatedAsyncioTestCase):
                         'properties': {
                             'a': {'type': 'string'},
                             'c': {'type': 'integer'}
-                        }
+                        },
+                        'additionalProperties': False
                     }
                 }
             )
@@ -156,7 +170,8 @@ class TestStruct(IsolatedAsyncioTestCase):
                     'properties': {
                         'a': {'type': 'string'},
                         'b': {'type': 'integer'}
-                    }
+                    },
+                    'additionalProperties': False
                 }
             }
         )
@@ -172,7 +187,8 @@ class TestStruct(IsolatedAsyncioTestCase):
                         'properties': {
                             'a': {'type': 'integer'},
                             'c': {'type': 'integer'}
-                        }
+                        },
+                        'additionalProperties': False
                     }
                 }
             )
@@ -182,7 +198,10 @@ class TestStruct(IsolatedAsyncioTestCase):
         await self.test_client.set('/expression', {})
 
         try:
-            await self.test_client.set('/schema', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+            await self.test_client.set(
+                '/schema',
+                {'type': 'object', 'properties': {'a': {'type': 'string'}}, 'additionalProperties': False}
+            )
         except Forbidden:
             self.fail()
 
