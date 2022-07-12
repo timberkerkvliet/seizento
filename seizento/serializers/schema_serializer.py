@@ -14,24 +14,24 @@ def serialize_constraint(value: Constraint) -> Any:
 
     result = {}
 
-    if len(value.get_types()) == 1:
-        result['type'] = value.get_types().pop().value
+    if len(value.types) == 1:
+        result['type'] = value.types.pop().value
 
-    if len(value.get_types()) > 1:
+    if len(value.types) > 1:
         result['type'] = [data_type.value for data_type in value.types]
 
-    if len(value.get_properties()) > 0:
+    if len(value.properties) > 0:
         result['properties'] = {
             prop: serialize_constraint(constraint)
-            for prop, constraint in value.get_properties().items()
+            for prop, constraint in value.properties.items()
             if not constraint.is_empty()
         }
 
     if not value.items.is_empty():
-        result['items'] = serialize_constraint(value.get_items())
+        result['items'] = serialize_constraint(value.items)
 
     if not value.additional_properties.is_empty():
-        result['additionalProperties'] = serialize_constraint(value.get_additional_properties())
+        result['additionalProperties'] = serialize_constraint(value.additional_properties)
 
     return result
 

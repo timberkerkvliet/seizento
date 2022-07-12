@@ -28,7 +28,7 @@ def constraint_to_tree(value: Constraint) -> DataTree:
         subtrees[IndexPlaceHolder()] = constraint_to_tree(items)
 
     return DataTree(
-        root_data={'type': [data_type.value for data_type in value.get_types()]},
+        root_data={'type': [data_type.value for data_type in value.types]},
         subtrees=subtrees
     )
 

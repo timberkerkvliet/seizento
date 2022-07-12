@@ -72,18 +72,6 @@ class Schema(Constraint):
     additional_properties: Constraint = field(default_factory=EverythingAllowed)
     items: Constraint = field(default_factory=EverythingAllowed)
 
-    def get_items(self) -> Constraint:
-        return self.items
-
-    def get_types(self) -> Set[DataType]:
-        return self.types
-
-    def get_additional_properties(self) -> Constraint:
-        return self.additional_properties
-
-    def get_properties(self) -> Dict[str, Constraint]:
-        return self.properties
-
     def satisfies(self, other: Constraint) -> bool:
         if other == EverythingAllowed():
             return True
@@ -92,21 +80,21 @@ class Schema(Constraint):
 
         assert isinstance(other, Schema)
 
-        if not self.types <= other.get_types():
+        if not self.types <= other.types:
             return False
 
-        if not self.items.satisfies(other.get_items()):
+        if not self.items.satisfies(other.items):
             return False
 
         for prop, schema in self.properties.items():
             if prop in other.properties:
-                if not schema.satisfies(other.get_properties()[prop]):
+                if not schema.satisfies(other.properties[prop]):
                     return False
             else:
                 if not schema.satisfies(other.additional_properties):
                     return False
 
-        if not self.additional_properties.satisfies(other.get_additional_properties()):
+        if not self.additional_properties.satisfies(other.additional_properties):
             return False
 
         return True
