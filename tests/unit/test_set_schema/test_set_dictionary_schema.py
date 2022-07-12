@@ -35,7 +35,8 @@ class TestDictionary(IsolatedAsyncioTestCase):
             '/schema',
             {
                 'type': 'object',
-                'properties': {'a': {'type': 'string'}}
+                'properties': {'a': {'type': 'string'}},
+                'additionalProperties': False
             }
         )
         await self.test_client.set('/expression', {'a': 'a'})
