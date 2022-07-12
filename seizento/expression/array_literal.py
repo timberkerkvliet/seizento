@@ -7,8 +7,9 @@ from seizento.identifier import Identifier
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import PathComponent, LiteralComponent
-from seizento.schema.schema import Schema, DataType, Schema, NotAllowed, EverythingAllowed
-
+from seizento.schema.schema import Schema, Schema
+from seizento.schema.constraint import EverythingAllowed, NotAllowed
+from seizento.schema.types import DataType
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

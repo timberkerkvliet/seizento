@@ -1,6 +1,8 @@
 
 from seizento.path import LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder
-from seizento.schema.schema import Schema, NotAllowed, EverythingAllowed, DataType, Constraint
+from seizento.schema.schema import Schema
+from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
+from seizento.schema.types import DataType
 
 from seizento.data_tree import DataTree
 

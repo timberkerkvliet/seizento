@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import Union, Dict, Set, TYPE_CHECKING
 
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, DataType
+from seizento.schema.schema import Schema
+from seizento.schema.types import DataType
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent

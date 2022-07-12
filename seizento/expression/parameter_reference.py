@@ -7,8 +7,8 @@ from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
 from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH
-from seizento.schema.schema import Schema, Schema, DataType
-
+from seizento.schema.schema import Schema, Schema
+from seizento.schema.types import DataType
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

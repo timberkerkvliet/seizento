@@ -7,8 +7,8 @@ from seizento.identifier import Identifier
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, PropertyPlaceHolder
-from seizento.schema.schema import Schema, DataType
-
+from seizento.schema.schema import Schema
+from seizento.schema.types import DataType
 
 if TYPE_CHECKING:
     from seizento.expression.path_service import PathService

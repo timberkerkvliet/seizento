@@ -4,7 +4,9 @@ from typing import Dict, Set, TYPE_CHECKING
 
 from seizento.data_tree import DataTree
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, Schema, DataType, NotAllowed
+from seizento.schema.schema import Schema, Schema
+from seizento.schema.constraint import NotAllowed
+from seizento.schema.types import DataType
 
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.path import Path, PathComponent, LiteralComponent

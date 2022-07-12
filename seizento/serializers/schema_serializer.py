@@ -1,7 +1,9 @@
 from typing import Any
 
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema, DataType, Schema, NotAllowed, EverythingAllowed, Constraint, ALL_TYPES
+from seizento.schema.schema import Schema, Schema
+from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
+from seizento.schema.types import DataType, ALL_TYPES
 
 
 def serialize_constraint(value: Constraint) -> Any:
