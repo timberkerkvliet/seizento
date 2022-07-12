@@ -2,7 +2,7 @@ from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
 from typing import Optional
 
-from seizento.data_tree_maps.schema_map import constraint_to_tree, tree_to_constraint
+from seizento.data_tree_maps.constraint_map import constraint_to_tree, tree_to_constraint
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent

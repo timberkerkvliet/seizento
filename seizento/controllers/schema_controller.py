@@ -6,7 +6,7 @@ from seizento.schema.schema import Schema
 
 from seizento.path import Path
 from seizento.repository import Repository
-from seizento.serializers.schema_serializer import parse_constraint, serialize_constraint
+from seizento.serializers.constraint_serializer import parse_constraint, serialize_constraint
 
 
 class SchemaController:
