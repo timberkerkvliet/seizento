@@ -22,24 +22,14 @@ class Schema(Constraint):
 
         assert isinstance(other, Schema)
 
-        if not self.types <= other.types:
-            return False
-
-        if not self.items.satisfies(other.items):
-            return False
-
-        for prop, schema in self.properties.items():
-            if prop in other.properties:
-                if not schema.satisfies(other.properties[prop]):
-                    return False
-            else:
-                if not schema.satisfies(other.additional_properties):
-                    return False
-
-        if not self.additional_properties.satisfies(other.additional_properties):
-            return False
-
-        return True
+        return self.types <= other.types \
+            and self.items.satisfies(other.items) \
+            and self.additional_properties.satisfies(other.additional_properties) \
+            and all(
+                schema.satisfies(other.properties[prop])
+                if prop in other.properties else schema.satisfies(other.additional_properties)
+                for prop, schema in self.properties.items()
+            )
 
     def union(self, other: Constraint) -> Constraint:
         if other == EverythingAllowed():
