@@ -25,7 +25,7 @@ class Constraint(ABC):
         ...
 
     @abstractmethod
-    def get_children(self) -> Dict[PathComponent, Constraint]:
+    def get_child(self, component: PathComponent) -> None:
         ...
 
     @abstractmethod
@@ -51,8 +51,8 @@ class EverythingAllowed(Constraint):
     def is_empty(self) -> bool:
         return True
 
-    def get_children(self) -> Dict[PathComponent, Constraint]:
-        return {}
+    def get_child(self, component: PathComponent) -> None:
+        raise KeyError
 
     def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
         raise Exception
@@ -75,8 +75,8 @@ class NotAllowed(Constraint):
     def is_empty(self) -> bool:
         return False
 
-    def get_children(self) -> Dict[PathComponent, Constraint]:
-        return {}
+    def get_child(self, component: PathComponent) -> None:
+        raise KeyError
 
     def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
         raise Exception

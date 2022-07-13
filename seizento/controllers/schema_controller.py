@@ -25,10 +25,7 @@ class SchemaController:
 
         result = root_schema
         for component in self._path:
-            if component not in result.get_children():
-                raise NotFound
-
-            result = result.get_children()[component]
+            result = result.get_child(component)
 
         return result
 

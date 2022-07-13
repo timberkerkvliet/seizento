@@ -42,23 +42,16 @@ class Repository:
         await self._transaction.__aexit__(*args)
 
     async def get_schema(self, path: Path) -> Optional[Schema]:
-        result = self._root_schema.get_children()[LiteralComponent('schema')]
+        result = self._root_schema.get_child(LiteralComponent('schema'))
         for component in path:
-            if component in result.get_children():
-                result = result.get_children()[component]
-            elif IndexPlaceHolder() in result.get_children() and isinstance(component, LiteralComponent) and component.value.isdigit():
-                result = result.get_children()[IndexPlaceHolder()]
-            elif PropertyPlaceHolder() in result.get_children() and isinstance(component, LiteralComponent):
-                result = result.get_children()[PropertyPlaceHolder()]
-            else:
-                raise KeyError
+            result = result.get_child(component)
 
         return result
 
     async def set_schema(self, path: Path, value: Schema) -> None:
         target = self._root_schema
         for component in path.insert_first(LiteralComponent('schema')).remove_last():
-            target = target.get_children()[component]
+            target = target.get_child(component)
 
         target.set_child(
             component=path.last_component if len(path) > 0 else LiteralComponent('schema'),
@@ -68,7 +61,7 @@ class Repository:
     async def delete_type(self, path: Path) -> None:
         target = self._root_schema
         for component in path.insert_first(LiteralComponent('schema')).remove_last():
-            target = target.get_children()[component]
+            target = target.get_child(component)
 
         target.delete_child(path.last_component)
 
