@@ -76,26 +76,26 @@ class Schema(Constraint):
            and self.items.is_empty()
 
     def get_child(self, component: PathComponent) -> Constraint:
+        candidates = []
         if isinstance(component, LiteralComponent) and component.value in self.properties:
-            return self.properties[component.value]
+            candidates.append(self.properties[component.value])
         if component == IndexPlaceHolder():
-            return self.items
+            candidates.append(self.items)
         if component == PropertyPlaceHolder():
-            return self.additional_properties
+            candidates.append(self.additional_properties)
         if isinstance(component, LiteralComponent) and component.value.isdigit() and self.items != EverythingAllowed():
-            return self.items
+            candidates.append(self.items)
         if isinstance(component, LiteralComponent) and self.additional_properties != EverythingAllowed():
-            return self.additional_properties
+            candidates.append(self.additional_properties)
         if component == PlaceHolder():
-            constraints = list(self.properties.values()) + [self.items, self.additional_properties]
-            constraints = [x for x in constraints if x != NotAllowed()]
-            result = EverythingAllowed()
-            for x in constraints:
-                result = result.intersection(x)
+            candidates = list(self.properties.values()) + [self.items, self.additional_properties]
 
-            return result
+        constraints = [x for x in candidates if x != NotAllowed()]
+        result = EverythingAllowed()
+        for x in constraints:
+            result = result.intersection(x)
 
-        raise KeyError
+        return result
 
     def set_child(self, component: PathComponent, constraint: Constraint) -> None:
         if isinstance(component, LiteralComponent):
