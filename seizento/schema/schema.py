@@ -3,11 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Set, Dict
 
+from seizento.path import PathComponent, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder
 from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
 from seizento.schema.types import DataType, ALL_TYPES
 
 
-@dataclass(frozen=True)
+@dataclass
 class Schema(Constraint):
     types: Set[DataType] = field(default_factory=lambda: ALL_TYPES)
     properties: Dict[str, Constraint] = field(default_factory=dict)
@@ -54,3 +55,15 @@ class Schema(Constraint):
            and all(constraint.is_empty() for constraint in self.properties.values()) == 0 \
            and self.additional_properties.is_empty() \
            and self.items.is_empty()
+
+    def get_children(self) -> Dict[PathComponent, Constraint]:
+        return {
+            **{
+                LiteralComponent(prop): constraint for prop, constraint in self.properties.items()
+            },
+            PropertyPlaceHolder(): self.additional_properties,
+            IndexPlaceHolder(): self.items
+        }
+
+    def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
+        raise Exception

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Dict
+
+from seizento.path import PathComponent
 
 
 class Constraint(ABC):
@@ -17,6 +20,14 @@ class Constraint(ABC):
     def is_empty(self) -> bool:
         ...
 
+    @abstractmethod
+    def get_children(self) -> Dict[PathComponent, Constraint]:
+        ...
+
+    @abstractmethod
+    def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
+        ...
+
 
 @dataclass(frozen=True)
 class EverythingAllowed(Constraint):
@@ -29,6 +40,12 @@ class EverythingAllowed(Constraint):
     def is_empty(self) -> bool:
         return True
 
+    def get_children(self) -> Dict[PathComponent, Constraint]:
+        return {}
+
+    def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
+        raise Exception
+
 
 @dataclass(frozen=True)
 class NotAllowed(Constraint):
@@ -40,3 +57,9 @@ class NotAllowed(Constraint):
 
     def is_empty(self) -> bool:
         return False
+
+    def get_children(self) -> Dict[PathComponent, Constraint]:
+        return {}
+
+    def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
+        raise Exception

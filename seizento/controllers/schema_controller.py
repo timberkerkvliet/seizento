@@ -4,7 +4,7 @@ from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.expression.path_service import PathService
 from seizento.schema.schema import Schema
 
-from seizento.path import Path
+from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
 from seizento.serializers.constraint_serializer import parse_constraint, serialize_constraint
 
@@ -19,9 +19,16 @@ class SchemaController:
         self._path = path
 
     async def _get_target_type(self) -> Schema:
-        result = await self._repository.get_schema(path=self._path)
-        if result is None:
+        root_schema = await self._repository.get_schema(path=EMPTY_PATH)
+        if root_schema is None:
             raise NotFound
+
+        result = root_schema
+        for component in self._path:
+            if component not in result.get_children():
+                raise NotFound
+
+            result = result.get_children()[component]
 
         return result
 
