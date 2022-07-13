@@ -22,10 +22,8 @@ class PathReference(Expression):
         result = await path_service.get_schema(EMPTY_PATH)
 
         for x in self.reference:
-            if isinstance(x, LiteralComponent):
-                result = result.get_child(x)
-            else:
-                result = result.get_child(PlaceHolder())
+            component = x if isinstance(x, LiteralComponent) else PlaceHolder()
+            result = result.get_child(component)
 
         return result
 
