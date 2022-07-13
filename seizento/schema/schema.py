@@ -50,6 +50,25 @@ class Schema(Constraint):
                 items=self.items.union(other.items)
             )
 
+    def intersection(self, other: Constraint) -> Constraint:
+        if other == EverythingAllowed():
+            return self
+        if other == NotAllowed():
+            return other
+
+        assert isinstance(other, Schema)
+
+        return Schema(
+            types=self.types & other.types,
+            properties={
+                prop: schema.intersection(other.properties[prop])
+                for prop, schema in self.properties.items()
+                if prop in other.properties
+            },
+            additional_properties=self.additional_properties.intersection(other.additional_properties),
+            items=self.items.intersection(other.items)
+        )
+
     def is_empty(self) -> bool:
         return len(self.types) == 0 \
            and all(constraint.is_empty() for constraint in self.properties.values()) == 0 \

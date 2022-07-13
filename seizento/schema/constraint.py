@@ -17,6 +17,10 @@ class Constraint(ABC):
         ...
 
     @abstractmethod
+    def intersection(self, other: Constraint) -> Constraint:
+        ...
+
+    @abstractmethod
     def is_empty(self) -> bool:
         ...
 
@@ -41,6 +45,9 @@ class EverythingAllowed(Constraint):
     def union(self, other: Constraint):
         return self
 
+    def intersection(self, other: Constraint) -> Constraint:
+        return other
+
     def is_empty(self) -> bool:
         return True
 
@@ -61,6 +68,9 @@ class NotAllowed(Constraint):
 
     def union(self, other: Constraint) -> Constraint:
         return other
+
+    def intersection(self, other: Constraint) -> Constraint:
+        return self
 
     def is_empty(self) -> bool:
         return False
