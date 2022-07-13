@@ -83,9 +83,9 @@ class Schema(Constraint):
             candidates.append(self.items)
         if component == PropertyPlaceHolder():
             candidates.append(self.additional_properties)
-        if isinstance(component, LiteralComponent) and component.value.isdigit() and self.items != EverythingAllowed():
+        if isinstance(component, LiteralComponent) and component.value.isdigit():
             candidates.append(self.items)
-        if isinstance(component, LiteralComponent) and self.additional_properties != EverythingAllowed():
+        if isinstance(component, LiteralComponent):
             candidates.append(self.additional_properties)
         if component == PlaceHolder():
             candidates = list(self.properties.values()) + [self.items, self.additional_properties]
