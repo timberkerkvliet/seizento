@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Set, Dict
 
-from seizento.path import PathComponent, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder
+from seizento.path import PathComponent, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder, PlaceHolder
 from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
 from seizento.schema.types import DataType, ALL_TYPES
 
@@ -86,6 +86,14 @@ class Schema(Constraint):
             return self.items
         if isinstance(component, LiteralComponent) and self.additional_properties != EverythingAllowed():
             return self.additional_properties
+        if component == PlaceHolder():
+            constraints = list(self.properties.values()) + [self.items, self.additional_properties]
+            constraints = [x for x in constraints if x != NotAllowed()]
+            result = EverythingAllowed()
+            for x in constraints:
+                result = result.intersection(x)
+
+            return result
 
         raise KeyError
 

@@ -28,6 +28,11 @@ class PropertyPlaceHolder(PathComponent):
 
 
 @dataclass(frozen=True)
+class PlaceHolder(PathComponent):
+    pass
+
+
+@dataclass(frozen=True)
 class Path:
     components: Tuple[PathComponent, ...]
 
