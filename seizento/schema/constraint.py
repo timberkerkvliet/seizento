@@ -28,6 +28,10 @@ class Constraint(ABC):
     def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
         ...
 
+    @abstractmethod
+    def delete_child(self, component: PathComponent) -> bool:
+        ...
+
 
 @dataclass(frozen=True)
 class EverythingAllowed(Constraint):
@@ -46,6 +50,9 @@ class EverythingAllowed(Constraint):
     def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
         raise Exception
 
+    def delete_child(self, component: PathComponent) -> None:
+        return
+
 
 @dataclass(frozen=True)
 class NotAllowed(Constraint):
@@ -63,3 +70,6 @@ class NotAllowed(Constraint):
 
     def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
         raise Exception
+
+    def delete_child(self, component: PathComponent) -> None:
+        return

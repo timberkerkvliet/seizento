@@ -5,7 +5,8 @@ from typing import Optional
 from seizento.data_tree_maps.constraint_map import constraint_to_tree, tree_to_constraint
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
-from seizento.path import Path, LiteralComponent
+from seizento.path import Path, LiteralComponent, IndexPlaceHolder, PropertyPlaceHolder
+from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
 
 from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
@@ -29,8 +30,9 @@ class DataTreeStoreTransaction(AbstractAsyncContextManager):
 
 
 class Repository:
-    def __init__(self, transaction: DataTreeStoreTransaction):
+    def __init__(self, transaction: DataTreeStoreTransaction, root_schema: Constraint):
         self._transaction = transaction
+        self._root_schema = root_schema
 
     async def __aenter__(self):
         await self._transaction.__aenter__()
@@ -40,28 +42,35 @@ class Repository:
         await self._transaction.__aexit__(*args)
 
     async def get_schema(self, path: Path) -> Optional[Schema]:
-        try:
-            data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('schema')))
-        except KeyError:
-            return None
+        result = self._root_schema.get_children()[LiteralComponent('schema')]
+        for component in path:
+            if component in result.get_children():
+                result = result.get_children()[component]
+            elif IndexPlaceHolder() in result.get_children() and isinstance(component, LiteralComponent) and component.value.isdigit():
+                result = result.get_children()[IndexPlaceHolder()]
+            elif PropertyPlaceHolder() in result.get_children() and isinstance(component, LiteralComponent):
+                result = result.get_children()[PropertyPlaceHolder()]
+            else:
+                raise KeyError
 
-        constraint = tree_to_constraint(data_tree)
-
-        if not isinstance(constraint, Schema):
-            raise Exception
-
-        return constraint
+        return result
 
     async def set_schema(self, path: Path, value: Schema) -> None:
-        await self._transaction.set_tree(
-            path=path.insert_first(LiteralComponent('schema')),
-            tree=constraint_to_tree(value)
+        target = self._root_schema
+        for component in path.insert_first(LiteralComponent('schema')).remove_last():
+            target = target.get_children()[component]
+
+        target.set_child(
+            component=path.last_component if len(path) > 0 else LiteralComponent('schema'),
+            constraint=value
         )
 
     async def delete_type(self, path: Path) -> None:
-        await self._transaction.delete_tree(
-            path=path.insert_first(LiteralComponent('schema'), )
-        )
+        target = self._root_schema
+        for component in path.insert_first(LiteralComponent('schema')).remove_last():
+            target = target.get_children()[component]
+
+        target.delete_child(path.last_component)
 
     async def get_expression(self, path: Path) -> Optional[Expression]:
         try:

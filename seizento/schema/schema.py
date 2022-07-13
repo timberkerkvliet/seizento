@@ -57,13 +57,24 @@ class Schema(Constraint):
            and self.items.is_empty()
 
     def get_children(self) -> Dict[PathComponent, Constraint]:
-        return {
-            **{
-                LiteralComponent(prop): constraint for prop, constraint in self.properties.items()
-            },
-            PropertyPlaceHolder(): self.additional_properties,
-            IndexPlaceHolder(): self.items
+        result = {
+            LiteralComponent(prop): constraint for prop, constraint in self.properties.items()
         }
+        if self.additional_properties != EverythingAllowed():
+            result[PropertyPlaceHolder()] = self.additional_properties
+        if self.items != EverythingAllowed():
+            result[IndexPlaceHolder()] = self.items
 
-    def set_child(self, component: PathComponent, constraint: Constraint) -> bool:
-        raise Exception
+        return result
+
+    def set_child(self, component: PathComponent, constraint: Constraint) -> None:
+        if isinstance(component, LiteralComponent):
+            self.properties[component.value] = constraint
+        if component == PropertyPlaceHolder():
+            self.additional_properties = constraint
+        if component == IndexPlaceHolder():
+            self.items = constraint
+
+    def delete_child(self, component: PathComponent) -> None:
+        if isinstance(component, LiteralComponent):
+            self.properties.pop(component.value, None)

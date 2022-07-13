@@ -9,6 +9,7 @@ from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
 from seizento.path import Path
 from seizento.repository import Repository, DataTreeStoreTransaction
+from seizento.schema.constraint import Constraint
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
 from seizento.user import AccessRights
@@ -18,10 +19,12 @@ class ResourceController:
     def __init__(
         self,
         transaction_factory: Callable[[], DataTreeStoreTransaction],
-        app_secret: str
+        app_secret: str,
+        root_schema: Constraint
     ):
         self._transaction_factory = transaction_factory
         self._app_secret = app_secret
+        self._root_schema = root_schema
 
     @staticmethod
     def _get_controller(resource_path: Path, repository: Repository):
@@ -71,7 +74,7 @@ class ResourceController:
         if not access_rights.can_read(resource_path):
             raise Unauthorized
 
-        repository = Repository(transaction=self._transaction_factory())
+        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -84,7 +87,7 @@ class ResourceController:
         if not access_rights.can_write(resource_path):
             raise Unauthorized
 
-        repository = Repository(transaction=self._transaction_factory())
+        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -97,7 +100,7 @@ class ResourceController:
         if not access_rights.can_write(resource_path):
             raise Unauthorized
 
-        repository = Repository(transaction=self._transaction_factory())
+        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)

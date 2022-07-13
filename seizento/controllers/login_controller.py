@@ -8,6 +8,7 @@ from seizento.identifier import Identifier
 from seizento.path import Path
 from seizento.repository import Repository, DataTreeStoreTransaction
 from seizento.expression.path_service import PathService
+from seizento.schema.constraint import Constraint
 from seizento.serializers.user_serializer import serialize_access_rights
 
 
@@ -15,13 +16,15 @@ class LoginController:
     def __init__(
         self,
         transaction_factory: Callable[[], DataTreeStoreTransaction],
-        app_secret: str
+        app_secret: str,
+        root_schema: Constraint
     ):
         self._transaction_factory = transaction_factory
         self._app_secret = app_secret
+        self._root_schema = root_schema
 
     async def login(self, data) -> str:
-        repository = Repository(transaction=self._transaction_factory())
+        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
 
         async with repository:
             user = await repository.get_user(Identifier(data['user_id']))

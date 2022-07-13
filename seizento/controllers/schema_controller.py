@@ -66,11 +66,13 @@ class SchemaController:
 
             if not current_schema.satisfies(new_schema):
                 raise Forbidden
-
-        await self._repository.set_schema(
-            path=self._path,
-            value=new_schema
-        )
+        try:
+            await self._repository.set_schema(
+                path=self._path,
+                value=new_schema
+            )
+        except Exception:
+            raise NotFound
 
     async def delete(self) -> None:
         if not self._path.empty:
