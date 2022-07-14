@@ -19,10 +19,8 @@ if TYPE_CHECKING:
 class ArrayLiteral(Expression):
     values: List[Expression, ...]
 
-    async def get_schema(self, path_service: PathService) -> Schema:
-        schemas = [
-            await value.get_schema(path_service) for value in self.values
-        ]
+    def get_schema(self, root_schema: Schema) -> Schema:
+        schemas = [value.get_schema(root_schema) for value in self.values]
         item_schema = NotAllowed()
         for schema in schemas:
             item_schema = item_schema.union(schema)

@@ -20,12 +20,12 @@ if TYPE_CHECKING:
 class StructLiteral(Expression):
     values: Dict[str, Expression]
 
-    async def get_schema(self, path_service: PathService) -> Schema:
+    def get_schema(self, root_schema: Schema) -> Schema:
 
         return Schema(
             types={DataType.OBJECT},
             properties={
-                prop: await expression.get_schema(path_service)
+                prop: expression.get_schema(root_schema)
                 for prop, expression in self.values.items()
             },
             additional_properties=NotAllowed()

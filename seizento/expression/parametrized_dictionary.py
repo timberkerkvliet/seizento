@@ -20,10 +20,10 @@ class ParametrizedDictionary(Expression):
     key: Expression
     value: Expression
 
-    async def get_schema(self, path_service: PathService) -> Schema:
+    def get_schema(self, root_schema: Schema) -> Schema:
         return Schema(
             types={DataType.OBJECT},
-            additional_properties=await self.value.get_schema(path_service)
+            additional_properties=self.value.get_schema(root_schema)
         )
 
     async def _internal_space(self, path_service: PathService) -> ArgumentSpace:

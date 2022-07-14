@@ -38,7 +38,7 @@ class ArgumentSpace:
 
 class Expression(ABC):
     @abstractmethod
-    async def get_schema(self, path_service: PathService) -> Schema:
+    def get_schema(self, root_schema: Schema) -> Schema:
         pass
 
     @abstractmethod

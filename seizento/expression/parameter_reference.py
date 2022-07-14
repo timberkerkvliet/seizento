@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class ParameterReference(Expression):
     reference: Identifier
 
-    async def get_schema(self, path_service: PathService) -> Schema:
+    def get_schema(self, root_schema: Schema) -> Schema:
         return Schema(types={DataType.STRING})
 
     async def get_argument_space(

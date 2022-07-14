@@ -2,7 +2,7 @@ from typing import Dict
 
 from seizento.controllers.exceptions import Forbidden, NotFound, BadRequest
 
-from seizento.path import Path
+from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
 from seizento.expression.path_service import CircularReference, PathService
@@ -39,7 +39,7 @@ class ExpressionController:
             raise NotFound
 
         try:
-            expression_type = await new_expression.get_schema(PathService(self._repository))
+            expression_type = new_expression.get_schema(await self._repository.get_schema(EMPTY_PATH))
         except ValueError as e:
             raise Forbidden from e
 

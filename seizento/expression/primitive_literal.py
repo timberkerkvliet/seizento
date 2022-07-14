@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class PrimitiveLiteral(Expression):
     value: Union[str, int, float, bool, None]
 
-    async def get_schema(self, path_service: PathService) -> Schema:
+    def get_schema(self, root_schema: Schema) -> Schema:
         if isinstance(self.value, str):
             return Schema(types={DataType.STRING})
         if isinstance(self.value, bool):

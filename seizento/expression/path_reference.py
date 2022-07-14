@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 class PathReference(Expression):
     reference: list[Union[LiteralComponent, Identifier]]
 
-    async def get_schema(self, path_service: PathService) -> Schema:
-        result = await path_service.get_schema(EMPTY_PATH)
+    def get_schema(self, root_schema: Schema) -> Schema:
+        result = root_schema
 
         for x in self.reference:
             component = x if isinstance(x, LiteralComponent) else PlaceHolder()
