@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import NotFound
+from seizento.controllers.exceptions import NotFound, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -17,10 +17,8 @@ class TestGetReferenceEvaluation(IsolatedAsyncioTestCase):
 
     async def test_non_existing_key(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-        await self.test_client.set('/expression/', ['{/1}'])
-
-        with self.assertRaises(NotFound):
-            await self.test_client.get('/evaluation/')
+        with self.assertRaises(Forbidden):
+            await self.test_client.set('/expression/', ['{/1}'])
 
     async def test_object_reference(self):
         await self.test_client.set(

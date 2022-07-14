@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional, Set
 
 from seizento.controllers.exceptions import NotFound
 from seizento.expression.expression import Expression, ArgumentSpace
-from seizento.path import Path
+from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
 from seizento.schema.schema import Schema
 
@@ -19,44 +19,44 @@ class CircularReference(Exception):
 
 
 class PathService:
-    def __init__(self, repository: Repository, visited: Set[Path] = None):
-        self._repository = repository
+    def __init__(self, root_expression: Expression, visited: Set[Path] = None):
+        self._root_expression = root_expression
         self._visited = visited or set()
 
     async def find_nearest_expression(self, path: Path) -> NearestExpressionResult:
-        current_path = path
-        while True:
-            expression = await self._repository.get_expression(current_path)
-            if expression is not None:
-                return NearestExpressionResult(
-                    expression=expression,
-                    path=current_path
-                )
+        current_path = EMPTY_PATH
+        expression = self._root_expression
+        for component in path:
+            try:
+                expression = expression.get_child(component)
+            except KeyError:
+                break
 
-            if path.empty:
-                raise NotFound
+            current_path = current_path.append(component)
 
-            path = path.remove_last()
-            continue
+        return NearestExpressionResult(
+            expression=expression,
+            path=current_path
+        )
 
     async def evaluate(self, path: Path):
-        if path in self._visited:
-            raise CircularReference
-
         nearest_expression = await self.find_nearest_expression(path=path)
 
-        indices = [component.name for component in path.components[len(nearest_expression.path):]]
+        indices = [
+            int(component.value) if component.value.isdigit() else component.value
+            for component in path.components[len(nearest_expression.path):]
+        ]
         expression = nearest_expression.expression
 
         evaluation = await expression.evaluate(
-            path_service=PathService(repository=self._repository, visited=self._visited | {path}),
+            path_service=PathService(root_expression=self._root_expression, visited=self._visited | {path}),
             arguments={}
         )
 
         for index in indices:
             try:
                 evaluation = evaluation[index]
-            except KeyError:
+            except (KeyError, IndexError):
                 raise NotFound
 
         return evaluation

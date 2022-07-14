@@ -1,6 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
-from seizento.controllers.exceptions import Forbidden
+from seizento.controllers.exceptions import Forbidden, NotFound
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -23,14 +23,6 @@ class TestSetReference(IsolatedAsyncioTestCase):
 
         with self.assertRaises(Forbidden):
             await self.test_client.set('/expression/b', '{/a}')
-
-    async def test_cycle_of_three(self):
-        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-
-        await self.test_client.set('/expression/', ['{/1}', '{/2}'])
-
-        with self.assertRaises(Forbidden):
-            await self.test_client.set('/expression/2', '{/0}')
 
     async def test_self_reference(self):
         await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})

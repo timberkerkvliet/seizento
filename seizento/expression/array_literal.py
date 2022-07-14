@@ -53,7 +53,8 @@ class ArrayLiteral(Expression):
 
             if index >= len(self.values):
                 raise KeyError
-            return self.values[int(component.value)]
+
+            return self.values[index]
 
     def set_child(self, component: PathComponent, expression: Expression) -> None:
         if not isinstance(component, LiteralComponent):
@@ -62,7 +63,7 @@ class ArrayLiteral(Expression):
         index = int(component.value)
 
         if index < len(self.values):
-            self.values[int(component.value)] = expression
+            self.values[index] = expression
             return
         if index == len(self.values):
             self.values.append(expression)

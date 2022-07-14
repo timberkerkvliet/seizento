@@ -58,17 +58,15 @@ class ExpressionController:
 
         repo = await self._repository.set_expression_temp(path=self._path, value=new_expression)
 
-        path_service = PathService(repository=repo)
+        path_service = PathService(root_expression=await repo.get_expression(EMPTY_PATH))
 
         path = self._path
         while True:
             try:
                 await path_service.evaluate(path=path)
                 break
-            except CircularReference as e:
+            except RecursionError as e:
                 raise Forbidden from e
-            except NotFound:
-                break
             except KeyError:
                 path = path.remove_last()
                 continue
