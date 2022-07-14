@@ -56,19 +56,21 @@ class ExpressionController:
             except ValueError as e:
                 raise Forbidden from e
 
-        await self._repository.set_expression(path=self._path, value=new_expression)
+        repo = await self._repository.set_expression_temp(path=self._path, value=new_expression)
 
-        path_service = PathService(repository=self._repository)
+        path_service = PathService(repository=repo)
 
         path = self._path
         while True:
             try:
                 await path_service.evaluate(path=path)
-                return
+                break
             except CircularReference as e:
                 raise Forbidden from e
             except NotFound:
-                return
+                break
             except KeyError:
                 path = path.remove_last()
                 continue
+
+        await self._repository.set_expression(path=self._path, value=new_expression)

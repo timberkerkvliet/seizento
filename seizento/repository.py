@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
+from copy import deepcopy
 from typing import Optional
 
 from seizento.data_tree_maps.constraint_map import constraint_to_tree, tree_to_constraint
@@ -68,17 +71,35 @@ class Repository:
 
     async def get_expression(self, path: Path) -> Optional[Expression]:
         try:
-            data_tree = await self._transaction.get_tree(path=path.insert_first(LiteralComponent('expression')))
+            result = self._root_expression.get_child(LiteralComponent('expression'))
         except KeyError:
             return None
+        for component in path:
+            try:
+                result = result.get_child(component)
+            except KeyError:
+                return None
 
-        return tree_to_expression(data_tree)
+        return result
 
     async def set_expression(self, path: Path, value: Expression) -> None:
-        await self._transaction.set_tree(
-            path=path.insert_first(LiteralComponent('expression')),
-            tree=expression_to_tree(value)
+        target = self._root_expression
+        for component in path.insert_first(LiteralComponent('expression')).remove_last():
+            target = target.get_child(component)
+
+        target.set_child(
+            component=path.last_component if len(path) > 0 else LiteralComponent('expression'),
+            expression=value
         )
+
+    async def set_expression_temp(self, path: Path, value: Expression) -> Repository:
+        repo = Repository(
+            transaction=self._transaction,
+            root_expression=deepcopy(self._root_expression),
+            root_schema=self._root_schema
+        )
+        await repo.set_expression(path, value)
+        return repo
 
     async def get_user(self, user_id: Identifier) -> Optional[User]:
         try:

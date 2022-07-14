@@ -12,7 +12,7 @@ class UnitTestClient:
     def __init__(self):
         store = InMemoryDataTreeStore(admin_user=ADMIN_USER)
         root_schema = Schema(properties={'schema': EverythingAllowed()})
-        root_expression = StructLiteral(values={'expression': StructLiteral(values={})})
+        root_expression = StructLiteral(values={})
 
         self.resource_controller = ResourceController(
             transaction_factory=lambda: store.get_transaction(),
