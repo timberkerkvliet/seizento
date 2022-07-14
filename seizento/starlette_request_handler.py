@@ -1,7 +1,7 @@
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from seizento.controllers.exceptions import NotFound, BadRequest, Forbidden
+from seizento.controllers.exceptions import NotFound, BadRequest, Forbidden, Unauthorized
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
 
@@ -48,3 +48,5 @@ class StarletteRequestHandler:
             return JSONResponse(content=str(e), status_code=400)
         except Forbidden as e:
             return JSONResponse(content=str(e), status_code=403)
+        except Unauthorized as e:
+            return JSONResponse(content=str(e), status_code=401)
