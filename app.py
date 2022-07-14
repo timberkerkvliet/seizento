@@ -2,32 +2,35 @@ import secrets
 
 from starlette.applications import Starlette
 
-from seizento.adapters.sqllite_data_tree_store import SQLiteDataTreeStore
-from seizento.adapters.starlette_request_handler import StarletteRequestHandler
+from seizento.expression.struct_literal import StructLiteral
+from seizento.schema.constraint import EverythingAllowed
+from seizento.schema.schema import Schema
+from seizento.starlette_request_handler import StarletteRequestHandler
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
-from seizento.setup import set_admin
 
-store = SQLiteDataTreeStore(db_path='/db.sql')
+from seizento.user import ADMIN_USER
+
+root_schema = Schema(properties={'schema': EverythingAllowed()})
+root_expression = StructLiteral(values={})
+users = {ADMIN_USER.id: ADMIN_USER}
 
 app_secret = secrets.token_hex(512)
 
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
-        transaction_factory=lambda: store.get_transaction(),
+        root_schema=root_schema,
+        root_expression=root_expression,
+        users=users,
         app_secret=app_secret,
     ),
     login_controller=LoginController(
-        transaction_factory=lambda: store.get_transaction(),
+        users=users,
         app_secret=app_secret
     )
 )
 
-
-async def on_startup():
-    await set_admin(store.get_transaction())
-
-app = Starlette(on_startup=[on_startup])
+app = Starlette()
 app.add_route(
     path='/{rest_of_path:path}',
     route=handler.handle,
