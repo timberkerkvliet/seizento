@@ -34,5 +34,11 @@ class ParameterReference(Expression):
     ):
         return arguments[self.reference]
 
-    def supports_child_at(self, component: PathComponent) -> bool:
-        return False
+    def get_child(self, component: PathComponent) -> None:
+        raise KeyError
+
+    def set_child(self, component: PathComponent, expression: Expression) -> None:
+        raise NotImplementedError
+
+    def delete_child(self, component: PathComponent) -> None:
+        raise NotImplementedError

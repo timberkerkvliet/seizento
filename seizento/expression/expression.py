@@ -57,5 +57,13 @@ class Expression(ABC):
         pass
 
     @abstractmethod
-    def supports_child_at(self, component: PathComponent) -> bool:
+    def get_child(self, component: PathComponent) -> None:
+        pass
+
+    @abstractmethod
+    def set_child(self, component: PathComponent, expression: Expression) -> None:
+        pass
+
+    @abstractmethod
+    def delete_child(self, component: PathComponent) -> None:
         pass

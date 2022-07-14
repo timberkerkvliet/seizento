@@ -51,5 +51,16 @@ class StructLiteral(Expression):
             for key, value in self.values.items()
         }
 
-    def supports_child_at(self, component: PathComponent) -> bool:
-        return isinstance(component, LiteralComponent)
+    def get_child(self, component: PathComponent) -> Expression:
+        if isinstance(component, LiteralComponent):
+            return self.values[component.value]
+
+        raise KeyError
+
+    def set_child(self, component: PathComponent, expression: Expression) -> None:
+        if isinstance(component, LiteralComponent):
+            self.values[component.value] = expression
+
+    def delete_child(self, component: PathComponent) -> None:
+        if isinstance(component, LiteralComponent):
+            self.values.pop(component.value, None)

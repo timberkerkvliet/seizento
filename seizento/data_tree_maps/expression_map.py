@@ -74,7 +74,7 @@ def tree_to_expression(value: DataTree) -> Expression:
             for component, subtree in subtrees.items()
         }
         return ArrayLiteral(
-            values=tuple(y for _, y in sorted(values.items()))
+            values=list(y for _, y in sorted(values.items()))
         )
 
     if isinstance(root_data, dict) and root_data.get('type') == 'OBJECT':

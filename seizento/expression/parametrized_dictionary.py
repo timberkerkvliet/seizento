@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from seizento.expression.path_service import PathService
 
 
-@dataclass(frozen=True)
+@dataclass
 class ParametrizedDictionary(Expression):
     parameter: Identifier
     key: Expression
@@ -50,5 +50,13 @@ class ParametrizedDictionary(Expression):
             for value in argument_space.values[self.parameter]
         }
 
-    def supports_child_at(self, component: PathComponent) -> bool:
-        return component == PropertyPlaceHolder()
+    def get_child(self, component: PathComponent) -> Expression:
+        if component == PropertyPlaceHolder():
+            return self.value
+
+    def set_child(self, component: PathComponent, expression: Expression) -> None:
+        if component == PropertyPlaceHolder():
+            self.value = expression
+
+    def delete_child(self, component: PathComponent) -> None:
+        raise NotImplementedError

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Tuple, TYPE_CHECKING
+from typing import Dict, Tuple, TYPE_CHECKING, List
 
 from seizento.identifier import Identifier
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class ArrayLiteral(Expression):
-    values: Tuple[Expression, ...]
+    values: List[Expression, ...]
 
     async def get_schema(self, path_service: PathService) -> Schema:
         schemas = [
@@ -49,8 +49,20 @@ class ArrayLiteral(Expression):
     ):
         return [await value.evaluate(path_service, arguments) for value in self.values]
 
-    def supports_child_at(self, component: PathComponent) -> bool:
-        if not isinstance(component, LiteralComponent):
-            return False
+    def get_child(self, component: PathComponent) -> Expression:
+        if isinstance(component, LiteralComponent):
+            return self.values[int(component.value)]
 
-        return component.value in {str(k) for k in range(len(self.values) + 1)}
+    def set_child(self, component: PathComponent, expression: Expression) -> None:
+        if not isinstance(component, LiteralComponent):
+            raise ValueError
+
+        index = int(component.value)
+
+        if index < len(self.values):
+            self.values[int(component.value)] = expression
+        if index == len(self.values):
+            self.values.append(expression)
+
+    def delete_child(self, component: PathComponent) -> None:
+        raise NotImplementedError

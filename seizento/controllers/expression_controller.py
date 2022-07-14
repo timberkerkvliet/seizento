@@ -51,7 +51,9 @@ class ExpressionController:
             if parent_expression is None:
                 raise NotFound
 
-            if not parent_expression.supports_child_at(self._path.last_component):
+            try:
+                parent_expression.set_child(component=self._path.last_component, expression=new_expression)
+            except Exception:
                 raise Forbidden
 
         await self._repository.set_expression(path=self._path, value=new_expression)

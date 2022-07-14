@@ -58,7 +58,7 @@ def parse_reference(value: str) -> Union[ParameterReference, PathReference]:
 
 def parse_expression(value: Any) -> Expression:
     if isinstance(value, list):
-        return ArrayLiteral(values=tuple(parse_expression(x) for x in value))
+        return ArrayLiteral(values=list(parse_expression(x) for x in value))
 
     if isinstance(value, dict):
         if set(value.keys()) == {'*parameter', '*property', '*value'}:
