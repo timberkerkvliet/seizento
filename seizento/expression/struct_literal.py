@@ -31,23 +31,23 @@ class StructLiteral(Expression):
             additional_properties=NotAllowed()
         )
 
-    async def get_argument_space(
+    def get_argument_space(
         self,
         root_expression: Expression
     ) -> ArgumentSpace:
         result = ArgumentSpace(values={})
         for value in self.values.values():
-            result = result.intersect(await value.get_argument_space(root_expression=root_expression))
+            result = result.intersect(value.get_argument_space(root_expression=root_expression))
 
         return result
 
-    async def evaluate(
+    def evaluate(
         self,
         root_expression: Expression,
         arguments: Dict[Identifier, str]
     ):
         return {
-            key: await value.evaluate(root_expression, arguments)
+            key: value.evaluate(root_expression, arguments)
             for key, value in self.values.items()
         }
 

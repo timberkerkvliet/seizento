@@ -12,46 +12,38 @@ class NearestExpressionResult:
     path: Path
 
 
-class CircularReference(Exception):
-    pass
+def find_nearest_expression(path: Path, root_expression: Expression) -> NearestExpressionResult:
+    current_path = EMPTY_PATH
+    expression = root_expression
+    for component in path:
+        try:
+            expression = expression.get_child(component)
+        except KeyError:
+            break
+
+        current_path = current_path.append(component)
+
+    return NearestExpressionResult(
+        expression=expression,
+        path=current_path
+    )
 
 
-class PathService:
-    def __init__(self, root_expression: Expression, visited: Set[Path] = None):
-        self._root_expression = root_expression
-        self._visited = visited or set()
+def evaluate_expression_at_path(path: Path, root_expression: Expression):
+    nearest_expression = find_nearest_expression(path=path, root_expression=root_expression)
 
-    async def find_nearest_expression(self, path: Path) -> NearestExpressionResult:
-        current_path = EMPTY_PATH
-        expression = self._root_expression
-        for component in path:
-            try:
-                expression = expression.get_child(component)
-            except KeyError:
-                break
+    indices = [
+        int(component.value) if component.value.isdigit() else component.value
+        for component in path.components[len(nearest_expression.path):]
+    ]
+    expression = nearest_expression.expression
 
-            current_path = current_path.append(component)
+    evaluation = expression.evaluate(root_expression=root_expression, arguments={})
 
-        return NearestExpressionResult(
-            expression=expression,
-            path=current_path
-        )
+    for index in indices:
+        try:
+            evaluation = evaluation[index]
+        except (KeyError, IndexError):
+            raise NotFound
 
-    async def evaluate(self, path: Path):
-        nearest_expression = await self.find_nearest_expression(path=path)
-
-        indices = [
-            int(component.value) if component.value.isdigit() else component.value
-            for component in path.components[len(nearest_expression.path):]
-        ]
-        expression = nearest_expression.expression
-
-        evaluation = await expression.evaluate(root_expression=self._root_expression, arguments={})
-
-        for index in indices:
-            try:
-                evaluation = evaluation[index]
-            except (KeyError, IndexError):
-                raise NotFound
-
-        return evaluation
+    return evaluation

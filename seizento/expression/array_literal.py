@@ -11,9 +11,6 @@ from seizento.schema.schema import Schema, Schema
 from seizento.schema.constraint import EverythingAllowed, NotAllowed
 from seizento.schema.types import DataType
 
-if TYPE_CHECKING:
-    from seizento.expression.path_service import PathService
-
 
 @dataclass
 class ArrayLiteral(Expression):
@@ -30,22 +27,22 @@ class ArrayLiteral(Expression):
             items=item_schema
         )
 
-    async def get_argument_space(
+    def get_argument_space(
         self,
         root_expression: Expression,
     ) -> ArgumentSpace:
         result = ArgumentSpace(values={})
         for value in self.values:
-            result = result.intersect(await value.get_argument_space(root_expression=root_expression))
+            result = result.intersect(value.get_argument_space(root_expression=root_expression))
 
         return result
 
-    async def evaluate(
+    def evaluate(
         self,
         root_expression: Expression,
         arguments: Dict[Identifier, str]
     ):
-        return [await value.evaluate(root_expression, arguments) for value in self.values]
+        return [value.evaluate(root_expression, arguments) for value in self.values]
 
     def get_child(self, component: PathComponent) -> Expression:
         if isinstance(component, LiteralComponent):

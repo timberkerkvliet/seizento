@@ -5,7 +5,7 @@ from seizento.controllers.exceptions import Forbidden, NotFound, BadRequest
 from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
-from seizento.expression.path_service import CircularReference, PathService
+from seizento.expression.path_service import evaluate_expression_at_path
 
 
 class ExpressionController:
@@ -58,12 +58,12 @@ class ExpressionController:
 
         repo = await self._repository.set_expression_temp(path=self._path, value=new_expression)
 
-        path_service = PathService(root_expression=await repo.get_expression(EMPTY_PATH))
+        root_expression = await repo.get_expression(EMPTY_PATH)
 
         path = self._path
         while True:
             try:
-                await path_service.evaluate(path=path)
+                evaluate_expression_at_path(path=path, root_expression=root_expression)
                 break
             except RecursionError as e:
                 raise Forbidden from e

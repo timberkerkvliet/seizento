@@ -21,13 +21,13 @@ class ParameterReference(Expression):
     def get_schema(self, root_schema: Schema) -> Schema:
         return Schema(types={DataType.STRING})
 
-    async def get_argument_space(
+    def get_argument_space(
         self,
         root_expression: Expression
     ) -> ArgumentSpace:
         return ArgumentSpace(values={})
 
-    async def evaluate(
+    def evaluate(
         self,
         root_expression: Expression,
         arguments: dict[Identifier, str]

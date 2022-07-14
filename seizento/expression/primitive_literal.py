@@ -30,13 +30,13 @@ class PrimitiveLiteral(Expression):
         if self.value is None:
             return Schema(types={DataType.NULL})
 
-    async def get_argument_space(
+    def get_argument_space(
         self,
         root_expression: Expression,
     ) -> ArgumentSpace:
         return ArgumentSpace(values={})
 
-    async def evaluate(
+    def evaluate(
         self,
         root_expression: Expression,
         arguments: Dict[Identifier, str]

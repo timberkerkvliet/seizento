@@ -26,27 +26,27 @@ class ParametrizedDictionary(Expression):
             additional_properties=self.value.get_schema(root_schema)
         )
 
-    async def _internal_space(self, root_expression: Expression) -> ArgumentSpace:
-        key_space = await self.key.get_argument_space(root_expression=root_expression)
-        value_space = await self.value.get_argument_space(root_expression=root_expression)
+    def _internal_space(self, root_expression: Expression) -> ArgumentSpace:
+        key_space = self.key.get_argument_space(root_expression=root_expression)
+        value_space = self.value.get_argument_space(root_expression=root_expression)
 
         return key_space.intersect(value_space)
 
-    async def get_argument_space(
+    def get_argument_space(
         self,
         root_expression: Expression
     ) -> ArgumentSpace:
-        return (await self._internal_space(root_expression)).remove(self.parameter)
+        return (self._internal_space(root_expression)).remove(self.parameter)
 
-    async def evaluate(self, root_expression: Expression, arguments: Dict[Identifier, str]) -> Any:
-        argument_space = await self._internal_space(root_expression)
+    def evaluate(self, root_expression: Expression, arguments: Dict[Identifier, str]) -> Any:
+        argument_space = self._internal_space(root_expression)
 
         if self.parameter not in argument_space:
             raise Exception
 
         return {
-            await self.key.evaluate(root_expression=root_expression, arguments={**arguments, self.parameter: value}):
-                await self.value.evaluate(root_expression=root_expression, arguments={**arguments, self.parameter: value})
+            self.key.evaluate(root_expression=root_expression, arguments={**arguments, self.parameter: value}):
+                self.value.evaluate(root_expression=root_expression, arguments={**arguments, self.parameter: value})
             for value in argument_space.values[self.parameter]
         }
 

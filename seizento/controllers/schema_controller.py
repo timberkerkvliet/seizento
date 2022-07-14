@@ -1,7 +1,7 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
-from seizento.expression.path_service import PathService
+
 from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
 

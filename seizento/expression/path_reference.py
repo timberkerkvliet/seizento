@@ -9,7 +9,7 @@ from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH, Pla
 from seizento.schema.schema import Schema
 
 
-from seizento.expression.path_service import PathService
+from seizento.expression.path_service import evaluate_expression_at_path
 
 
 @dataclass
@@ -51,7 +51,7 @@ class PathReference(Expression):
 
         raise TypeError
 
-    async def get_argument_space(
+    def get_argument_space(
         self,
         root_expression: Expression,
     ) -> ArgumentSpace:
@@ -61,11 +61,11 @@ class PathReference(Expression):
             path = path.append(parts[0])
             parts = parts[1:]
 
-        root_value = await PathService(root_expression).evaluate(path=path)
+        root_value = evaluate_expression_at_path(path=path, root_expression=root_expression)
 
         return self._get_argument_space(value=root_value, parts=parts)
 
-    async def evaluate(
+    def evaluate(
         self,
         root_expression: Expression,
         arguments: dict[Identifier, str]
@@ -76,7 +76,7 @@ class PathReference(Expression):
             )
         )
 
-        return await PathService(root_expression).evaluate(path=path)
+        return evaluate_expression_at_path(path=path, root_expression=root_expression)
 
     def get_child(self, component: PathComponent) -> None:
         raise KeyError
