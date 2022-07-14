@@ -8,7 +8,7 @@ from seizento.repository import Repository
 from seizento.schema.schema import Schema
 
 
-@dataclass(frozen=True)
+@dataclass
 class NearestExpressionResult:
     expression: Expression
     path: Path

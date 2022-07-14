@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from seizento.expression.path_service import PathService
 
 
-@dataclass(frozen=True)
+@dataclass
 class PathReference(Expression):
     reference: list[Union[LiteralComponent, Identifier]]
 

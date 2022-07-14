@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from seizento.expression.path_service import PathService
 
 
-@dataclass(frozen=True)
+@dataclass
 class PrimitiveLiteral(Expression):
     value: Union[str, int, float, bool, None]
 

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from seizento.expression.path_service import PathService
 
 
-@dataclass(frozen=True)
+@dataclass
 class ArrayLiteral(Expression):
     values: List[Expression, ...]
 
