@@ -20,11 +20,7 @@ class Repository:
         self._root_expression = root_expression
 
     async def get_schema(self, path: Path) -> Optional[Schema]:
-        result = self._root_schema.get_child(LiteralComponent('schema'))
-        for component in path:
-            result = result.get_child(component)
-
-        return result
+        return self._root_schema.navigate_to(path.insert_first(LiteralComponent('schema')))
 
     async def set_schema(self, path: Path, value: Schema) -> None:
         target = self._root_schema

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict
 
-from seizento.path import PathComponent
+from seizento.path import PathComponent, Path
 
 
 class Constraint(ABC):
@@ -25,7 +25,7 @@ class Constraint(ABC):
         ...
 
     @abstractmethod
-    def get_child(self, component: PathComponent) -> None:
+    def get_child(self, component: PathComponent) -> Constraint:
         ...
 
     @abstractmethod
@@ -33,8 +33,15 @@ class Constraint(ABC):
         ...
 
     @abstractmethod
-    def delete_child(self, component: PathComponent) -> bool:
+    def delete_child(self, component: PathComponent) -> None:
         ...
+
+    def navigate_to(self, path: Path) -> Constraint:
+        result = self
+        for component in path:
+            result = result.get_child(component)
+
+        return result
 
 
 @dataclass(frozen=True)
