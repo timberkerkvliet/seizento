@@ -1,35 +1,35 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import NotFound
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestGetIntegerEvaluation(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestGetIntegerEvaluation(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_positive(self):
+    def test_set_positive(self):
         self.test_client.set('/schema/', {'type': 'integer'})
         self.test_client.set('/expression/', 10)
 
         response = self.test_client.get('/evaluation/')
         self.assertEqual(response, 10)
 
-    async def test_set_zero(self):
+    def test_set_zero(self):
         self.test_client.set('/schema/', {'type': 'integer'})
         self.test_client.set('/expression/', 0)
 
         response = self.test_client.get('/evaluation/')
         self.assertEqual(response, 0)
 
-    async def test_set_negative(self):
+    def test_set_negative(self):
         self.test_client.set('/schema/', {'type': 'integer'})
         self.test_client.set('/expression/', -100)
 
         response = self.test_client.get('/evaluation/')
         self.assertEqual(response, -100)
 
-    async def test_not_set(self):
+    def test_not_set(self):
         self.test_client.set('/schema/', {'type': 'integer'})
 
         with self.assertRaises(NotFound):

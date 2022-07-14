@@ -1,14 +1,14 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import BadRequest, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestSetObject(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestSetObject(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_add_additional_field(self):
+    def test_add_additional_field(self):
         schema = {
             'type': 'object',
             'properties': {

@@ -1,14 +1,14 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import BadRequest, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestArray(IsolatedAsyncioTestCase):
+class TestArray(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_array(self):
+    def test_set_array(self):
         self.test_client.set(
             '/schema/',
             {'type': 'array', 'items': {'type': 'string'}}
@@ -17,13 +17,13 @@ class TestArray(IsolatedAsyncioTestCase):
         response = self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'array', 'items': {'type': 'string'}})
 
-    async def test_without_items(self):
+    def test_without_items(self):
         try:
             self.test_client.set('/schema/', {'type': 'array'})
         except BadRequest:
             self.fail()
 
-    async def test_reset_value_type(self):
+    def test_reset_value_type(self):
         self.test_client.set(
             '/schema/',
             {'type': 'array', 'items': {'type': 'string'}}
@@ -33,7 +33,7 @@ class TestArray(IsolatedAsyncioTestCase):
         response = self.test_client.get('/schema/')
         self.assertDictEqual(response,  {'type': 'array', 'items': {'type': 'integer'}})
 
-    async def test_cannot_remove_value_type(self):
+    def test_cannot_remove_value_type(self):
         self.test_client.set(
             '/schema/',
             {'type': 'array', 'items': {'type': 'string'}}

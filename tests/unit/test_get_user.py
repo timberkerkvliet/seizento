@@ -1,14 +1,14 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import NotFound, Unauthorized, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestGetUser(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestGetUser(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_cannot_access_other_user(self):
+    def test_cannot_access_other_user(self):
         self.test_client.set(
             '/user/timber',
             {
@@ -23,10 +23,10 @@ class TestGetUser(IsolatedAsyncioTestCase):
         with self.assertRaises(Unauthorized):
             self.test_client.get('user/admin/access_rights')
 
-    async def test_cannot_access_password(self):
+    def test_cannot_access_password(self):
         with self.assertRaises(NotFound):
             self.test_client.get('user/admin/password')
 
-    async def test_cannot_access_complete_user(self):
+    def test_cannot_access_complete_user(self):
         with self.assertRaises(NotFound):
             self.test_client.get('user/admin')

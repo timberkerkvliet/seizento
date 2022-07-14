@@ -1,14 +1,14 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import BadRequest, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestStruct(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestStruct(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_struct_schema_is_persisted(self):
+    def test_set_struct_schema_is_persisted(self):
         schema = {
             'type': 'object',
             'properties': {
@@ -22,7 +22,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         response = self.test_client.get('/schema/')
         self.assertDictEqual(response, schema)
 
-    async def test_reset_struct_schema_is_persisted(self):
+    def test_reset_struct_schema_is_persisted(self):
         self.test_client.set(
             '/schema/',
             {
@@ -53,7 +53,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             }
         )
 
-    async def test_adding_fields(self):
+    def test_adding_fields(self):
         self.test_client.set('schema/', {'type': 'object', 'additionalProperties': False})
 
         self.test_client.set(
@@ -78,7 +78,7 @@ class TestStruct(IsolatedAsyncioTestCase):
             }
         )
 
-    async def test_extending_fields(self):
+    def test_extending_fields(self):
         self.test_client.set(
             '/schema/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}, 'additionalProperties': False}
@@ -100,7 +100,7 @@ class TestStruct(IsolatedAsyncioTestCase):
 
         self.assertDictEqual(response, new_schema)
 
-    async def test_set_field_name_with_special_chars(self):
+    def test_set_field_name_with_special_chars(self):
         try:
             self.test_client.set(
                 '/schema',
@@ -109,7 +109,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         except BadRequest:
             self.fail()
 
-    async def test_set_struct_from_dict(self):
+    def test_set_struct_from_dict(self):
         self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         self.test_client.set('/expression', {'a': 'a'})
 
@@ -125,7 +125,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_set_struct_from_dict_with_nested(self):
+    def test_set_struct_from_dict_with_nested(self):
         self.test_client.set(
             '/schema',
             {
@@ -160,7 +160,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_cannot_set_struct_from_dict_with_nested(self):
+    def test_cannot_set_struct_from_dict_with_nested(self):
         self.test_client.set(
             '/schema',
             {
@@ -193,7 +193,7 @@ class TestStruct(IsolatedAsyncioTestCase):
                 }
             )
 
-    async def test_set_struct_from_dict_if_empty_is_set(self):
+    def test_set_struct_from_dict_if_empty_is_set(self):
         self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         self.test_client.set('/expression', {})
 
@@ -205,7 +205,7 @@ class TestStruct(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_set_struct_from_non_matching_dict(self):
+    def test_set_struct_from_non_matching_dict(self):
         self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         self.test_client.set('/expression', {'b': 'b'})
 

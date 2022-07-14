@@ -1,14 +1,14 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import NotFound, Unauthorized, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestUser(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestUser(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_create_new_user(self):
+    def test_create_new_user(self):
         self.test_client.set(
             '/user/timber',
             {

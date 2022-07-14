@@ -1,13 +1,13 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestSetParametrizedDictionary(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_with_fixed_object(self):
+    def test_with_fixed_object(self):
         self.test_client.set(
             '/schema/',
             {
@@ -44,7 +44,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
                 }
         )
 
-    async def test_reset_value(self):
+    def test_reset_value(self):
         self.test_client.set(
             '/schema/',
             {

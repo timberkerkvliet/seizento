@@ -1,18 +1,18 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
-from seizento.controllers.exceptions import NotFound, Unauthorized, Forbidden
+from seizento.controllers.exceptions import NotFound, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestUser(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestUser(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_admin_cannot_delete_itself(self):
+    def test_admin_cannot_delete_itself(self):
         with self.assertRaises(Forbidden):
             self.test_client.delete('user/admin')
 
-    async def test_user_not_found_after_deletion(self):
+    def test_user_not_found_after_deletion(self):
         self.test_client.set(
             '/user/timber',
             {
@@ -25,7 +25,7 @@ class TestUser(IsolatedAsyncioTestCase):
         with self.assertRaises(NotFound):
             self.test_client.get('/user/timber')
 
-    async def test_token_still_works_after_user_deletion(self):
+    def test_token_still_works_after_user_deletion(self):
         self.test_client.set(
             '/user/timber',
             {

@@ -1,26 +1,26 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from seizento.controllers.exceptions import Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestSetStringSchema(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestSetStringSchema(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_set_string(self):
+    def test_set_string(self):
         self.test_client.set('/schema/', {'type': 'string'})
 
         response = self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'string'})
 
-    async def test_set_optional_string(self):
+    def test_set_optional_string(self):
         self.test_client.set('/schema/', {'type': ['string', 'null']})
 
         response = self.test_client.get('/schema/')
         self.assertEqual(set(response['type']), {'string', 'null'})
 
-    async def test_set_optional_string_after_string_literal_has_been_set(self):
+    def test_set_optional_string_after_string_literal_has_been_set(self):
         self.test_client.set('/schema/', {'type': 'string'})
         self.test_client.set('/expression', 'my string')
 
@@ -29,14 +29,14 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_set_string_after_null_has_been_set(self):
+    def test_set_string_after_null_has_been_set(self):
         self.test_client.set('/schema/', {'type': ['null', 'string']})
         self.test_client.set('/expression', None)
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema', {'type': 'string'})
 
-    async def test_set_string_after_string_literal_has_been_set(self):
+    def test_set_string_after_string_literal_has_been_set(self):
         self.test_client.set('/schema/', {'type': ['null', 'string']})
         self.test_client.set('/expression', 'a string')
 
@@ -45,7 +45,7 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_can_set_child(self):
+    def test_can_set_child(self):
         self.test_client.set('/schema/', {'type': 'string'})
 
         try:
@@ -56,7 +56,7 @@ class TestSetStringSchema(IsolatedAsyncioTestCase):
         except Forbidden:
             self.fail()
 
-    async def test_can_set_placeholder_child(self):
+    def test_can_set_placeholder_child(self):
         self.test_client.set('/schema/', {'type': 'string'})
 
         try:

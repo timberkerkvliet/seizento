@@ -1,13 +1,13 @@
-from unittest import IsolatedAsyncioTestCase
+from unittest import TestCase
 
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
-    async def asyncSetUp(self) -> None:
+class TestGetParametrizedDictionaryEvaluation(TestCase):
+    def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    async def test_with_fixed_object(self):
+    def test_with_fixed_object(self):
         self.test_client.set(
             '/schema/',
             {
@@ -38,7 +38,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
         response = self.test_client.get('/evaluation/projection')
         self.assertEqual(response, {'een': 1, 'twee': 2, 'drie': 3})
 
-    async def test_with_fixed_array(self):
+    def test_with_fixed_array(self):
         self.test_client.set(
             '/schema/',
             {
@@ -69,7 +69,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
         response = self.test_client.get('/evaluation/projection')
         self.assertEqual(response, {'0': 1, '1': 2, '2': 3})
 
-    async def test_switch_nested_objects(self):
+    def test_switch_nested_objects(self):
         self.test_client.set(
             '/schema/',
             {
