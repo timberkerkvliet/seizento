@@ -21,38 +21,25 @@ class SchemaController:
         self._path = path
         self._root_schema = root_schema
 
-    async def _get_target_type(self) -> Schema:
-        root_schema = await self._repository.get_schema(path=EMPTY_PATH)
-        if root_schema is None:
-            raise NotFound
-
-        result = root_schema
-        for component in self._path:
-            result = result.get_child(component)
-
-        return result
-
     async def _get_parent_type(self) -> Schema:
-        result = await self._repository.get_schema(path=self._path.remove_last())
-        if result is None:
-            raise NotFound
-
-        return result
+        try:
+            return self._root_schema.navigate_to(self._path.remove_last())
+        except KeyError as e:
+            raise NotFound from e
 
     async def get(self) -> Dict:
         try:
-            target_type = self._root_schema.navigate_to(self._path.insert_first(LiteralComponent('schema')))
+            target_type = self._root_schema.navigate_to(self._path)
         except KeyError as e:
             raise NotFound from e
 
         return serialize_constraint(target_type)
 
     async def set(self, data: Dict) -> None:
-        if not self._path.empty:
-            parent_type = await self._get_parent_type()
+        parent_type = await self._get_parent_type()
 
-            if parent_type is None:
-                raise Forbidden
+        if parent_type is None:
+            raise Forbidden
 
         try:
             new_schema = parse_constraint(data)
@@ -62,26 +49,26 @@ class SchemaController:
         if not isinstance(new_schema, Schema):
             raise BadRequest
 
-        expression = await self._repository.get_expression(path=self._path)
+        expression = await self._repository.get_expression(path=self._path.remove_first())
 
         if expression is not None:
             current_schema = await expression.get_schema(PathService(self._repository))
 
             if not current_schema.satisfies(new_schema):
                 raise Forbidden
+
         try:
-            await self._repository.set_schema(
-                path=self._path,
-                value=new_schema
+            parent_type.set_child(
+                component=self._path.last_component,
+                constraint=new_schema
             )
-        except Exception:
-            raise NotFound
+        except Exception as e:
+            raise NotFound from e
 
     async def delete(self) -> None:
-        if not self._path.empty:
-            parent_type = await self._get_parent_type()
+        parent_type = await self._get_parent_type()
 
-            if parent_type is None:
-                raise Forbidden
+        if parent_type is None:
+            raise Forbidden
 
-        await self._repository.delete_type(path=self._path)
+        parent_type.delete_child(self._path.last_component)
