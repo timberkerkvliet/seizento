@@ -30,13 +30,13 @@ class ResourceController:
         self._root_schema = root_schema
         self._root_expression = root_expression
 
-    @staticmethod
-    def _get_controller(resource_path: Path, repository: Repository):
+    def _get_controller(self, resource_path: Path, repository: Repository):
         resource_type = resource_path.first_component.value
         if resource_type == 'schema':
             return SchemaController(
                 repository=repository,
-                path=resource_path.remove_first()
+                path=resource_path.remove_first(),
+                root_schema=self._root_schema
             )
         if resource_type == 'expression':
             return ExpressionController(

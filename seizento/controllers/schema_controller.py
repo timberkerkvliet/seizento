@@ -2,9 +2,10 @@ from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.expression.path_service import PathService
+from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
 
-from seizento.path import Path, EMPTY_PATH
+from seizento.path import Path, EMPTY_PATH, LiteralComponent
 from seizento.repository import Repository
 from seizento.serializers.constraint_serializer import parse_constraint, serialize_constraint
 
@@ -13,10 +14,12 @@ class SchemaController:
     def __init__(
         self,
         repository: Repository,
-        path: Path
+        path: Path,
+        root_schema: Constraint
     ):
         self._repository = repository
         self._path = path
+        self._root_schema = root_schema
 
     async def _get_target_type(self) -> Schema:
         root_schema = await self._repository.get_schema(path=EMPTY_PATH)
@@ -37,7 +40,10 @@ class SchemaController:
         return result
 
     async def get(self) -> Dict:
-        target_type = await self._get_target_type()
+        try:
+            target_type = self._root_schema.navigate_to(self._path.insert_first(LiteralComponent('schema')))
+        except KeyError as e:
+            raise NotFound from e
 
         return serialize_constraint(target_type)
 
