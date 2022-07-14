@@ -3,7 +3,7 @@ from typing import Dict
 from seizento.controllers.exceptions import MethodNotAllowed, NotFound
 from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
-from seizento.expression.path_service import evaluate_expression_at_path
+from seizento.expression.path_evaluation import evaluate_expression_at_path
 
 
 class EvaluationController:

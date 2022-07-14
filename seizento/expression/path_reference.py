@@ -9,7 +9,7 @@ from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH, Pla
 from seizento.schema.schema import Schema
 
 
-from seizento.expression.path_service import evaluate_expression_at_path
+from seizento.expression.path_evaluation import evaluate_expression_at_path
 
 
 @dataclass
