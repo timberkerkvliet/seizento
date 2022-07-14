@@ -49,10 +49,10 @@ class SchemaController:
         if not isinstance(new_schema, Schema):
             raise BadRequest
 
-        expression = await self._repository.get_expression(path=self._path.remove_first())
+        expression = self._repository.get_expression(path=self._path.remove_first())
 
         if expression is not None:
-            current_schema = expression.get_schema(await self._repository.get_schema(EMPTY_PATH))
+            current_schema = expression.get_schema(self._repository.get_schema(EMPTY_PATH))
 
             if not current_schema.satisfies(new_schema):
                 raise Forbidden

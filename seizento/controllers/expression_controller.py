@@ -18,7 +18,7 @@ class ExpressionController:
         self._path = path
 
     async def _get_expression(self):
-        return await self._repository.get_expression(path=self._path)
+        return self._repository.get_expression(path=self._path)
 
     async def get(self) -> Dict:
         expression = await self._get_expression()
@@ -34,12 +34,12 @@ class ExpressionController:
         except Exception as e:
             raise BadRequest from e
 
-        current_type = await self._repository.get_schema(path=self._path)
+        current_type = self._repository.get_schema(path=self._path)
         if current_type is None:
             raise NotFound
 
         try:
-            expression_type = new_expression.get_schema(await self._repository.get_schema(EMPTY_PATH))
+            expression_type = new_expression.get_schema(self._repository.get_schema(EMPTY_PATH))
         except ValueError as e:
             raise Forbidden from e
 
@@ -47,7 +47,7 @@ class ExpressionController:
             raise Forbidden
 
         if not self._path.empty:
-            parent_expression = await self._repository.get_expression(path=self._path.remove_last())
+            parent_expression = self._repository.get_expression(path=self._path.remove_last())
             if parent_expression is None:
                 raise NotFound
 
@@ -56,9 +56,9 @@ class ExpressionController:
             except ValueError as e:
                 raise Forbidden from e
 
-        repo = await self._repository.set_expression_temp(path=self._path, value=new_expression)
+        repo = self._repository.set_expression_temp(path=self._path, value=new_expression)
 
-        root_expression = await repo.get_expression(EMPTY_PATH)
+        root_expression = repo.get_expression(EMPTY_PATH)
 
         path = self._path
         while True:
@@ -71,4 +71,4 @@ class ExpressionController:
                 path = path.remove_last()
                 continue
 
-        await self._repository.set_expression(path=self._path, value=new_expression)
+        self._repository.set_expression(path=self._path, value=new_expression)

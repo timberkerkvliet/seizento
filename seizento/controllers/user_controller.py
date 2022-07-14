@@ -27,7 +27,7 @@ class UserController:
         except Exception as e:
             raise BadRequest from e
 
-        user = await self._repository.get_user(user_id)
+        user = self._repository.get_user(user_id)
 
         if len(self._path) == 1:
             raise NotFound
@@ -46,7 +46,7 @@ class UserController:
             raise BadRequest from e
 
         if len(self._path) == 1:
-            await self._repository.set_user(
+            self._repository.set_user(
                 User(
                     id=user_id,
                     password=HashedPassword.from_password(data['password']),
@@ -55,9 +55,9 @@ class UserController:
             )
             return
 
-        user = await self._repository.get_user(user_id)
+        user = self._repository.get_user(user_id)
 
-        await self._repository.set_user(
+        self._repository.set_user(
             user.with_new_password(HashedPassword.from_password(data))
         )
 
@@ -73,4 +73,4 @@ class UserController:
         if len(self._path) > 1:
             raise BadRequest
 
-        await self._repository.delete_user(user_id)
+        self._repository.delete_user(user_id)

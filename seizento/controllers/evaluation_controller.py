@@ -16,7 +16,7 @@ class EvaluationController:
         self._path = path
 
     async def get(self) -> Dict:
-        root_expression = await self._repository.get_expression(EMPTY_PATH)
+        root_expression = self._repository.get_expression(EMPTY_PATH)
         if root_expression is None:
             raise NotFound
 

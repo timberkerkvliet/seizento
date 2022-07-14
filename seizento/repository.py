@@ -19,10 +19,10 @@ class Repository:
         self._root_schema = root_schema
         self._root_expression = root_expression
 
-    async def get_schema(self, path: Path) -> Optional[Schema]:
+    def get_schema(self, path: Path) -> Optional[Schema]:
         return self._root_schema.navigate_to(path.insert_first(LiteralComponent('schema')))
 
-    async def set_schema(self, path: Path, value: Schema) -> None:
+    def set_schema(self, path: Path, value: Schema) -> None:
         target = self._root_schema
         for component in path.insert_first(LiteralComponent('schema')).remove_last():
             target = target.get_child(component)
@@ -32,14 +32,14 @@ class Repository:
             constraint=value
         )
 
-    async def delete_type(self, path: Path) -> None:
+    def delete_type(self, path: Path) -> None:
         target = self._root_schema
         for component in path.insert_first(LiteralComponent('schema')).remove_last():
             target = target.get_child(component)
 
         target.delete_child(path.last_component)
 
-    async def get_expression(self, path: Path) -> Optional[Expression]:
+    def get_expression(self, path: Path) -> Optional[Expression]:
         try:
             result = self._root_expression.get_child(LiteralComponent('expression'))
         except KeyError:
@@ -52,7 +52,7 @@ class Repository:
 
         return result
 
-    async def set_expression(self, path: Path, value: Expression) -> None:
+    def set_expression(self, path: Path, value: Expression) -> None:
         target = self._root_expression
         for component in path.insert_first(LiteralComponent('expression')).remove_last():
             target = target.get_child(component)
@@ -62,23 +62,23 @@ class Repository:
             expression=value
         )
 
-    async def set_expression_temp(self, path: Path, value: Expression) -> Repository:
+    def set_expression_temp(self, path: Path, value: Expression) -> Repository:
         repo = Repository(
             root_expression=deepcopy(self._root_expression),
             root_schema=self._root_schema,
             users=self._users
         )
-        await repo.set_expression(path, value)
+        repo.set_expression(path, value)
         return repo
 
-    async def get_user(self, user_id: Identifier) -> Optional[User]:
+    def get_user(self, user_id: Identifier) -> Optional[User]:
         if user_id in self._users:
             return self._users[user_id]
 
         return None
 
-    async def set_user(self, user: User) -> None:
+    def set_user(self, user: User) -> None:
         self._users[user.id] = user
 
-    async def delete_user(self, user_id: Identifier) -> None:
+    def delete_user(self, user_id: Identifier) -> None:
         self._users.pop(user_id, None)
