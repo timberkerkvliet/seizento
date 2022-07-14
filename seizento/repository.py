@@ -30,9 +30,10 @@ class DataTreeStoreTransaction(AbstractAsyncContextManager):
 
 
 class Repository:
-    def __init__(self, transaction: DataTreeStoreTransaction, root_schema: Constraint):
+    def __init__(self, transaction: DataTreeStoreTransaction, root_schema: Constraint, root_expression: Expression):
         self._transaction = transaction
         self._root_schema = root_schema
+        self._root_expression = root_expression
 
     async def __aenter__(self):
         await self._transaction.__aenter__()

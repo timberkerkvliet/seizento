@@ -1,6 +1,7 @@
 from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
+from seizento.expression.struct_literal import StructLiteral
 from seizento.schema.constraint import EverythingAllowed
 from seizento.schema.schema import Schema
 
@@ -11,16 +12,19 @@ class UnitTestClient:
     def __init__(self):
         store = InMemoryDataTreeStore(admin_user=ADMIN_USER)
         root_schema = Schema(properties={'schema': EverythingAllowed()})
+        root_expression = StructLiteral(values={'expression': StructLiteral(values={})})
 
         self.resource_controller = ResourceController(
             transaction_factory=lambda: store.get_transaction(),
             app_secret='test-secret',
-            root_schema=root_schema
+            root_schema=root_schema,
+            root_expression=root_expression
         )
         self.login_controller = LoginController(
             transaction_factory=lambda: store.get_transaction(),
             app_secret='test-secret',
-            root_schema=root_schema
+            root_schema=root_schema,
+            root_expression=root_expression
         )
         self.token = None
 

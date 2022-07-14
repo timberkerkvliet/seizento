@@ -7,6 +7,7 @@ from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
+from seizento.expression.expression import Expression
 from seizento.path import Path
 from seizento.repository import Repository, DataTreeStoreTransaction
 from seizento.schema.constraint import Constraint
@@ -20,11 +21,13 @@ class ResourceController:
         self,
         transaction_factory: Callable[[], DataTreeStoreTransaction],
         app_secret: str,
-        root_schema: Constraint
+        root_schema: Constraint,
+        root_expression: Expression
     ):
         self._transaction_factory = transaction_factory
         self._app_secret = app_secret
         self._root_schema = root_schema
+        self._root_expression = root_expression
 
     @staticmethod
     def _get_controller(resource_path: Path, repository: Repository):
@@ -74,7 +77,11 @@ class ResourceController:
         if not access_rights.can_read(resource_path):
             raise Unauthorized
 
-        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
+        repository = Repository(
+            transaction=self._transaction_factory(),
+            root_schema=self._root_schema,
+            root_expression=self._root_expression
+        )
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -87,7 +94,11 @@ class ResourceController:
         if not access_rights.can_write(resource_path):
             raise Unauthorized
 
-        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
+        repository = Repository(
+            transaction=self._transaction_factory(),
+            root_schema=self._root_schema,
+            root_expression=self._root_expression
+        )
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -100,7 +111,11 @@ class ResourceController:
         if not access_rights.can_write(resource_path):
             raise Unauthorized
 
-        repository = Repository(transaction=self._transaction_factory(), root_schema=self._root_schema)
+        repository = Repository(
+            transaction=self._transaction_factory(),
+            root_schema=self._root_schema,
+            root_expression=self._root_expression
+        )
 
         async with repository:
             controller = self._get_controller(resource_path=resource_path, repository=repository)

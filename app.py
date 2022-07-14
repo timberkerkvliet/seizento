@@ -15,7 +15,7 @@ app_secret = secrets.token_hex(512)
 handler = StarletteRequestHandler(
     resource_controller=ResourceController(
         transaction_factory=lambda: store.get_transaction(),
-        app_secret=app_secret
+        app_secret=app_secret,
     ),
     login_controller=LoginController(
         transaction_factory=lambda: store.get_transaction(),
