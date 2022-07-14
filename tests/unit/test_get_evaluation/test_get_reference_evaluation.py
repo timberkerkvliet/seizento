@@ -9,19 +9,19 @@ class TestGetReferenceEvaluation(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_reference(self):
-        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-        await self.test_client.set('/expression/', [1, '{/0}'])
+        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/expression/', [1, '{/0}'])
 
-        response = await self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/')
         self.assertEqual(response, [1, 1])
 
     async def test_non_existing_key(self):
-        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
         with self.assertRaises(Forbidden):
-            await self.test_client.set('/expression/', ['{/1}'])
+            self.test_client.set('/expression/', ['{/1}'])
 
     async def test_object_reference(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -31,7 +31,7 @@ class TestGetReferenceEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression',
             {
                 'a': {'x': 'copy this'},
@@ -39,7 +39,7 @@ class TestGetReferenceEvaluation(IsolatedAsyncioTestCase):
             }
         )
 
-        response = await self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/')
 
         self.assertDictEqual(
             response,
@@ -50,11 +50,11 @@ class TestGetReferenceEvaluation(IsolatedAsyncioTestCase):
         )
 
     async def test_double_reference(self):
-        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-        await self.test_client.set('/expression/', [1])
+        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/expression/', [1])
 
-        await self.test_client.set('/expression/1', '{/0}')
-        await self.test_client.set('/expression/2', '{/1}')
+        self.test_client.set('/expression/1', '{/0}')
+        self.test_client.set('/expression/2', '{/1}')
 
-        response = await self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/')
         self.assertEqual(response, [1, 1, 1])

@@ -17,7 +17,7 @@ class LoginController:
         self._users = users
         self._app_secret = app_secret
 
-    async def login(self, data) -> str:
+    def login(self, data) -> str:
         try:
             user_id = Identifier(data['user_id'])
         except Exception as e:

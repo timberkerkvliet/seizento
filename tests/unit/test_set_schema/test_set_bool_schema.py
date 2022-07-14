@@ -9,25 +9,25 @@ class TestSetBoolSchema(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_bool(self):
-        await self.test_client.set('/schema/', {'type': 'boolean'})
+        self.test_client.set('/schema/', {'type': 'boolean'})
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'boolean'})
 
     async def test_set_optional_bool(self):
-        await self.test_client.set('/schema/', {'type': ['boolean', 'null']})
+        self.test_client.set('/schema/', {'type': ['boolean', 'null']})
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertEqual(set(response['type']), {'boolean', 'null'})
 
     async def test_can_set_child(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'boolean'}
         )
 
         try:
-            await self.test_client.set(
+            self.test_client.set(
                 '/schema/a',
                 {'type': 'integer'}
             )
@@ -35,13 +35,13 @@ class TestSetBoolSchema(IsolatedAsyncioTestCase):
             self.fail()
 
     async def test_can_set_placeholder_child(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'boolean'}
         )
 
         try:
-            await self.test_client.set(
+            self.test_client.set(
                 '/schema/~items',
                 {'type': 'integer'}
             )

@@ -16,8 +16,8 @@ class TestSetObject(IsolatedAsyncioTestCase):
                 'b': {'type': 'integer'}
             }
         }
-        await self.test_client.set('schema', schema)
-        await self.test_client.set('/schema/new-one', {'type': 'string'})
+        self.test_client.set('schema', schema)
+        self.test_client.set('/schema/new-one', {'type': 'string'})
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertEqual(set(response['properties']), {'a', 'b', 'new-one'})

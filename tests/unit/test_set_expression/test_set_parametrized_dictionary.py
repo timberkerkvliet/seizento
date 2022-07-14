@@ -8,7 +8,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_with_fixed_object(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -24,7 +24,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
@@ -35,7 +35,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
                 }
             }
         )
-        response = await self.test_client.get('/expression/projection')
+        response = self.test_client.get('/expression/projection')
         self.assertDictEqual(
             response, {
                     '*parameter': 'k',
@@ -45,7 +45,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
         )
 
     async def test_reset_value(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -65,7 +65,7 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
@@ -77,11 +77,11 @@ class TestSetParametrizedDictionary(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/projection/~properties',
             '{/alternative/<k>}'
         )
-        response = await self.test_client.get('/expression/projection')
+        response = self.test_client.get('/expression/projection')
         self.assertDictEqual(
             response, {
                     '*parameter': 'k',

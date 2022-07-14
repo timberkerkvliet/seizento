@@ -9,28 +9,28 @@ class TestSetFloatSchema(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_float(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'number'}
         )
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'number'})
 
     async def test_set_optional_float(self):
-        await self.test_client.set('/schema/', {'type': ['number', 'null']})
+        self.test_client.set('/schema/', {'type': ['number', 'null']})
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertEqual(set(response['type']), {'number', 'null'})
 
     async def test_cannot_set_child(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'number'}
         )
 
         try:
-            await self.test_client.set(
+            self.test_client.set(
                 '/schema/a',
                 {'type': 'integer'}
             )
@@ -38,13 +38,13 @@ class TestSetFloatSchema(IsolatedAsyncioTestCase):
             self.fail()
 
     async def test_cannot_set_placeholder_child(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'number'}
         )
 
         try:
-            await self.test_client.set(
+            self.test_client.set(
                 '/schema/~items',
                 {'type': 'integer'}
             )

@@ -9,15 +9,15 @@ class TestInteger(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_and_get_literal(self):
-        await self.test_client.set('/schema/', {'type': 'integer'})
-        await self.test_client.set(
+        self.test_client.set('/schema/', {'type': 'integer'})
+        self.test_client.set(
             '/expression/',
             -7
         )
-        response = await self.test_client.get('/expression/')
+        response = self.test_client.get('/expression/')
         self.assertEqual(response, -7)
 
     async def test_set_wrong_literal(self):
-        await self.test_client.set('/schema/', {'type': 'string'})
+        self.test_client.set('/schema/', {'type': 'string'})
         with self.assertRaises(Forbidden):
-            await self.test_client.set('/expression/', 8.77)
+            self.test_client.set('/expression/', 8.77)

@@ -10,33 +10,33 @@ class TestUser(IsolatedAsyncioTestCase):
 
     async def test_admin_cannot_delete_itself(self):
         with self.assertRaises(Forbidden):
-            await self.test_client.delete('user/admin')
+            self.test_client.delete('user/admin')
 
     async def test_user_not_found_after_deletion(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/user/timber',
             {
                 'password': 'my-password',
                 'access_rights': {'read_access': [''], 'write_access': ['']}
             }
         )
-        await self.test_client.delete('/user/timber')
+        self.test_client.delete('/user/timber')
 
         with self.assertRaises(NotFound):
-            await self.test_client.get('/user/timber')
+            self.test_client.get('/user/timber')
 
     async def test_token_still_works_after_user_deletion(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/user/timber',
             {
                 'password': 'my-password',
                 'access_rights': {'read_access': [''], 'write_access': ['']}
             }
         )
-        await self.test_client.login(data={'user_id': 'timber', 'password': 'my-password'})
-        await self.test_client.delete('/user/timber')
+        self.test_client.login(data={'user_id': 'timber', 'password': 'my-password'})
+        self.test_client.delete('/user/timber')
 
         try:
-            await self.test_client.get('/user/admin/access_rights')
+            self.test_client.get('/user/admin/access_rights')
         except Exception:
             self.fail()

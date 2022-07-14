@@ -9,7 +9,7 @@ class TestGetUser(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_cannot_access_other_user(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/user/timber',
             {
                 'password': 'my-password',
@@ -19,14 +19,14 @@ class TestGetUser(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
+        self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
         with self.assertRaises(Unauthorized):
-            await self.test_client.get('user/admin/access_rights')
+            self.test_client.get('user/admin/access_rights')
 
     async def test_cannot_access_password(self):
         with self.assertRaises(NotFound):
-            await self.test_client.get('user/admin/password')
+            self.test_client.get('user/admin/password')
 
     async def test_cannot_access_complete_user(self):
         with self.assertRaises(NotFound):
-            await self.test_client.get('user/admin')
+            self.test_client.get('user/admin')

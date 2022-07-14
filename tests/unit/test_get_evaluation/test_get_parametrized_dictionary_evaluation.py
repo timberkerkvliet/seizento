@@ -8,7 +8,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_with_fixed_object(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -24,7 +24,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
@@ -35,11 +35,11 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        response = await self.test_client.get('/evaluation/projection')
+        response = self.test_client.get('/evaluation/projection')
         self.assertEqual(response, {'een': 1, 'twee': 2, 'drie': 3})
 
     async def test_with_fixed_array(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -55,7 +55,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/',
             {
                 'fixed': [1, 2, 3],
@@ -66,11 +66,11 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        response = await self.test_client.get('/evaluation/projection')
+        response = self.test_client.get('/evaluation/projection')
         self.assertEqual(response, {'0': 1, '1': 2, '2': 3})
 
     async def test_switch_nested_objects(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -92,7 +92,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/expression/',
             {
                 'fixed': {
@@ -111,7 +111,7 @@ class TestGetParametrizedDictionaryEvaluation(IsolatedAsyncioTestCase):
                 }
             }
         )
-        response = await self.test_client.get('/evaluation/projection')
+        response = self.test_client.get('/evaluation/projection')
         self.assertEqual(
             response,
             {

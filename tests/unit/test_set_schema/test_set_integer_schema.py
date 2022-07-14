@@ -9,28 +9,28 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_integer(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'integer'}
         )
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'integer'})
 
     async def test_set_optional_integer(self):
-        await self.test_client.set('/schema/', {'type': ['integer', 'null']})
+        self.test_client.set('/schema/', {'type': ['integer', 'null']})
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertEqual(set(response['type']), {'integer', 'null'})
 
     async def test_cannot_set_child(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'integer'}
         )
 
         try:
-            await self.test_client.set(
+            self.test_client.set(
                 '/schema/a',
                 {'type': 'integer'}
             )
@@ -38,13 +38,13 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
             self.fail()
 
     async def test_can_set_placeholder_child(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'integer'}
         )
 
         try:
-            await self.test_client.set(
+            self.test_client.set(
                 '/schema/~items',
                 {'type': 'integer'}
             )
@@ -52,22 +52,22 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
             self.fail()
 
     async def test_can_set_integer_if_string_is_set(self):
-        await self.test_client.set('/schema/', {'type': 'string'})
+        self.test_client.set('/schema/', {'type': 'string'})
 
         try:
-            await self.test_client.set('/schema/', {'type': 'integer'})
+            self.test_client.set('/schema/', {'type': 'integer'})
         except Forbidden:
             self.fail()
 
     async def test_change_to_integer_after_string_expression_has_set(self):
-        await self.test_client.set('/schema/', {'type': 'string'})
-        await self.test_client.set('/expression/', 'hey')
+        self.test_client.set('/schema/', {'type': 'string'})
+        self.test_client.set('/expression/', 'hey')
 
         with self.assertRaises(Forbidden):
-            await self.test_client.set('/schema/', {'type': 'integer'})
+            self.test_client.set('/schema/', {'type': 'integer'})
 
     async def test_set_struct_field_to_integer(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -75,9 +75,9 @@ class TestSetIntegerSchema(IsolatedAsyncioTestCase):
             }
         )
 
-        await self.test_client.set('/schema/a', {'type': 'integer'})
+        self.test_client.set('/schema/a', {'type': 'integer'})
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertDictEqual(
             response,
             {

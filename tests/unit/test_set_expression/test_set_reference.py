@@ -9,7 +9,7 @@ class TestSetReference(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_reference_with_wrong_type(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -19,27 +19,27 @@ class TestSetReference(IsolatedAsyncioTestCase):
                 }
             }
         )
-        await self.test_client.set('/expression', {'a': 5})
+        self.test_client.set('/expression', {'a': 5})
 
         with self.assertRaises(Forbidden):
-            await self.test_client.set('/expression/b', '{/a}')
+            self.test_client.set('/expression/b', '{/a}')
 
     async def test_self_reference(self):
-        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
 
         with self.assertRaises(Forbidden):
-            await self.test_client.set('/expression', ['{/0}'])
+            self.test_client.set('/expression', ['{/0}'])
 
     async def test_self_reference_did_not_change_anything(self):
-        await self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
 
-        await self.test_client.set('/expression', [1])
+        self.test_client.set('/expression', [1])
 
         try:
-            await self.test_client.set('/expression', ['{/0}'])
+            self.test_client.set('/expression', ['{/0}'])
         except Forbidden:
             pass
 
-        response = await self.test_client.get('/expression')
+        response = self.test_client.get('/expression')
 
         self.assertEqual(response, [1])

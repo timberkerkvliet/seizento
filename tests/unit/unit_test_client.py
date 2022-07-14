@@ -25,24 +25,24 @@ class UnitTestClient:
         )
         self.token = None
 
-    async def login(self, data=None):
+    def login(self, data=None):
         data = data or {
             'user_id': 'admin',
             'password': 'admin'
         }
-        self.token = await self.login_controller.login(data)
+        self.token = self.login_controller.login(data)
 
-    async def get(self, resource: str):
+    def get(self, resource: str):
         if self.token is None:
-            await self.login()
+            self.login()
         return self.resource_controller.get(resource=resource, token=self.token)
 
-    async def set(self, resource: str, data):
+    def set(self, resource: str, data):
         if self.token is None:
-            await self.login()
+            self.login()
         self.resource_controller.set(resource=resource, data=data, token=self.token)
 
-    async def delete(self, resource: str) -> None:
+    def delete(self, resource: str) -> None:
         if self.token is None:
-            await self.login()
+            self.login()
         self.resource_controller.delete(resource=resource, token=self.token)

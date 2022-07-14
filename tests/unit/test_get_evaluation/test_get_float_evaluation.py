@@ -10,14 +10,14 @@ class TestGetFloatEvaluation(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set(self):
-        await self.test_client.set('/schema/', {'type': 'number'})
-        await self.test_client.set('/expression/', -4.56)
+        self.test_client.set('/schema/', {'type': 'number'})
+        self.test_client.set('/expression/', -4.56)
 
-        response = await self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/')
         self.assertTrue(math.isclose(response, -4.56))
 
     async def test_not_set(self):
-        await self.test_client.set('/schema/', {'type': 'number'})
+        self.test_client.set('/schema/', {'type': 'number'})
 
         with self.assertRaises(NotFound):
-            await self.test_client.get('/evaluation')
+            self.test_client.get('/evaluation')

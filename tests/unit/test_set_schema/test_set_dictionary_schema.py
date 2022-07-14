@@ -9,29 +9,29 @@ class TestDictionary(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_set_dict(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'object', 'additionalProperties': {'type': 'string'}}
         )
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertDictEqual(response, {'type': 'object', 'additionalProperties': {'type': 'string'}})
 
     async def test_reset_value_type(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'object', 'additionalProperties': {'type': 'string'}}
         )
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/~properties',
             {'type': 'integer'}
         )
 
-        response = await self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/')
         self.assertDictEqual(response,  {'type': 'object', 'additionalProperties': {'type': 'integer'}})
 
     async def test_set_dict_from_struct(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema',
             {
                 'type': 'object',
@@ -39,9 +39,9 @@ class TestDictionary(IsolatedAsyncioTestCase):
                 'additionalProperties': False
             }
         )
-        await self.test_client.set('/expression', {'a': 'a'})
+        self.test_client.set('/expression', {'a': 'a'})
 
         try:
-            await self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+            self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         except Forbidden:
             self.fail()

@@ -10,26 +10,26 @@ class TestGeneralErrors(IsolatedAsyncioTestCase):
 
     async def test_when_setting_schema_with_no_paren_then_raise_not_found(self):
         with self.assertRaises(NotFound):
-            await self.test_client.set('/schema/a', {'type': 'integer'})
+            self.test_client.set('/schema/a', {'type': 'integer'})
 
     async def test_when_getting_nonsensical_resource_then_raise_bad_request(self):
         with self.assertRaises(BadRequest):
-            await self.test_client.get('plfo//dsf')
+            self.test_client.get('plfo//dsf')
 
     async def test_when_getting_non_existing_base_type_then_raise_bad_request(self):
         with self.assertRaises(BadRequest):
-            await self.test_client.get('/hoi-daar-allemaal')
+            self.test_client.get('/hoi-daar-allemaal')
 
     async def test_set_empty_type_data(self):
         try:
-            await self.test_client.set('/schema', {})
+            self.test_client.set('/schema', {})
         except BadRequest:
             self.fail()
 
     async def test_set_evaluation(self):
         with self.assertRaises(MethodNotAllowed):
-            await self.test_client.set('/evaluation', {})
+            self.test_client.set('/evaluation', {})
 
     async def test_delete_evaluation(self):
         with self.assertRaises(MethodNotAllowed):
-            await self.test_client.delete('/evaluation')
+            self.test_client.delete('/evaluation')

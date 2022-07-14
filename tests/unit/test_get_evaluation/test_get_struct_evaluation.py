@@ -9,7 +9,7 @@ class TestGetStructEvaluation(IsolatedAsyncioTestCase):
         self.test_client = UnitTestClient()
 
     async def test_not_found_before_set(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {
                 'type': 'object',
@@ -18,14 +18,14 @@ class TestGetStructEvaluation(IsolatedAsyncioTestCase):
         )
 
         with self.assertRaises(NotFound):
-            await self.test_client.get('/evaluation/')
+            self.test_client.get('/evaluation/')
 
     async def test_evaluation_after_change(self):
-        await self.test_client.set(
+        self.test_client.set(
             '/schema/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
         )
-        await self.test_client.set('/expression/',  {'a': 900})
+        self.test_client.set('/expression/',  {'a': 900})
 
         new_schema = {
             'type': 'object',
@@ -35,8 +35,8 @@ class TestGetStructEvaluation(IsolatedAsyncioTestCase):
             }
         }
 
-        await self.test_client.set('/schema/', new_schema)
+        self.test_client.set('/schema/', new_schema)
 
-        response = await self.test_client.get('/evaluation')
+        response = self.test_client.get('/evaluation')
 
         self.assertDictEqual(response, {'a': 900})
