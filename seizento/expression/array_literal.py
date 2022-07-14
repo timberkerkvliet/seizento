@@ -32,20 +32,20 @@ class ArrayLiteral(Expression):
 
     async def get_argument_space(
         self,
-        path_service: PathService
+        root_expression: Expression,
     ) -> ArgumentSpace:
         result = ArgumentSpace(values={})
         for value in self.values:
-            result = result.intersect(await value.get_argument_space(path_service=path_service))
+            result = result.intersect(await value.get_argument_space(root_expression=root_expression))
 
         return result
 
     async def evaluate(
         self,
-        path_service: PathService,
+        root_expression: Expression,
         arguments: Dict[Identifier, str]
     ):
-        return [await value.evaluate(path_service, arguments) for value in self.values]
+        return [await value.evaluate(root_expression, arguments) for value in self.values]
 
     def get_child(self, component: PathComponent) -> Expression:
         if isinstance(component, LiteralComponent):

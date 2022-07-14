@@ -3,15 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Set, TYPE_CHECKING, Union
 
-from seizento.data_tree import DataTree
 from seizento.expression.expression import Expression, ArgumentSpace
 from seizento.identifier import Identifier
 from seizento.path import Path, PathComponent, LiteralComponent, EMPTY_PATH, PlaceHolder
 from seizento.schema.schema import Schema
 
 
-if TYPE_CHECKING:
-    from seizento.expression.path_service import PathService
+from seizento.expression.path_service import PathService
 
 
 @dataclass
@@ -55,7 +53,7 @@ class PathReference(Expression):
 
     async def get_argument_space(
         self,
-        path_service: PathService
+        root_expression: Expression,
     ) -> ArgumentSpace:
         parts = self.reference
         path = EMPTY_PATH
@@ -63,13 +61,13 @@ class PathReference(Expression):
             path = path.append(parts[0])
             parts = parts[1:]
 
-        root_value = await path_service.evaluate(path=path)
+        root_value = await PathService(root_expression).evaluate(path=path)
 
         return self._get_argument_space(value=root_value, parts=parts)
 
     async def evaluate(
         self,
-        path_service: PathService,
+        root_expression: Expression,
         arguments: dict[Identifier, str]
     ):
         path = Path(
@@ -78,7 +76,7 @@ class PathReference(Expression):
             )
         )
 
-        return await path_service.evaluate(path=path)
+        return await PathService(root_expression).evaluate(path=path)
 
     def get_child(self, component: PathComponent) -> None:
         raise KeyError

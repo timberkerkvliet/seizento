@@ -44,14 +44,14 @@ class Expression(ABC):
     @abstractmethod
     async def get_argument_space(
         self,
-        path_service: PathService
+        root_expression: Expression
     ) -> ArgumentSpace:
         pass
 
     @abstractmethod
     async def evaluate(
         self,
-        path_service: PathService,
+        root_expression: Expression,
         arguments: Dict[Identifier, str]
     ) -> Any:
         pass

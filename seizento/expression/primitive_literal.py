@@ -32,13 +32,13 @@ class PrimitiveLiteral(Expression):
 
     async def get_argument_space(
         self,
-        path_service: PathService
+        root_expression: Expression,
     ) -> ArgumentSpace:
         return ArgumentSpace(values={})
 
     async def evaluate(
         self,
-        path_service: PathService,
+        root_expression: Expression,
         arguments: Dict[Identifier, str]
     ):
         return self.value

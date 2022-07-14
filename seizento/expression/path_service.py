@@ -1,11 +1,9 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Optional, Set
+from typing import Set
 
 from seizento.controllers.exceptions import NotFound
-from seizento.expression.expression import Expression, ArgumentSpace
+from seizento.expression.expression import Expression
 from seizento.path import Path, EMPTY_PATH
-from seizento.repository import Repository
-from seizento.schema.schema import Schema
 
 
 @dataclass
@@ -48,10 +46,7 @@ class PathService:
         ]
         expression = nearest_expression.expression
 
-        evaluation = await expression.evaluate(
-            path_service=PathService(root_expression=self._root_expression, visited=self._visited | {path}),
-            arguments={}
-        )
+        evaluation = await expression.evaluate(root_expression=self._root_expression, arguments={})
 
         for index in indices:
             try:
