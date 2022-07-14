@@ -21,13 +21,13 @@ class SchemaController:
         self._path = path
         self._root_schema = root_schema
 
-    async def _get_parent_type(self) -> Schema:
+    def _get_parent_type(self) -> Schema:
         try:
             return self._root_schema.navigate_to(self._path.remove_last())
         except KeyError as e:
             raise NotFound from e
 
-    async def get(self) -> Dict:
+    def get(self) -> Dict:
         try:
             target_type = self._root_schema.navigate_to(self._path)
         except KeyError as e:
@@ -35,8 +35,8 @@ class SchemaController:
 
         return serialize_constraint(target_type)
 
-    async def set(self, data: Dict) -> None:
-        parent_type = await self._get_parent_type()
+    def set(self, data: Dict) -> None:
+        parent_type = self._get_parent_type()
 
         if parent_type is None:
             raise Forbidden
@@ -65,8 +65,8 @@ class SchemaController:
         except Exception as e:
             raise NotFound from e
 
-    async def delete(self) -> None:
-        parent_type = await self._get_parent_type()
+    def delete(self) -> None:
+        parent_type = self._get_parent_type()
 
         if parent_type is None:
             raise Forbidden

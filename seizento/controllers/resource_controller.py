@@ -71,7 +71,7 @@ class ResourceController:
         except Exception as e:
             raise BadRequest from e
 
-    async def get(self, resource: str, token: str) -> Dict:
+    def get(self, resource: str, token: str) -> Dict:
         access_rights = self._get_access_rights(token)
         resource_path = self._get_resource_path(resource)
 
@@ -85,9 +85,9 @@ class ResourceController:
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
-        return await controller.get()
+        return controller.get()
 
-    async def set(self, resource: str, data: Any, token: str) -> None:
+    def set(self, resource: str, data: Any, token: str) -> None:
         access_rights = self._get_access_rights(token)
         resource_path = self._get_resource_path(resource)
 
@@ -101,9 +101,9 @@ class ResourceController:
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
-        await controller.set(data)
+        controller.set(data)
 
-    async def delete(self, resource: str, token: str) -> None:
+    def delete(self, resource: str, token: str) -> None:
         access_rights = self._get_access_rights(token)
         resource_path = self._get_resource_path(resource)
 
@@ -117,4 +117,4 @@ class ResourceController:
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
-        await controller.delete()
+        controller.delete()

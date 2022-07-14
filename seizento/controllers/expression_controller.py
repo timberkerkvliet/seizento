@@ -17,18 +17,18 @@ class ExpressionController:
         self._repository = repository
         self._path = path
 
-    async def _get_expression(self):
+    def _get_expression(self):
         return self._repository.get_expression(path=self._path)
 
-    async def get(self) -> Dict:
-        expression = await self._get_expression()
+    def get(self) -> Dict:
+        expression = self._get_expression()
 
         if expression is None:
             raise NotFound
 
         return serialize_expression(expression)
 
-    async def set(self, data: Dict) -> None:
+    def set(self, data: Dict) -> None:
         try:
             new_expression = parse_expression(data)
         except Exception as e:

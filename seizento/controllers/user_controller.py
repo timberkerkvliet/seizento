@@ -21,7 +21,7 @@ class UserController:
         component = self._path.first_component
         return Identifier(component.value)
 
-    async def get(self) -> Dict:
+    def get(self) -> Dict:
         try:
             user_id = self._get_user_id()
         except Exception as e:
@@ -39,7 +39,7 @@ class UserController:
 
         return serialize_access_rights(user.access_rights)
 
-    async def set(self, data) -> None:
+    def set(self, data) -> None:
         try:
             user_id = self._get_user_id()
         except Exception as e:
@@ -61,7 +61,7 @@ class UserController:
             user.with_new_password(HashedPassword.from_password(data))
         )
 
-    async def delete(self) -> None:
+    def delete(self) -> None:
         try:
             user_id = self._get_user_id()
         except Exception as e:

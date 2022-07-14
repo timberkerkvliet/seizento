@@ -15,15 +15,15 @@ class EvaluationController:
         self._repository = repository
         self._path = path
 
-    async def get(self) -> Dict:
+    def get(self) -> Dict:
         root_expression = self._repository.get_expression(EMPTY_PATH)
         if root_expression is None:
             raise NotFound
 
         return evaluate_expression_at_path(path=self._path, root_expression=root_expression)
 
-    async def set(self, data) -> None:
+    def set(self, data) -> None:
         raise MethodNotAllowed
 
-    async def delete(self) -> None:
+    def delete(self) -> None:
         raise MethodNotAllowed
