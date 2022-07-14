@@ -1,4 +1,3 @@
-from seizento.adapters.in_memory_data_tree_store import InMemoryDataTreeStore
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
 from seizento.expression.struct_literal import StructLiteral
@@ -10,7 +9,6 @@ from seizento.user import ADMIN_USER
 
 class UnitTestClient:
     def __init__(self):
-        store = InMemoryDataTreeStore(admin_user=ADMIN_USER)
         root_schema = Schema(properties={'schema': EverythingAllowed()})
         root_expression = StructLiteral(values={})
         users = {ADMIN_USER.id: ADMIN_USER}

@@ -1,35 +1,16 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from contextlib import AbstractAsyncContextManager
 from copy import deepcopy
 from typing import Optional, Dict
 
-from seizento.data_tree_maps.constraint_map import constraint_to_tree, tree_to_constraint
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
-from seizento.path import Path, LiteralComponent, IndexPlaceHolder, PropertyPlaceHolder
+from seizento.path import Path, LiteralComponent
 from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
 
-from seizento.data_tree_maps.expression_map import tree_to_expression, expression_to_tree
-from seizento.data_tree import DataTree
-from seizento.serializers.user_serializer import parse_user, serialize_user
+
 from seizento.user import User
-
-
-class DataTreeStoreTransaction(AbstractAsyncContextManager):
-    @abstractmethod
-    async def get_tree(self, path: Path) -> DataTree:
-        ...
-
-    @abstractmethod
-    async def set_tree(self, path: Path, tree: DataTree) -> None:
-        ...
-
-    @abstractmethod
-    async def delete_tree(self, path: Path) -> None:
-        ...
 
 
 class Repository:

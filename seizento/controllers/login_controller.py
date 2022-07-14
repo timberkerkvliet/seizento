@@ -7,8 +7,8 @@ from seizento.controllers.exceptions import MethodNotAllowed, Unauthorized
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path
-from seizento.repository import Repository, DataTreeStoreTransaction
-from seizento.expression.path_service import PathService
+from seizento.repository import Repository
+
 from seizento.schema.constraint import Constraint
 from seizento.serializers.user_serializer import serialize_access_rights
 from seizento.user import User

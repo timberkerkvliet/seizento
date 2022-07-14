@@ -10,7 +10,7 @@ from seizento.controllers.user_controller import UserController
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path
-from seizento.repository import Repository, DataTreeStoreTransaction
+from seizento.repository import Repository
 from seizento.schema.constraint import Constraint
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
