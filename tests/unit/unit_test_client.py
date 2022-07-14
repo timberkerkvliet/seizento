@@ -21,9 +21,7 @@ class UnitTestClient:
         )
         self.login_controller = LoginController(
             users=users,
-            app_secret='test-secret',
-            root_schema=root_schema,
-            root_expression=root_expression
+            app_secret='test-secret'
         )
         self.token = None
 

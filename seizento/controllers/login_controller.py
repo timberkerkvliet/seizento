@@ -1,15 +1,9 @@
-from typing import Dict, Callable
-from uuid import UUID
+from typing import Dict
 
 import jwt
 
-from seizento.controllers.exceptions import MethodNotAllowed, Unauthorized
-from seizento.expression.expression import Expression
+from seizento.controllers.exceptions import Unauthorized, BadRequest
 from seizento.identifier import Identifier
-from seizento.path import Path
-from seizento.repository import Repository
-
-from seizento.schema.constraint import Constraint
 from seizento.serializers.user_serializer import serialize_access_rights
 from seizento.user import User
 
@@ -18,23 +12,21 @@ class LoginController:
     def __init__(
         self,
         users: Dict[Identifier, User],
-        app_secret: str,
-        root_schema: Constraint,
-        root_expression: Expression
+        app_secret: str
     ):
         self._users = users
         self._app_secret = app_secret
-        self._root_schema = root_schema
-        self._root_expression = root_expression
 
     async def login(self, data) -> str:
-        repository = Repository(
-            users=self._users,
-            root_schema=self._root_schema,
-            root_expression=self._root_expression
-        )
+        try:
+            user_id = Identifier(data['user_id'])
+        except Exception as e:
+            raise BadRequest from e
 
-        user = await repository.get_user(Identifier(data['user_id']))
+        if user_id not in self._users:
+            raise Unauthorized
+
+        user = self._users[user_id]
 
         if user is None or not user.password.check_password(data['password']):
             raise Unauthorized
