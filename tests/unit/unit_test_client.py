@@ -13,15 +13,16 @@ class UnitTestClient:
         store = InMemoryDataTreeStore(admin_user=ADMIN_USER)
         root_schema = Schema(properties={'schema': EverythingAllowed()})
         root_expression = StructLiteral(values={})
+        users = {ADMIN_USER.id: ADMIN_USER}
 
         self.resource_controller = ResourceController(
-            transaction_factory=lambda: store.get_transaction(),
+            users=users,
             app_secret='test-secret',
             root_schema=root_schema,
             root_expression=root_expression
         )
         self.login_controller = LoginController(
-            transaction_factory=lambda: store.get_transaction(),
+            users=users,
             app_secret='test-secret',
             root_schema=root_schema,
             root_expression=root_expression

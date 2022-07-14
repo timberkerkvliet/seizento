@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from contextlib import AbstractAsyncContextManager
 from copy import deepcopy
-from typing import Optional
+from typing import Optional, Dict
 
 from seizento.data_tree_maps.constraint_map import constraint_to_tree, tree_to_constraint
 from seizento.expression.expression import Expression
@@ -33,17 +33,10 @@ class DataTreeStoreTransaction(AbstractAsyncContextManager):
 
 
 class Repository:
-    def __init__(self, transaction: DataTreeStoreTransaction, root_schema: Constraint, root_expression: Expression):
-        self._transaction = transaction
+    def __init__(self, users: Dict[Identifier, User], root_schema: Constraint, root_expression: Expression):
+        self._users = users
         self._root_schema = root_schema
         self._root_expression = root_expression
-
-    async def __aenter__(self):
-        await self._transaction.__aenter__()
-        return self
-
-    async def __aexit__(self, *args):
-        await self._transaction.__aexit__(*args)
 
     async def get_schema(self, path: Path) -> Optional[Schema]:
         result = self._root_schema.get_child(LiteralComponent('schema'))
@@ -94,30 +87,21 @@ class Repository:
 
     async def set_expression_temp(self, path: Path, value: Expression) -> Repository:
         repo = Repository(
-            transaction=self._transaction,
             root_expression=deepcopy(self._root_expression),
-            root_schema=self._root_schema
+            root_schema=self._root_schema,
+            users=self._users
         )
         await repo.set_expression(path, value)
         return repo
 
     async def get_user(self, user_id: Identifier) -> Optional[User]:
-        try:
-            data_tree = await self._transaction.get_tree(
-                path=Path(components=(LiteralComponent('user'), LiteralComponent(str(user_id))))
-            )
-        except KeyError:
-            return None
+        if user_id in self._users:
+            return self._users[user_id]
 
-        return parse_user(data_tree.root_data)
+        return None
 
     async def set_user(self, user: User) -> None:
-        await self._transaction.set_tree(
-            path=Path(components=(LiteralComponent('user'), LiteralComponent(str(user.id)))),
-            tree=DataTree(root_data=serialize_user(user))
-        )
+        self._users[user.id] = user
 
     async def delete_user(self, user_id: Identifier) -> None:
-        await self._transaction.delete_tree(
-            path=Path(components=(LiteralComponent('user'), LiteralComponent(str(user_id)))),
-        )
+        self._users.pop(user_id, None)
