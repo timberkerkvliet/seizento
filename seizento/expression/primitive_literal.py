@@ -47,8 +47,8 @@ class PrimitiveLiteral(Expression):
         raise KeyError
 
     def set_child(self, component: PathComponent, expression: Expression) -> None:
-        raise NotImplementedError
+        raise ValueError
 
     def delete_child(self, component: PathComponent) -> None:
-        raise NotImplementedError
+        return
 

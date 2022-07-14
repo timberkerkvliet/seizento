@@ -57,6 +57,9 @@ class ParametrizedDictionary(Expression):
     def set_child(self, component: PathComponent, expression: Expression) -> None:
         if component == PropertyPlaceHolder():
             self.value = expression
+            return
+
+        raise ValueError
 
     def delete_child(self, component: PathComponent) -> None:
         raise NotImplementedError

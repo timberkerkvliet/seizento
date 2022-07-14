@@ -53,8 +53,8 @@ class ExpressionController:
 
             try:
                 parent_expression.set_child(component=self._path.last_component, expression=new_expression)
-            except Exception:
-                raise Forbidden
+            except ValueError as e:
+                raise Forbidden from e
 
         await self._repository.set_expression(path=self._path, value=new_expression)
 

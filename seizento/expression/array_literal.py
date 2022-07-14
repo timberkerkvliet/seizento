@@ -61,8 +61,12 @@ class ArrayLiteral(Expression):
 
         if index < len(self.values):
             self.values[int(component.value)] = expression
+            return
         if index == len(self.values):
             self.values.append(expression)
+            return
+
+        raise ValueError
 
     def delete_child(self, component: PathComponent) -> None:
-        raise NotImplementedError
+        return

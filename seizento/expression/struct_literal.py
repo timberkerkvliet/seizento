@@ -60,6 +60,9 @@ class StructLiteral(Expression):
     def set_child(self, component: PathComponent, expression: Expression) -> None:
         if isinstance(component, LiteralComponent):
             self.values[component.value] = expression
+            return
+
+        raise ValueError
 
     def delete_child(self, component: PathComponent) -> None:
         if isinstance(component, LiteralComponent):
