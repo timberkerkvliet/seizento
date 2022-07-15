@@ -22,12 +22,6 @@ class SchemaController:
         self._path = path
         self._root = root
 
-    def _get_parent_type(self) -> Schema:
-        try:
-            return self._root.schema.navigate_to(self._path.remove_last())
-        except KeyError as e:
-            raise NotFound from e
-
     def get(self) -> Dict:
         try:
             target_type = self._root.schema.navigate_to(self._path)
@@ -35,6 +29,12 @@ class SchemaController:
             raise NotFound from e
 
         return serialize_constraint(target_type)
+
+    def _get_parent_type(self) -> Schema:
+        try:
+            return self._root.schema.navigate_to(self._path.remove_last())
+        except KeyError as e:
+            raise NotFound from e
 
     def set(self, data: Dict) -> None:
         parent_type = self._get_parent_type()
@@ -47,13 +47,10 @@ class SchemaController:
         except Exception as e:
             raise BadRequest from e
 
-        expression = self._repository.get_expression(path=self._path)
-
-        if expression is not None:
-            current_schema = expression.get_schema(self._repository.get_schema(EMPTY_PATH))
-
-            if not current_schema.satisfies(new_schema):
-                raise Forbidden
+        try:
+            current = parent_type.get_child(self._path.last_component)
+        except KeyError:
+            current = None
 
         try:
             parent_type.set_child(
@@ -62,6 +59,17 @@ class SchemaController:
             )
         except Exception as e:
             raise NotFound from e
+
+        if not self._root.expression.get_schema(self._root.schema).satisfies(self._root.schema):
+            if current is not None:
+                parent_type.set_child(
+                    component=self._path.last_component,
+                    constraint=current
+                )
+            else:
+                parent_type.delete_child(self._path.last_component)
+
+            raise Forbidden
 
     def delete(self) -> None:
         parent_type = self._get_parent_type()
