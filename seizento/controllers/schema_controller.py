@@ -47,7 +47,7 @@ class SchemaController:
         except Exception as e:
             raise BadRequest from e
 
-        expression = self._repository.get_expression(path=self._path.remove_first())
+        expression = self._repository.get_expression(path=self._path)
 
         if expression is not None:
             current_schema = expression.get_schema(self._repository.get_schema(EMPTY_PATH))

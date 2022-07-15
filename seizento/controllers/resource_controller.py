@@ -32,7 +32,7 @@ class ResourceController:
         if resource_type == 'schema':
             return SchemaController(
                 repository=repository,
-                path=resource_path,
+                path=resource_path.remove_first(),
                 root=Root(schema=self._root.schema, expression=self._root.expression)
             )
         if resource_type == 'expression':

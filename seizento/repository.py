@@ -20,28 +20,28 @@ class Repository:
         self._root_expression = root_expression
 
     def get_schema(self, path: Path) -> Optional[Schema]:
-        return self._root_schema.navigate_to(path.insert_first(LiteralComponent('schema')))
+        return self._root_schema.navigate_to(path)
 
     def set_schema(self, path: Path, value: Schema) -> None:
         target = self._root_schema
-        for component in path.insert_first(LiteralComponent('schema')).remove_last():
+        for component in path:
             target = target.get_child(component)
 
         target.set_child(
-            component=path.last_component if len(path) > 0 else LiteralComponent('schema'),
+            component=path.last_component,
             constraint=value
         )
 
     def delete_type(self, path: Path) -> None:
         target = self._root_schema
-        for component in path.insert_first(LiteralComponent('schema')).remove_last():
+        for component in path:
             target = target.get_child(component)
 
         target.delete_child(path.last_component)
 
     def get_expression(self, path: Path) -> Optional[Expression]:
         try:
-            result = self._root_expression.get_child(LiteralComponent('expression'))
+            result = self._root_expression
         except KeyError:
             return None
         for component in path:
@@ -54,11 +54,11 @@ class Repository:
 
     def set_expression(self, path: Path, value: Expression) -> None:
         target = self._root_expression
-        for component in path.insert_first(LiteralComponent('expression')).remove_last():
+        for component in path.remove_last():
             target = target.get_child(component)
 
         target.set_child(
-            component=path.last_component if len(path) > 0 else LiteralComponent('expression'),
+            component=path.last_component,
             expression=value
         )
 

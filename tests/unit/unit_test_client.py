@@ -11,8 +11,8 @@ from seizento.user import ADMIN_USER
 
 class UnitTestClient:
     def __init__(self):
-        root_schema = Schema(properties={'schema': Schema(types={DataType.OBJECT})})
-        root_expression = StructLiteral(values={'expression': StructLiteral(values={})})
+        root_schema = Schema(types={DataType.OBJECT})
+        root_expression = StructLiteral(values={})
         users = {ADMIN_USER.id: ADMIN_USER}
 
         self.resource_controller = ResourceController(
