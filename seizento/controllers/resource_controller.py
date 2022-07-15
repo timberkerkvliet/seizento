@@ -31,7 +31,6 @@ class ResourceController:
         resource_type = resource_path.first_component.value
         if resource_type == 'schema':
             return SchemaController(
-                repository=repository,
                 path=resource_path.remove_first(),
                 root=Root(schema=self._root.schema, expression=self._root.expression)
             )

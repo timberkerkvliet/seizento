@@ -12,13 +12,7 @@ from seizento.serializers.constraint_serializer import parse_constraint, seriali
 
 
 class SchemaController:
-    def __init__(
-        self,
-        repository: Repository,
-        path: Path,
-        root: Root
-    ):
-        self._repository = repository
+    def __init__(self, path: Path, root: Root):
         self._path = path
         self._root = root
 
