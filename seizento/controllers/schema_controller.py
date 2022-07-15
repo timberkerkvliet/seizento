@@ -46,9 +46,6 @@ class SchemaController:
         except Exception as e:
             raise BadRequest from e
 
-        if not isinstance(new_schema, Schema):
-            raise BadRequest
-
         expression = self._repository.get_expression(path=self._path.remove_first())
 
         if expression is not None:
