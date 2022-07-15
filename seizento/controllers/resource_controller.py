@@ -32,12 +32,13 @@ class ResourceController:
         if resource_type == 'schema':
             return SchemaController(
                 path=resource_path.remove_first(),
-                root=Root(schema=self._root.schema, expression=self._root.expression)
+                root=self._root
             )
         if resource_type == 'expression':
             return ExpressionController(
                 repository=repository,
-                path=resource_path.remove_first()
+                path=resource_path.remove_first(),
+                root=self._root
             )
         if resource_type == 'evaluation':
             return EvaluationController(
