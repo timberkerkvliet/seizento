@@ -1,4 +1,4 @@
-from typing import Dict, Any, Callable, Awaitable
+from typing import Dict, Any
 
 import jwt
 
@@ -7,11 +7,10 @@ from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
-from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path
 from seizento.repository import Repository
-from seizento.schema.constraint import Constraint
+from seizento.resource import Root
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
 from seizento.user import AccessRights, User
@@ -22,13 +21,11 @@ class ResourceController:
         self,
         users: Dict[Identifier, User],
         app_secret: str,
-        root_schema: Constraint,
-        root_expression: Expression
+        root: Root,
     ):
         self._users = users
         self._app_secret = app_secret
-        self._root_schema = root_schema
-        self._root_expression = root_expression
+        self._root = root
 
     def _get_controller(self, resource_path: Path, repository: Repository):
         resource_type = resource_path.first_component.value
@@ -36,7 +33,7 @@ class ResourceController:
             return SchemaController(
                 repository=repository,
                 path=resource_path,
-                root_schema=self._root_schema
+                root=Root(schema=self._root.schema, expression=self._root.expression)
             )
         if resource_type == 'expression':
             return ExpressionController(
@@ -80,8 +77,8 @@ class ResourceController:
 
         repository = Repository(
             users=self._users,
-            root_schema=self._root_schema,
-            root_expression=self._root_expression
+            root_schema=self._root.schema,
+            root_expression=self._root.expression
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -96,8 +93,8 @@ class ResourceController:
 
         repository = Repository(
             users=self._users,
-            root_schema=self._root_schema,
-            root_expression=self._root_expression
+            root_schema=self._root.schema,
+            root_expression=self._root.expression
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -112,8 +109,8 @@ class ResourceController:
 
         repository = Repository(
             users=self._users,
-            root_schema=self._root_schema,
-            root_expression=self._root_expression
+            root_schema=self._root.schema,
+            root_expression=self._root.expression
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)

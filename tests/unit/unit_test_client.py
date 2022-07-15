@@ -1,6 +1,7 @@
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
 from seizento.expression.struct_literal import StructLiteral
+from seizento.resource import Root
 from seizento.schema.constraint import EverythingAllowed
 from seizento.schema.schema import Schema
 
@@ -16,8 +17,7 @@ class UnitTestClient:
         self.resource_controller = ResourceController(
             users=users,
             app_secret='test-secret',
-            root_schema=root_schema,
-            root_expression=root_expression
+            root=Root(schema=root_schema, expression=root_expression)
         )
         self.login_controller = LoginController(
             users=users,

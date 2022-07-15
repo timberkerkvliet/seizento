@@ -1,6 +1,7 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
+from seizento.resource import Root
 
 from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
@@ -15,21 +16,21 @@ class SchemaController:
         self,
         repository: Repository,
         path: Path,
-        root_schema: Constraint
+        root: Root
     ):
         self._repository = repository
         self._path = path
-        self._root_schema = root_schema
+        self._root = root
 
     def _get_parent_type(self) -> Schema:
         try:
-            return self._root_schema.navigate_to(self._path.remove_last())
+            return self._root.schema.navigate_to(self._path.remove_last())
         except KeyError as e:
             raise NotFound from e
 
     def get(self) -> Dict:
         try:
-            target_type = self._root_schema.navigate_to(self._path)
+            target_type = self._root.schema.navigate_to(self._path)
         except KeyError as e:
             raise NotFound from e
 
