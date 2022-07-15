@@ -32,19 +32,15 @@ class SchemaController:
 
     def set(self, data: Dict) -> None:
         parent_type = self._get_parent_type()
-
-        if parent_type is None:
-            raise Forbidden
-
         try:
             new_schema = parse_constraint(data)
         except Exception as e:
             raise BadRequest from e
 
         try:
-            current = parent_type.get_child(self._path.last_component)
+            current_schema = parent_type.get_child(self._path.last_component)
         except KeyError:
-            current = None
+            current_schema = None
 
         try:
             parent_type.set_child(
@@ -54,21 +50,19 @@ class SchemaController:
         except Exception as e:
             raise NotFound from e
 
-        if not self._root.expression.get_schema(self._root.schema).satisfies(self._root.schema):
-            if current is not None:
-                parent_type.set_child(
-                    component=self._path.last_component,
-                    constraint=current
-                )
-            else:
-                parent_type.delete_child(self._path.last_component)
+        if self._root.expression.get_schema(self._root.schema).satisfies(self._root.schema):
+            return
 
-            raise Forbidden
+        if current_schema is not None:
+            parent_type.set_child(
+                component=self._path.last_component,
+                constraint=current_schema
+            )
+        else:
+            parent_type.delete_child(self._path.last_component)
+
+        raise Forbidden
 
     def delete(self) -> None:
         parent_type = self._get_parent_type()
-
-        if parent_type is None:
-            raise Forbidden
-
         parent_type.delete_child(self._path.last_component)
