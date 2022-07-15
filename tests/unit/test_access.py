@@ -18,7 +18,7 @@ class TestAccess(TestCase):
             }
         )
         self.test_client.set(
-            '/schema',
+            '/schema/test',
             {
                 'type': 'object',
                 'properties': {

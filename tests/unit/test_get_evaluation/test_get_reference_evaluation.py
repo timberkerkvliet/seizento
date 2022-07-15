@@ -9,20 +9,20 @@ class TestGetReferenceEvaluation(TestCase):
         self.test_client = UnitTestClient()
 
     def test_set_reference(self):
-        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-        self.test_client.set('/expression/', [1, '{/0}'])
+        self.test_client.set('/schema/test/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/expression/test/', [1, '{/test/0}'])
 
-        response = self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/test/')
         self.assertEqual(response, [1, 1])
 
     def test_non_existing_key(self):
-        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/schema/test/', {'type': 'array', 'items': {'type': 'integer'}})
         with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/', ['{/1}'])
+            self.test_client.set('/expression/test/', ['{/test/1}'])
 
     def test_object_reference(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {
@@ -32,14 +32,14 @@ class TestGetReferenceEvaluation(TestCase):
             }
         )
         self.test_client.set(
-            '/expression',
+            '/expression/test',
             {
                 'a': {'x': 'copy this'},
-                'b': '{/a}'
+                'b': '{/test/a}'
             }
         )
 
-        response = self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/test/')
 
         self.assertDictEqual(
             response,
@@ -50,11 +50,11 @@ class TestGetReferenceEvaluation(TestCase):
         )
 
     def test_double_reference(self):
-        self.test_client.set('/schema/', {'type': 'array', 'items': {'type': 'integer'}})
-        self.test_client.set('/expression/', [1])
+        self.test_client.set('/schema/test/', {'type': 'array', 'items': {'type': 'integer'}})
+        self.test_client.set('/expression/test/', [1])
 
-        self.test_client.set('/expression/1', '{/0}')
-        self.test_client.set('/expression/2', '{/1}')
+        self.test_client.set('/expression/test/1', '{/test/0}')
+        self.test_client.set('/expression/test/2', '{/test/1}')
 
-        response = self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/test/')
         self.assertEqual(response, [1, 1, 1])

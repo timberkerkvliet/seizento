@@ -9,7 +9,7 @@ class TestSetParametrizedDictionary(TestCase):
 
     def test_with_fixed_object(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {
@@ -25,28 +25,28 @@ class TestSetParametrizedDictionary(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/',
+            '/expression/test/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
                 'projection': {
                     '*parameter': 'k',
                     '*property': '{k}',
-                    '*value': '{/fixed/<k>}'
+                    '*value': '{/test/fixed/<k>}'
                 }
             }
         )
-        response = self.test_client.get('/expression/projection')
+        response = self.test_client.get('/expression/test/projection')
         self.assertDictEqual(
             response, {
                     '*parameter': 'k',
                     '*property': '{k}',
-                    '*value': '{/fixed/<k>}'
+                    '*value': '{/test/fixed/<k>}'
                 }
         )
 
     def test_reset_value(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {
@@ -66,26 +66,26 @@ class TestSetParametrizedDictionary(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/',
+            '/expression/test/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
                 'alternative': {'een': 101, 'twee': 102, 'drie': 103},
                 'projection': {
                     '*parameter': 'k',
                     '*property': '{k}',
-                    '*value': '{/fixed/<k>}'
+                    '*value': '{/test/fixed/<k>}'
                 }
             }
         )
         self.test_client.set(
-            '/expression/projection/~properties',
-            '{/alternative/<k>}'
+            '/expression/test/projection/~properties',
+            '{/test/alternative/<k>}'
         )
-        response = self.test_client.get('/expression/projection')
+        response = self.test_client.get('/expression/test/projection')
         self.assertDictEqual(
             response, {
                     '*parameter': 'k',
                     '*property': '{k}',
-                    '*value': '{/alternative/<k>}'
+                    '*value': '{/test/alternative/<k>}'
                 }
         )

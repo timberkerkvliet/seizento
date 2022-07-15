@@ -9,7 +9,7 @@ class TestGetParametrizedDictionaryEvaluation(TestCase):
 
     def test_with_fixed_object(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {
@@ -25,22 +25,22 @@ class TestGetParametrizedDictionaryEvaluation(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/',
+            '/expression/test/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
                 'projection': {
                     '*parameter': 'k',
                     '*property': '{k}',
-                    '*value': '{/fixed/<k>}'
+                    '*value': '{/test/fixed/<k>}'
                 }
             }
         )
-        response = self.test_client.get('/evaluation/projection')
+        response = self.test_client.get('/evaluation/test/projection')
         self.assertEqual(response, {'een': 1, 'twee': 2, 'drie': 3})
 
     def test_with_fixed_array(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {
@@ -56,22 +56,22 @@ class TestGetParametrizedDictionaryEvaluation(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/',
+            '/expression/test/',
             {
                 'fixed': [1, 2, 3],
                 'projection': {
                     '*parameter': 'k',
                     '*property': '{k}',
-                    '*value': '{/fixed/<k>}'
+                    '*value': '{/test/fixed/<k>}'
                 }
             }
         )
-        response = self.test_client.get('/evaluation/projection')
+        response = self.test_client.get('/evaluation/test/projection')
         self.assertEqual(response, {'0': 1, '1': 2, '2': 3})
 
     def test_switch_nested_objects(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {
@@ -93,7 +93,7 @@ class TestGetParametrizedDictionaryEvaluation(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/',
+            '/expression/test/',
             {
                 'fixed': {
                     'een': {'a': 1, 'b': 4},
@@ -106,12 +106,12 @@ class TestGetParametrizedDictionaryEvaluation(TestCase):
                     '*value': {
                         '*parameter': 'x',
                         '*property': '{x}',
-                        '*value': '{/fixed/<x>/<y>}'
+                        '*value': '{/test/fixed/<x>/<y>}'
                     }
                 }
             }
         )
-        response = self.test_client.get('/evaluation/projection')
+        response = self.test_client.get('/evaluation/test/projection')
         self.assertEqual(
             response,
             {

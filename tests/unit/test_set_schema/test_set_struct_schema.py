@@ -17,14 +17,14 @@ class TestStruct(TestCase):
             },
             'additionalProperties': False
         }
-        self.test_client.set('/schema/', schema)
+        self.test_client.set('/schema/test/', schema)
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response, schema)
 
     def test_reset_struct_schema_is_persisted(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {'a': {'type': 'number'}},
@@ -33,7 +33,7 @@ class TestStruct(TestCase):
         )
 
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {'b': {'type': 'integer'}},
@@ -41,7 +41,7 @@ class TestStruct(TestCase):
             }
         )
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(
             response,
             {
@@ -54,18 +54,18 @@ class TestStruct(TestCase):
         )
 
     def test_adding_fields(self):
-        self.test_client.set('schema/', {'type': 'object', 'additionalProperties': False})
+        self.test_client.set('schema/test', {'type': 'object', 'additionalProperties': False})
 
         self.test_client.set(
-            '/schema/c',
+            '/schema/test/c',
             {'type': 'integer'}
         )
         self.test_client.set(
-            '/schema/d',
+            '/schema/test/d',
             {'type': 'string'}
         )
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(
             response,
             {
@@ -80,10 +80,10 @@ class TestStruct(TestCase):
 
     def test_extending_fields(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}, 'additionalProperties': False}
         )
-        self.test_client.set('/expression/',  {'a': 900})
+        self.test_client.set('/expression/test/',  {'a': 900})
 
         new_schema = {
             'type': 'object',
@@ -94,28 +94,28 @@ class TestStruct(TestCase):
             'additionalProperties': False
         }
 
-        self.test_client.set('/schema/', new_schema)
+        self.test_client.set('/schema/test/', new_schema)
 
-        response = self.test_client.get('/schema')
+        response = self.test_client.get('/schema/test')
 
         self.assertDictEqual(response, new_schema)
 
     def test_set_field_name_with_special_chars(self):
         try:
             self.test_client.set(
-                '/schema',
+                '/schema/test',
                 {'type': 'object', 'properties': {'^ (&@a9.?$#/{é': {'type': 'string'}}, 'additionalProperties': False}
             )
         except BadRequest:
             self.fail()
 
     def test_set_struct_from_dict(self):
-        self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/expression', {'a': 'a'})
+        self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        self.test_client.set('/expression/test', {'a': 'a'})
 
         try:
             self.test_client.set(
-                '/schema',
+                '/schema/test',
                 {
                     'type': 'object',
                     'properties': {'a': {'type': 'string'}},
@@ -127,7 +127,7 @@ class TestStruct(TestCase):
 
     def test_set_struct_from_dict_with_nested(self):
         self.test_client.set(
-            '/schema',
+            '/schema/test',
             {
                 'type': 'object',
                 'additionalProperties': {
@@ -140,11 +140,11 @@ class TestStruct(TestCase):
                 }
             }
         )
-        self.test_client.set('/expression', {'Ti': {'a': 'string'}})
+        self.test_client.set('/expression/test', {'Ti': {'a': 'string'}})
 
         try:
             self.test_client.set(
-                '/schema',
+                '/schema/test',
                 {
                     'type': 'object',
                     'additionalProperties': {
@@ -162,7 +162,7 @@ class TestStruct(TestCase):
 
     def test_cannot_set_struct_from_dict_with_nested(self):
         self.test_client.set(
-            '/schema',
+            '/schema/test',
             {
                 'type': 'object',
                 'additionalProperties': {
@@ -175,11 +175,11 @@ class TestStruct(TestCase):
                 }
             }
         )
-        self.test_client.set('/expression', {'Ti': {'a': 'string'}})
+        self.test_client.set('/expression/test', {'Ti': {'a': 'string'}})
 
         with self.assertRaises(Forbidden):
             self.test_client.set(
-                '/schema',
+                '/schema/test',
                 {
                     'type': 'object',
                     'additionalProperties': {
@@ -194,24 +194,24 @@ class TestStruct(TestCase):
             )
 
     def test_set_struct_from_dict_if_empty_is_set(self):
-        self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/expression', {})
+        self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        self.test_client.set('/expression/test', {})
 
         try:
             self.test_client.set(
-                '/schema',
+                '/schema/test',
                 {'type': 'object', 'properties': {'a': {'type': 'string'}}, 'additionalProperties': False}
             )
         except Forbidden:
             self.fail()
 
     def test_set_struct_from_non_matching_dict(self):
-        self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/expression', {'b': 'b'})
+        self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        self.test_client.set('/expression/test', {'b': 'b'})
 
         with self.assertRaises(Forbidden):
             self.test_client.set(
-                '/schema',
+                '/schema/test',
                 {
                     'type': 'object',
                     'properties': {'a': {'type': 'string'}},

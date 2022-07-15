@@ -8,21 +8,21 @@ class TestDeleteSchema(TestCase):
         self.test_client = UnitTestClient()
 
     def test_Given_a_struct_schema_When_delete_field_Then_get_schema_without_field_back(self):
-        self.test_client.set('schema/', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+        self.test_client.set('schema/test', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
 
-        self.test_client.delete('/schema/a')
+        self.test_client.delete('/schema/test/a')
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(
             response,
             {'type': 'object'}
         )
 
     def test_Given_an_empty_struct_schema_When_nonexisting_field_deleted_Then_get_same_schema_back(self):
-        self.test_client.set('/schema', {'type': 'object'})
-        self.test_client.delete('/schema/a')
+        self.test_client.set('/schema/test', {'type': 'object'})
+        self.test_client.delete('/schema/test/a')
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(
             response,
             {'type': 'object'}

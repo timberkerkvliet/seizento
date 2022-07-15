@@ -16,8 +16,8 @@ class TestSetObject(TestCase):
                 'b': {'type': 'integer'}
             }
         }
-        self.test_client.set('schema', schema)
-        self.test_client.set('/schema/new-one', {'type': 'string'})
+        self.test_client.set('schema/test', schema)
+        self.test_client.set('/schema/test/new-one', {'type': 'string'})
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertEqual(set(response['properties']), {'a', 'b', 'new-one'})

@@ -10,14 +10,14 @@ class TestGetFloatEvaluation(TestCase):
         self.test_client = UnitTestClient()
 
     def test_set(self):
-        self.test_client.set('/schema/', {'type': 'number'})
-        self.test_client.set('/expression/', -4.56)
+        self.test_client.set('/schema/test/', {'type': 'number'})
+        self.test_client.set('/expression/test/', -4.56)
 
-        response = self.test_client.get('/evaluation/')
+        response = self.test_client.get('/evaluation/test/')
         self.assertTrue(math.isclose(response, -4.56))
 
     def test_not_set(self):
-        self.test_client.set('/schema/', {'type': 'number'})
+        self.test_client.set('/schema/test/', {'type': 'number'})
 
         with self.assertRaises(NotFound):
-            self.test_client.get('/evaluation')
+            self.test_client.get('/evaluation/test')

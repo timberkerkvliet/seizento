@@ -10,7 +10,7 @@ class TestGetStructEvaluation(TestCase):
 
     def test_not_found_before_set(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {
                 'type': 'object',
                 'properties': {'a': {'type': 'integer'}}
@@ -18,14 +18,14 @@ class TestGetStructEvaluation(TestCase):
         )
 
         with self.assertRaises(NotFound):
-            self.test_client.get('/evaluation/')
+            self.test_client.get('/evaluation/test/')
 
     def test_evaluation_after_change(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
         )
-        self.test_client.set('/expression/',  {'a': 900})
+        self.test_client.set('/expression/test/',  {'a': 900})
 
         new_schema = {
             'type': 'object',
@@ -35,8 +35,8 @@ class TestGetStructEvaluation(TestCase):
             }
         }
 
-        self.test_client.set('/schema/', new_schema)
+        self.test_client.set('/schema/test/', new_schema)
 
-        response = self.test_client.get('/evaluation')
+        response = self.test_client.get('/evaluation/test')
 
         self.assertDictEqual(response, {'a': 900})

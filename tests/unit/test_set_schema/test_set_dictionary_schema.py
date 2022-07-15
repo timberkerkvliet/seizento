@@ -10,38 +10,38 @@ class TestDictionary(TestCase):
 
     def test_set_dict(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'object', 'additionalProperties': {'type': 'string'}}
         )
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response, {'type': 'object', 'additionalProperties': {'type': 'string'}})
 
     def test_reset_value_type(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'object', 'additionalProperties': {'type': 'string'}}
         )
         self.test_client.set(
-            '/schema/~properties',
+            '/schema/test/~properties',
             {'type': 'integer'}
         )
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response,  {'type': 'object', 'additionalProperties': {'type': 'integer'}})
 
     def test_set_dict_from_struct(self):
         self.test_client.set(
-            '/schema',
+            '/schema/test',
             {
                 'type': 'object',
                 'properties': {'a': {'type': 'string'}},
                 'additionalProperties': False
             }
         )
-        self.test_client.set('/expression', {'a': 'a'})
+        self.test_client.set('/expression/test', {'a': 'a'})
 
         try:
-            self.test_client.set('/schema', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+            self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         except Forbidden:
             self.fail()

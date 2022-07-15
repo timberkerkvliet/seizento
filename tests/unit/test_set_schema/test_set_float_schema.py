@@ -10,28 +10,28 @@ class TestSetFloatSchema(TestCase):
 
     def test_set_float(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'number'}
         )
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response, {'type': 'number'})
 
     def test_set_optional_float(self):
-        self.test_client.set('/schema/', {'type': ['number', 'null']})
+        self.test_client.set('/schema/test/', {'type': ['number', 'null']})
 
-        response = self.test_client.get('/schema/')
+        response = self.test_client.get('/schema/test/')
         self.assertEqual(set(response['type']), {'number', 'null'})
 
     def test_cannot_set_child(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'number'}
         )
 
         try:
             self.test_client.set(
-                '/schema/a',
+                '/schema/test/a',
                 {'type': 'integer'}
             )
         except Forbidden:
@@ -39,13 +39,13 @@ class TestSetFloatSchema(TestCase):
 
     def test_cannot_set_placeholder_child(self):
         self.test_client.set(
-            '/schema/',
+            '/schema/test/',
             {'type': 'number'}
         )
 
         try:
             self.test_client.set(
-                '/schema/~items',
+                '/schema/test/~items',
                 {'type': 'integer'}
             )
         except Forbidden:
