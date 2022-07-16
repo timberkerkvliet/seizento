@@ -66,3 +66,23 @@ class TestSetStringSchema(TestCase):
             )
         except Forbidden:
             self.fail()
+
+    def test_cannot_reset_type_if_it_is_referenced(self):
+        self.test_client.set('/schema/a', {'type': 'string'})
+        self.test_client.set('/schema/b', {'type': 'string'})
+        self.test_client.set('/expression/a', 'hey')
+        self.test_client.set('/expression/b', '{/a}')
+
+        with self.assertRaises(Forbidden):
+            self.test_client.set('/schema/a', {'type': 'integer'})
+
+    def test_can_reset_type_if_it_is_referenced(self):
+        self.test_client.set('/schema/a', {'type': ['string', 'integer']})
+        self.test_client.set('/schema/b', {'type': ['string', 'integer']})
+        self.test_client.set('/expression/a', 'hey')
+        self.test_client.set('/expression/b', '{/a}')
+
+        try:
+            self.test_client.set('/schema/a', {'type': 'string'})
+        except Forbidden:
+            self.fail()
