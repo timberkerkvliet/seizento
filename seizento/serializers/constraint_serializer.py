@@ -2,7 +2,7 @@ from typing import Any
 
 from seizento.schema.schema import Schema
 from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
-from seizento.schema.types import DataType
+from seizento.schema.types import DataType, ALL_TYPES
 
 
 def serialize_constraint(value: Constraint) -> Any:
@@ -21,7 +21,7 @@ def serialize_constraint(value: Constraint) -> Any:
     if len(value.types) == 1:
         result['type'] = value.types.pop().value
 
-    if len(value.types) > 1:
+    if len(value.types) > 1 and len(value.types) != len(ALL_TYPES):
         result['type'] = [data_type.value for data_type in value.types]
 
     if len(value.properties) > 0:

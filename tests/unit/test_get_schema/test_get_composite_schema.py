@@ -8,22 +8,22 @@ class TestGetCompositeSchema(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    def test_set_struct_schema_is_persisted(self):
+    def test_multiple_types(self):
         self.test_client.set(
             'schema/test',
             {
-                'type': ['array', 'object'],
-                'properties': {'a': {'type': 'integer'}},
-                'additionalProperties': {'type': 'string'},
-                'items': {'type': 'boolean'}
+                'type': ['array', 'object', 'string']
             }
         )
 
         response = self.test_client.get('schema/test')
 
-        self.assertEqual({'array', 'object'}, set(response['type']))
-        self.assertEqual({'a': {'type': 'integer'}}, response['properties'])
-        self.assertEqual({'type': 'string'}, response['additionalProperties'])
-        self.assertEqual({'type': 'boolean'}, response['items'])
+        self.assertEqual({'array', 'object', 'string'}, set(response['type']))
 
+    def test_empty(self):
+        self.test_client.set('schema/test', {})
+
+        response = self.test_client.get('schema/test')
+
+        self.assertEqual({}, response)
 
