@@ -63,15 +63,9 @@ class ExpressionController:
 
         root_expression = repo.get_expression(EMPTY_PATH)
 
-        path = self._path
-        while True:
-            try:
-                evaluate_expression_at_path(path=path, root_expression=root_expression)
-                break
-            except RecursionError as e:
-                raise Forbidden from e
-            except KeyError:
-                path = path.remove_last()
-                continue
+        try:
+            root_expression.evaluate(root_expression=root_expression, arguments={})
+        except RecursionError as e:
+            raise Forbidden from e
 
         self._repository.set_expression(path=self._path, value=new_expression)
