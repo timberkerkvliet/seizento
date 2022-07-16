@@ -4,7 +4,7 @@ from seizento.controllers.exceptions import Forbidden, NotFound, BadRequest
 
 from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
-from seizento.resource import Root
+from seizento.application_data import ApplicationData
 from seizento.serializers.expression_serializer import serialize_expression, parse_expression
 from seizento.expression.path_evaluation import evaluate_expression_at_path
 
@@ -14,7 +14,7 @@ class ExpressionController:
         self,
         repository: Repository,
         path: Path,
-        root: Root
+        root: ApplicationData
     ):
         self._repository = repository
         self._path = path

@@ -1,7 +1,7 @@
 from typing import Dict
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
-from seizento.resource import Root
+from seizento.application_data import ApplicationData
 
 from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
@@ -12,7 +12,7 @@ from seizento.serializers.constraint_serializer import parse_constraint, seriali
 
 
 class SchemaController:
-    def __init__(self, path: Path, root: Root):
+    def __init__(self, path: Path, root: ApplicationData):
         self._path = path
         self._root = root
 

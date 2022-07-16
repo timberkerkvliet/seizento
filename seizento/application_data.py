@@ -3,12 +3,12 @@ from typing import Dict
 
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
-from seizento.path import PathComponent, Path, LiteralComponent
 from seizento.schema.schema import Schema
 from seizento.user import User
 
 
 @dataclass
-class Root:
+class ApplicationData:
     schema: Schema
     expression: Expression
+    users: Dict[Identifier, User]

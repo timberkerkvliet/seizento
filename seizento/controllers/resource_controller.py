@@ -10,7 +10,7 @@ from seizento.controllers.user_controller import UserController
 from seizento.identifier import Identifier
 from seizento.path import Path
 from seizento.repository import Repository
-from seizento.resource import Root
+from seizento.application_data import ApplicationData
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
 from seizento.user import AccessRights, User
@@ -19,26 +19,24 @@ from seizento.user import AccessRights, User
 class ResourceController:
     def __init__(
         self,
-        users: Dict[Identifier, User],
         app_secret: str,
-        root: Root,
+        application_data: ApplicationData,
     ):
-        self._users = users
         self._app_secret = app_secret
-        self._root = root
+        self._application_data = application_data
 
     def _get_controller(self, resource_path: Path, repository: Repository):
         resource_type = resource_path.first_component.value
         if resource_type == 'schema':
             return SchemaController(
                 path=resource_path.remove_first(),
-                root=self._root
+                root=self._application_data
             )
         if resource_type == 'expression':
             return ExpressionController(
                 repository=repository,
                 path=resource_path.remove_first(),
-                root=self._root
+                root=self._application_data
             )
         if resource_type == 'evaluation':
             return EvaluationController(
@@ -76,9 +74,7 @@ class ResourceController:
             raise Unauthorized
 
         repository = Repository(
-            users=self._users,
-            root_schema=self._root.schema,
-            root_expression=self._root.expression
+            application_data=self._application_data
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -92,9 +88,7 @@ class ResourceController:
             raise Unauthorized
 
         repository = Repository(
-            users=self._users,
-            root_schema=self._root.schema,
-            root_expression=self._root.expression
+            application_data=self._application_data
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
@@ -108,9 +102,7 @@ class ResourceController:
             raise Unauthorized
 
         repository = Repository(
-            users=self._users,
-            root_schema=self._root.schema,
-            root_expression=self._root.expression
+            application_data=self._application_data
         )
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)

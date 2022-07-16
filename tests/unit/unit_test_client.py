@@ -1,7 +1,7 @@
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
 from seizento.expression.struct_literal import StructLiteral
-from seizento.resource import Root
+from seizento.application_data import ApplicationData
 from seizento.schema.constraint import EverythingAllowed
 from seizento.schema.schema import Schema
 from seizento.schema.types import DataType
@@ -11,17 +11,18 @@ from seizento.user import ADMIN_USER
 
 class UnitTestClient:
     def __init__(self):
-        root_schema = Schema(types={DataType.OBJECT})
-        root_expression = StructLiteral(values={})
-        users = {ADMIN_USER.id: ADMIN_USER}
+        data = ApplicationData(
+            schema=Schema(types={DataType.OBJECT}),
+            expression=StructLiteral(values={}),
+            users={ADMIN_USER.id: ADMIN_USER}
+        )
 
         self.resource_controller = ResourceController(
-            users=users,
             app_secret='test-secret',
-            root=Root(schema=root_schema, expression=root_expression)
+            application_data=data
         )
         self.login_controller = LoginController(
-            users=users,
+            users=data.users,
             app_secret='test-secret'
         )
         self.token = None

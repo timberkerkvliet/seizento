@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Optional, Dict
 
+from seizento.application_data import ApplicationData
 from seizento.expression.expression import Expression
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
@@ -14,14 +15,12 @@ from seizento.user import User
 
 
 class Repository:
-    def __init__(self, users: Dict[Identifier, User], root_schema: Constraint, root_expression: Expression):
-        self._users = users
-        self._root_schema = root_schema
-        self._root_expression = root_expression
+    def __init__(self, application_data: ApplicationData):
+        self._data = application_data
 
     def get_expression(self, path: Path) -> Optional[Expression]:
         try:
-            result = self._root_expression
+            result = self._data.expression
         except KeyError:
             return None
         for component in path:
@@ -33,7 +32,7 @@ class Repository:
         return result
 
     def set_expression(self, path: Path, value: Expression) -> None:
-        target = self._root_expression
+        target = self._data.expression
         for component in path.remove_last():
             target = target.get_child(component)
 
@@ -42,23 +41,14 @@ class Repository:
             expression=value
         )
 
-    def set_expression_temp(self, path: Path, value: Expression) -> Repository:
-        repo = Repository(
-            root_expression=deepcopy(self._root_expression),
-            root_schema=self._root_schema,
-            users=self._users
-        )
-        repo.set_expression(path, value)
-        return repo
-
     def get_user(self, user_id: Identifier) -> Optional[User]:
-        if user_id in self._users:
-            return self._users[user_id]
+        if user_id in self._data.users:
+            return self._data.users[user_id]
 
         return None
 
     def set_user(self, user: User) -> None:
-        self._users[user.id] = user
+        self._data.users[user.id] = user
 
     def delete_user(self, user_id: Identifier) -> None:
-        self._users.pop(user_id, None)
+        self._data.users.pop(user_id, None)
