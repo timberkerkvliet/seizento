@@ -38,16 +38,16 @@ class ExpressionController:
             raise BadRequest from e
 
         try:
-            current_type = self._root.schema.navigate_to(path=self._path)
+            schema = self._root.schema.navigate_to(path=self._path)
         except KeyError:
             raise NotFound
 
         try:
-            expression_type = new_expression.get_schema(self._root.schema)
+            expression_schema = new_expression.get_schema(self._root.schema)
         except ValueError as e:
             raise Forbidden from e
 
-        if not expression_type.satisfies(current_type):
+        if not expression_schema.satisfies(schema):
             raise Forbidden
 
         parent_expression = self._repository.get_expression(path=self._path.remove_last())
