@@ -55,6 +55,11 @@ class ExpressionController:
             raise NotFound
 
         try:
+            current = parent_expression.get_child(self._path.last_component)
+        except KeyError:
+            current = None
+
+        try:
             parent_expression.set_child(component=self._path.last_component, expression=new_expression)
         except ValueError as e:
             raise Forbidden from e
@@ -62,4 +67,6 @@ class ExpressionController:
         try:
             evaluate_expression_at_path(root_expression=self._root.expression, path=EMPTY_PATH)
         except RecursionError as e:
+            if current is not None:
+                parent_expression.set_child(component=self._path.last_component, expression=current)
             raise Forbidden from e

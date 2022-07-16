@@ -36,10 +36,21 @@ class TestSetReference(TestCase):
         self.test_client.set('/expression/test', [1])
 
         try:
-            self.test_client.set('/expression/test', ['{/0}'])
+            self.test_client.set('/expression/test', ['{/test/0}'])
         except Forbidden:
             pass
 
         response = self.test_client.get('/expression/test')
 
         self.assertEqual(response, [1])
+
+    def test_self_reference_did_not_set_anything(self):
+        self.test_client.set('/schema/test/', {'type': 'string'})
+
+        try:
+            self.test_client.set('/expression/test', ['{/test/}'])
+        except Forbidden:
+            pass
+
+        with self.assertRaises(NotFound):
+            self.test_client.get('/expression/test')
