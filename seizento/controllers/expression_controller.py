@@ -59,13 +59,7 @@ class ExpressionController:
         except ValueError as e:
             raise Forbidden from e
 
-        repo = self._repository.set_expression_temp(path=self._path, value=new_expression)
-
-        root_expression = repo.get_expression(EMPTY_PATH)
-
         try:
-            root_expression.evaluate(root_expression=root_expression, arguments={})
+            self._root.expression.evaluate(root_expression=self._root.expression, arguments={})
         except RecursionError as e:
             raise Forbidden from e
-
-        self._repository.set_expression(path=self._path, value=new_expression)
