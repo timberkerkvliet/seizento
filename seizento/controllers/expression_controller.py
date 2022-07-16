@@ -69,4 +69,6 @@ class ExpressionController:
         except RecursionError as e:
             if current is not None:
                 parent_expression.set_child(component=self._path.last_component, expression=current)
+            else:
+                parent_expression.delete_child(component=self._path.last_component)
             raise Forbidden from e

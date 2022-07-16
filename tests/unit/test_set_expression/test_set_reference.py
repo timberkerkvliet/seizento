@@ -48,7 +48,7 @@ class TestSetReference(TestCase):
         self.test_client.set('/schema/test/', {'type': 'string'})
 
         try:
-            self.test_client.set('/expression/test', ['{/test/}'])
+            self.test_client.set('/expression/test', '{/test/}')
         except Forbidden:
             pass
 
