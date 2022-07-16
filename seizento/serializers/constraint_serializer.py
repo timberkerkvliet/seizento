@@ -27,7 +27,6 @@ def serialize_constraint(value: Constraint) -> Any:
     serialized_properties = {
         prop: serialize_constraint(constraint)
         for prop, constraint in value.properties.items()
-        if not constraint.is_empty()
     }
     if len(serialized_properties) > 0:
         result['properties'] = serialized_properties

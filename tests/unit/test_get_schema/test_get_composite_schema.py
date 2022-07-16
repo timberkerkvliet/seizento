@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from seizento.controllers.exceptions import NotFound
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -38,7 +39,7 @@ class TestGetCompositeSchema(TestCase):
 
         response = self.test_client.get('schema/test')
 
-        self.assertEqual({}, response)
+        self.assertEqual({'properties': {'a': {}}}, response)
 
     def test_empty_items(self):
         self.test_client.set('schema/test', {'items': {}})
