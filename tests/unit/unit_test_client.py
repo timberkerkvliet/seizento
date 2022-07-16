@@ -1,21 +1,11 @@
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
-from seizento.expression.struct_literal import StructLiteral
-from seizento.application_data import ApplicationData
-from seizento.schema.constraint import EverythingAllowed
-from seizento.schema.schema import Schema
-from seizento.schema.types import DataType
-
-from seizento.user import ADMIN_USER
+from seizento.application_data import create_default
 
 
 class UnitTestClient:
     def __init__(self):
-        data = ApplicationData(
-            schema=Schema(types={DataType.OBJECT}),
-            expression=StructLiteral(values={}),
-            users={ADMIN_USER.id: ADMIN_USER}
-        )
+        data = create_default()
 
         self.resource_controller = ResourceController(
             app_secret='test-secret',
