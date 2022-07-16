@@ -19,26 +19,6 @@ class Repository:
         self._root_schema = root_schema
         self._root_expression = root_expression
 
-    def get_schema(self, path: Path) -> Optional[Schema]:
-        return self._root_schema.navigate_to(path)
-
-    def set_schema(self, path: Path, value: Schema) -> None:
-        target = self._root_schema
-        for component in path:
-            target = target.get_child(component)
-
-        target.set_child(
-            component=path.last_component,
-            constraint=value
-        )
-
-    def delete_type(self, path: Path) -> None:
-        target = self._root_schema
-        for component in path:
-            target = target.get_child(component)
-
-        target.delete_child(path.last_component)
-
     def get_expression(self, path: Path) -> Optional[Expression]:
         try:
             result = self._root_expression
