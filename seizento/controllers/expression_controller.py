@@ -37,8 +37,9 @@ class ExpressionController:
         except Exception as e:
             raise BadRequest from e
 
-        current_type = self._repository.get_schema(path=self._path)
-        if current_type is None:
+        try:
+            current_type = self._root.schema.navigate_to(path=self._path)
+        except KeyError:
             raise NotFound
 
         try:
@@ -49,15 +50,14 @@ class ExpressionController:
         if not expression_type.satisfies(current_type):
             raise Forbidden
 
-        if not self._path.empty:
-            parent_expression = self._repository.get_expression(path=self._path.remove_last())
-            if parent_expression is None:
-                raise NotFound
+        parent_expression = self._repository.get_expression(path=self._path.remove_last())
+        if parent_expression is None:
+            raise NotFound
 
-            try:
-                parent_expression.set_child(component=self._path.last_component, expression=new_expression)
-            except ValueError as e:
-                raise Forbidden from e
+        try:
+            parent_expression.set_child(component=self._path.last_component, expression=new_expression)
+        except ValueError as e:
+            raise Forbidden from e
 
         repo = self._repository.set_expression_temp(path=self._path, value=new_expression)
 
