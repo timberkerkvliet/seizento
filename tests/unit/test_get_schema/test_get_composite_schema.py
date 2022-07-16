@@ -27,3 +27,16 @@ class TestGetCompositeSchema(TestCase):
 
         self.assertEqual({}, response)
 
+    def test_no_additional_properties(self):
+        self.test_client.set('schema/test', {'additionalProperties': False})
+
+        response = self.test_client.get('schema/test')
+
+        self.assertEqual({'additionalProperties': False}, response)
+
+    def test_empty_property(self):
+        self.test_client.set('schema/test', {'properties': {'a': {}}})
+
+        response = self.test_client.get('schema/test')
+
+        self.assertEqual({}, response)

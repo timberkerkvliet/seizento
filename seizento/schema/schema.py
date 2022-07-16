@@ -70,8 +70,8 @@ class Schema(Constraint):
         )
 
     def is_empty(self) -> bool:
-        return len(self.types) == 0 \
-           and all(constraint.is_empty() for constraint in self.properties.values()) == 0 \
+        return len(self.types) == len(ALL_TYPES) \
+           and all(constraint.is_empty() for constraint in self.properties.values()) \
            and self.additional_properties.is_empty() \
            and self.items.is_empty()
 

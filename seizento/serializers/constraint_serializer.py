@@ -24,12 +24,13 @@ def serialize_constraint(value: Constraint) -> Any:
     if len(value.types) > 1 and len(value.types) != len(ALL_TYPES):
         result['type'] = [data_type.value for data_type in value.types]
 
-    if len(value.properties) > 0:
-        result['properties'] = {
-            prop: serialize_constraint(constraint)
-            for prop, constraint in value.properties.items()
-            if not constraint.is_empty()
-        }
+    serialized_properties = {
+        prop: serialize_constraint(constraint)
+        for prop, constraint in value.properties.items()
+        if not constraint.is_empty()
+    }
+    if len(serialized_properties) > 0:
+        result['properties'] = serialized_properties
 
     if not value.items.is_empty():
         result['items'] = serialize_constraint(value.items)
