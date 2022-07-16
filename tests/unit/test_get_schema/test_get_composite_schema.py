@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-from seizento.controllers.exceptions import BadRequest, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -36,6 +35,20 @@ class TestGetCompositeSchema(TestCase):
 
     def test_empty_property(self):
         self.test_client.set('schema/test', {'properties': {'a': {}}})
+
+        response = self.test_client.get('schema/test')
+
+        self.assertEqual({}, response)
+
+    def test_empty_items(self):
+        self.test_client.set('schema/test', {'items': {}})
+
+        response = self.test_client.get('schema/test')
+
+        self.assertEqual({}, response)
+
+    def test_empty_additional_properties(self):
+        self.test_client.set('schema/test', {'additionalProperties': {}})
 
         response = self.test_client.get('schema/test')
 
