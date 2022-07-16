@@ -60,6 +60,6 @@ class ExpressionController:
             raise Forbidden from e
 
         try:
-            self._root.expression.evaluate(root_expression=self._root.expression, arguments={})
+            evaluate_expression_at_path(root_expression=self._root.expression, path=EMPTY_PATH)
         except RecursionError as e:
             raise Forbidden from e
