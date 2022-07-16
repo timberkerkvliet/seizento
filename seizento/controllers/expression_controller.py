@@ -43,7 +43,7 @@ class ExpressionController:
             raise NotFound
 
         try:
-            expression_type = new_expression.get_schema(self._repository.get_schema(EMPTY_PATH))
+            expression_type = new_expression.get_schema(self._root.schema)
         except ValueError as e:
             raise Forbidden from e
 
