@@ -8,7 +8,7 @@ from seizento.user import User, AccessRights, HashedPassword
 def serialize_user(user: User):
     return {
         'id': str(user.id),
-        'password': str(user.password),
+        'hashed_password': str(user.hashed_password),
         'access_rights': serialize_access_rights(user.access_rights)
     }
 
@@ -23,7 +23,7 @@ def serialize_access_rights(access_rights: AccessRights):
 def parse_user(val) -> User:
     return User(
         id=Identifier(val['id']),
-        password=HashedPassword.from_string(val['password']),
+        hashed_password=HashedPassword.from_string(val['hashed_password']),
         access_rights=parse_access_rights(val['access_rights'])
     )
 

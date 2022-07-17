@@ -9,9 +9,7 @@ def serialize_app_data(data: ApplicationData):
     return {
         'schema': serialize_constraint(data.schema),
         'expression': serialize_expression(data.expression),
-        'users': {
-            user.id.name: serialize_user(user) for user_id, user in data.users.items()
-        }
+        'users': [serialize_user(user) for user in data.users.values()]
     }
 
 
@@ -19,8 +17,5 @@ def parse_app_data(data):
     return ApplicationData(
         schema=parse_constraint(data['schema']),
         expression=parse_expression(data['expression']),
-        users={
-            Identifier(user_id): parse_user(user)
-            for user_id, user in data['users'].items()
-        }
+        users={parse_user(user).id: parse_user(user) for user in data['users']}
     )

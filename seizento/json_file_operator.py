@@ -20,4 +20,4 @@ class JSONFileOperator(AppDataOperator):
 
     def save(self, app_data: ApplicationData) -> None:
         with open(self._path, 'w') as f:
-            json.dump(serialize_app_data(app_data), f)
+            json.dump(serialize_app_data(app_data), f, check_circular=False, indent=4)

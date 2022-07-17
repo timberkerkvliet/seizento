@@ -46,20 +46,20 @@ class HashedPassword:
 @dataclass(frozen=True)
 class User:
     id: Identifier
-    password: HashedPassword
+    hashed_password: HashedPassword
     access_rights: AccessRights
 
-    def with_new_password(self, password: HashedPassword) -> User:
+    def with_new_password(self, hashed_password: HashedPassword) -> User:
         return User(
             id=self.id,
-            password=password,
+            hashed_password=hashed_password,
             access_rights=self.access_rights
         )
 
 
 ADMIN_USER = User(
     id=Identifier('admin'),
-    password=HashedPassword.from_password('admin'),
+    hashed_password=HashedPassword.from_password('admin'),
     access_rights=AccessRights(
         read_access={EMPTY_PATH},
         write_access={EMPTY_PATH}

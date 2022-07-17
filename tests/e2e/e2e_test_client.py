@@ -10,7 +10,7 @@ class E2ETestClient:
         self.token = None
 
     def __enter__(self):
-        self.process = Process(target=os.system, args=('python3 -m uvicorn app:app',))
+        self.process = Process(target=os.system, args=('python3 -m uvicorn starlette_app:starlette_app',))
         self.process.start()
         sleep(0.5)
 

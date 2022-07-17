@@ -28,7 +28,7 @@ class LoginController:
 
         user = self._users[user_id]
 
-        if user is None or not user.password.check_password(data['password']):
+        if user is None or not user.hashed_password.check_password(data['password']):
             raise Unauthorized
 
         return jwt.encode(

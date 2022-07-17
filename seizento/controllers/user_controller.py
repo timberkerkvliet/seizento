@@ -49,7 +49,7 @@ class UserController:
             self._repository.set_user(
                 User(
                     id=user_id,
-                    password=HashedPassword.from_password(data['password']),
+                    hashed_password=HashedPassword.from_password(data['password']),
                     access_rights=parse_access_rights(data['access_rights'])
                 )
             )
