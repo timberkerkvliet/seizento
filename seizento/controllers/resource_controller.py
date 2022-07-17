@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 
 import jwt
 
@@ -21,9 +21,11 @@ class ResourceController:
         self,
         app_secret: str,
         application_data: ApplicationData,
+        app_data_saver: Callable[[ApplicationData], None]
     ):
         self._app_secret = app_secret
         self._application_data = application_data
+        self._app_data_saver = app_data_saver
 
     def _get_controller(self, resource_path: Path, repository: Repository):
         resource_type = resource_path.first_component.value
@@ -94,6 +96,8 @@ class ResourceController:
         controller = self._get_controller(resource_path=resource_path, repository=repository)
         controller.set(data)
 
+        self._app_data_saver(self._application_data)
+
     def delete(self, resource: str, token: str) -> None:
         access_rights = self._get_access_rights(token)
         resource_path = self._get_resource_path(resource)
@@ -107,3 +111,5 @@ class ResourceController:
 
         controller = self._get_controller(resource_path=resource_path, repository=repository)
         controller.delete()
+
+        self._app_data_saver(self._application_data)

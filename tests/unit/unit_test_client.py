@@ -1,9 +1,20 @@
-from seizento.app import App
+from typing import Optional
+
+from seizento.app import App, AppDataOperator
+from seizento.application_data import ApplicationData
+
+
+class FakeAppDataOperator(AppDataOperator):
+    def load(self) -> None:
+        return None
+
+    def save(self, app_data: ApplicationData) -> None:
+        return
 
 
 class UnitTestClient:
     def __init__(self):
-        self.app = App(app_secret='test-secret')
+        self.app = App(app_secret='test-secret', app_data_operator=FakeAppDataOperator())
         self.token = None
 
     def login(self, data=None):
