@@ -19,7 +19,7 @@ def serialize_constraint(value: Constraint) -> Any:
         raise ValueError
 
     if len(value.types) == 1:
-        result['type'] = value.types.pop().value
+        result['type'] = set(value.types).pop().value
 
     if len(value.types) > 1 and len(value.types) != len(ALL_TYPES):
         result['type'] = [data_type.value for data_type in value.types]

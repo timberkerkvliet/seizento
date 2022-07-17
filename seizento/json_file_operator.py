@@ -8,13 +8,16 @@ from seizento.serializers.app_data_serializer import parse_app_data, serialize_a
 
 
 class JSONFileOperator(AppDataOperator):
+    def __init__(self, path: str):
+        self._path = path
+
     def load(self) -> Optional[ApplicationData]:
-        if not os.path.exists('data.json'):
+        if not os.path.exists(self._path):
             return None
 
-        with open('data.json') as f:
+        with open(self._path) as f:
             return parse_app_data(json.load(f))
 
     def save(self, app_data: ApplicationData) -> None:
-        with open('data.json') as f:
+        with open(self._path, 'w') as f:
             json.dump(serialize_app_data(app_data), f)

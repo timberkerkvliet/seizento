@@ -10,7 +10,7 @@ def serialize_app_data(data: ApplicationData):
         'schema': serialize_constraint(data.schema),
         'expression': serialize_expression(data.expression),
         'users': {
-            user.id: serialize_user(user) for user_id, user in data.users.items()
+            user.id.name: serialize_user(user) for user_id, user in data.users.items()
         }
     }
 
