@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Optional
 
 from seizento.app import AppDataOperator
@@ -8,6 +9,9 @@ from seizento.serializers.app_data_serializer import parse_app_data, serialize_a
 
 class JSONFileOperator(AppDataOperator):
     def load(self) -> Optional[ApplicationData]:
+        if not os.path.exists('data.json'):
+            return None
+
         with open('data.json') as f:
             return parse_app_data(json.load(f))
 
