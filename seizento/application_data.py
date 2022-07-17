@@ -25,13 +25,3 @@ def create_default() -> ApplicationData:
         expression=StructLiteral(values={}),
         users={ADMIN_USER.id: ADMIN_USER}
     )
-
-
-def serialize_app_data(data: ApplicationData):
-    return {
-        'schema': serialize_constraint(data.schema),
-        'expression': serialize_expression(data.expression),
-        'users': {
-            user.id: serialize_user(user) for user_id, user in data.users.items()
-        }
-    }

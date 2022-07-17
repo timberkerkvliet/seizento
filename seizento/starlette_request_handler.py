@@ -1,25 +1,21 @@
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from seizento.app import App
 from seizento.controllers.exceptions import NotFound, BadRequest, Forbidden, Unauthorized
 from seizento.controllers.login_controller import LoginController
 from seizento.controllers.resource_controller import ResourceController
 
 
 class StarletteRequestHandler:
-    def __init__(
-        self,
-        resource_controller: ResourceController,
-        login_controller: LoginController
-    ):
-        self._resource_controller = resource_controller
-        self._login_controller = login_controller
+    def __init__(self, app: App):
+        self._app = app
 
     async def handle(self, request: Request) -> JSONResponse:
         resource = request.url.path
         try:
             if request.method == 'POST' and resource == '/login':
-                return JSONResponse(await self._login_controller.login(data=await request.json()))
+                return JSONResponse(self._app.login_controller.login(data=await request.json()))
 
             auth = request.headers.get('Authorization')
 
@@ -30,16 +26,16 @@ class StarletteRequestHandler:
 
             if request.method == 'GET':
                 return JSONResponse(
-                    await self._resource_controller.get(resource=resource, token=token)
+                    self._app.resource_controller.get(resource=resource, token=token)
                 )
             if request.method == 'PUT':
                 data = await request.json()
                 return JSONResponse(
-                    await self._resource_controller.set(resource=resource, data=data, token=token)
+                    self._app.resource_controller.set(resource=resource, data=data, token=token)
                 )
             if request.method == 'DELETE':
                 return JSONResponse(
-                    await self._resource_controller.delete(resource=resource, token=token)
+                    self._app.resource_controller.delete(resource=resource, token=token)
                 )
             return JSONResponse(content='', status_code=405)
         except NotFound as e:

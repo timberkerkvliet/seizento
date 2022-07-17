@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from seizento.application_data import create_default, ApplicationData
@@ -7,9 +7,11 @@ from seizento.controllers.resource_controller import ResourceController
 
 
 class AppDataOperator(ABC):
+    @abstractmethod
     def load(self) -> Optional[ApplicationData]:
         ...
 
+    @abstractmethod
     def save(self, app_data: ApplicationData) -> None:
         ...
 
