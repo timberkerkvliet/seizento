@@ -14,8 +14,8 @@ app = App(
 
 handler = StarletteRequestHandler(app)
 
-app = Starlette()
-app.add_route(
+starlette_app = Starlette()
+starlette_app.add_route(
     path='/{rest_of_path:path}',
     route=handler.handle,
     methods=['POST', 'GET', 'PUT', 'DELETE']
