@@ -31,6 +31,9 @@ class SchemaController:
             raise NotFound from e
 
     def set(self, data: Dict) -> None:
+        if len(self._path) == 0:
+            raise Forbidden
+
         parent_type = self._get_parent_type()
         try:
             new_schema = parse_constraint(data)
@@ -64,5 +67,8 @@ class SchemaController:
         raise Forbidden
 
     def delete(self) -> None:
+        if len(self._path) == 0:
+            raise Forbidden
+
         parent_type = self._get_parent_type()
         parent_type.delete_child(self._path.last_component)

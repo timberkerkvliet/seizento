@@ -132,3 +132,11 @@ class TestStruct(TestCase):
         response = self.test_client.get('expression/test')
 
         self.assertDictEqual({'a': 19, 'b': 'hallo'}, response)
+
+    def test_adding_field_to_root_expression(self):
+        with self.assertRaises(Forbidden):
+            self.test_client.set('/expression/some-thing', 9)
+
+    def test_setting_expression(self):
+        with self.assertRaises(Forbidden):
+            self.test_client.set('/expression', {})

@@ -32,6 +32,8 @@ class ExpressionController:
         return serialize_expression(expression)
 
     def set(self, data: Dict) -> None:
+        if len(self._path) == 0:
+            raise Forbidden
         try:
             new_expression = parse_expression(data)
         except Exception as e:

@@ -12,10 +12,6 @@ class TestGeneralErrors(TestCase):
         with self.assertRaises(NotFound):
             self.test_client.set('/schema/test/a', {'type': 'integer'})
 
-    def test_adding_field_to_root_expression(self):
-        with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/some-thing', 9)
-
     def test_when_getting_nonsensical_resource_then_raise_bad_request(self):
         with self.assertRaises(BadRequest):
             self.test_client.get('plfo//dsf')
