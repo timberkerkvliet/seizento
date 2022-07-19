@@ -85,14 +85,13 @@ class Schema(Constraint):
             candidates.append(self.additional_properties)
         if isinstance(component, LiteralComponent) and component.value.isdigit():
             candidates.append(self.items)
-        if isinstance(component, LiteralComponent):
+        if isinstance(component, LiteralComponent) and component.value not in self.properties:
             candidates.append(self.additional_properties)
         if component == PlaceHolder():
             candidates = list(self.properties.values()) + [self.items, self.additional_properties]
 
-        constraints = [x for x in candidates if x != NotAllowed()]
         result = EverythingAllowed()
-        for x in constraints:
+        for x in candidates:
             result = result.intersection(x)
 
         return result

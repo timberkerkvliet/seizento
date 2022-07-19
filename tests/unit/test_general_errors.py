@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from seizento.controllers.exceptions import NotFound, BadRequest, MethodNotAllowed
+from seizento.controllers.exceptions import NotFound, BadRequest, MethodNotAllowed, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -11,6 +11,10 @@ class TestGeneralErrors(TestCase):
     def test_when_setting_schema_with_no_paren_then_raise_not_found(self):
         with self.assertRaises(NotFound):
             self.test_client.set('/schema/test/a', {'type': 'integer'})
+
+    def test_adding_field_to_root_expression(self):
+        with self.assertRaises(Forbidden):
+            self.test_client.set('/expression/some-thing', 9)
 
     def test_when_getting_nonsensical_resource_then_raise_bad_request(self):
         with self.assertRaises(BadRequest):
