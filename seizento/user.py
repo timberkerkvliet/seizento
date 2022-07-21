@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import base64
+import os
 from dataclasses import dataclass
-from typing import Set, Union
+from typing import Set
 
 import bcrypt as bcrypt
 
@@ -58,8 +59,8 @@ class User:
 
 
 ADMIN_USER = User(
-    id=Identifier('admin'),
-    hashed_password=HashedPassword.from_password('admin'),
+    id=Identifier(os.getenv('ADMIN_USER', default='admin')),
+    hashed_password=HashedPassword.from_password(os.getenv('ADMIN_PASSWORD', default='admin')),
     access_rights=AccessRights(
         read_access={EMPTY_PATH},
         write_access={EMPTY_PATH}
