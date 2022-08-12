@@ -25,7 +25,7 @@ class TestSetParametrizedDictionary(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/test/',
+            '/value/test/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
                 'projection': {
@@ -35,7 +35,7 @@ class TestSetParametrizedDictionary(TestCase):
                 }
             }
         )
-        response = self.test_client.get('/expression/test/projection')
+        response = self.test_client.get('/value/test/projection')
         self.assertDictEqual(
             response, {
                     '*parameter': 'k',
@@ -66,7 +66,7 @@ class TestSetParametrizedDictionary(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/test/',
+            '/value/test/',
             {
                 'fixed': {'een': 1, 'twee': 2, 'drie': 3},
                 'alternative': {'een': 101, 'twee': 102, 'drie': 103},
@@ -78,10 +78,10 @@ class TestSetParametrizedDictionary(TestCase):
             }
         )
         self.test_client.set(
-            '/expression/test/projection/~properties',
+            '/value/test/projection/~properties',
             '{/test/alternative/<k>}'
         )
-        response = self.test_client.get('/expression/test/projection')
+        response = self.test_client.get('/value/test/projection')
         self.assertDictEqual(
             response, {
                     '*parameter': 'k',

@@ -12,7 +12,7 @@ class TestSetProperties(TestCase):
         self.test_client.set('schema/test', {'properties': {'a': {}}, 'additionalProperties': False})
 
         try:
-            self.test_client.set('expression/test', {'a': ['everything', 'I', 'want']})
+            self.test_client.set('value/test', {'a': ['everything', 'I', 'want']})
         except Forbidden:
             self.fail()
 
@@ -20,10 +20,10 @@ class TestSetProperties(TestCase):
         self.test_client.set('schema/test', {'additionalProperties': False})
 
         with self.assertRaises(Forbidden):
-            self.test_client.set('expression/test', {'a': 8})
+            self.test_client.set('value/test', {'a': 8})
 
     def test_set_one_free_property_something_else_cannot_be_set(self):
         self.test_client.set('schema/test', {'properties': {'a': {}}, 'additionalProperties': False})
 
         with self.assertRaises(Forbidden):
-            self.test_client.set('expression/test', {'b': 'else'})
+            self.test_client.set('value/test', {'b': 'else'})

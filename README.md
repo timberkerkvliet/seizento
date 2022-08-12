@@ -1,12 +1,6 @@
 ## What does seizento do?
 
-Seizento should do two things well:
-* It stores JSON data conforming to a JSON schema
-* It enables JSON projections by an expression language
-
-## The products example
-
-### Setting literals
+It stores JSON data conforming to a JSON schema
 
 Suppose that by a PUT request to `/schema/products` we set the following schema (using the defined standard at https://json-schema.org/):
 
@@ -25,7 +19,7 @@ Suppose that by a PUT request to `/schema/products` we set the following schema 
 ```
 
 In words: under the property `products` we have a list of products with the properties `id`, `name` and `on_stock`.
-Then data for this schema can be set with a PUT request to `/expression/products`:
+Then data for this schema can be set with a PUT request to `/value/products`:
 
 ```
 [
@@ -43,40 +37,5 @@ Then data for this schema can be set with a PUT request to `/expression/products
 ```
 
 We are using the `expression` endpoint, but the data we are submitting is just a literal value.
-If we get the evaluation of the expression by a `GET` request on `/evaluation/`, 
+If we get the evaluation of the expression by a `GET` request on `/value/`, 
 we get exactly the same data back.
-
-### Creating a projection
-
-Now for something more interesting, suppose that someone else needs the data in the form of a map from product names to stock.
-Suppose we extend schema by a PUT request to  `/schema/stock` with payload:
-
-```
-{
-    "type": "object",
-    "additionalProperties": {
-        {"type": "boolean"}
-    }
-}
-```
-
-This creates a `stock` property in addition to the already existing `products` property in the root schema.
-
-Then we can set an expression to base the values on the values we have set for `products` with a PUT request to `/expression/stock`:
-
-```
-{
-    "*parameter": "k",
-    "*property": "{products/<k>/name}"
-    "*value": "{products/<k>/on_stock}"
-}
-```
-
-And by sending a GET request to `/evaluation/stock` we get it evaluated:
-
-```
-{
-    "Boring product": true
-    "Fancy product": false
-}
-```

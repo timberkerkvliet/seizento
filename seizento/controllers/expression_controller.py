@@ -1,6 +1,6 @@
 from typing import Dict
 
-from seizento.controllers.exceptions import Forbidden, NotFound, BadRequest
+from seizento.controllers.exceptions import Forbidden, NotFound, BadRequest, MethodNotAllowed
 
 from seizento.path import Path, EMPTY_PATH
 from seizento.repository import Repository
@@ -30,6 +30,9 @@ class ExpressionController:
             raise NotFound
 
         return serialize_expression(expression)
+
+    def delete(self) -> None:
+        raise MethodNotAllowed
 
     def set(self, data: Dict) -> None:
         if len(self._path) == 0:

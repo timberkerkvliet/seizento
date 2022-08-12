@@ -11,13 +11,13 @@ class TestBool(TestCase):
     def test_set_and_get_literal(self):
         self.test_client.set('/schema/test/', {'type': 'boolean'})
         self.test_client.set(
-            '/expression/test/',
+            '/value/test/',
             True
         )
-        response = self.test_client.get('/expression/test/')
+        response = self.test_client.get('/value/test/')
         self.assertEqual(response, True)
 
     def test_set_wrong_literal(self):
         self.test_client.set('/schema/test/', {'type': 'boolean'})
         with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/test/', 9000)
+            self.test_client.set('/value/test/', 9000)

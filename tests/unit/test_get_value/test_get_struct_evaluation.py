@@ -18,14 +18,14 @@ class TestGetStructEvaluation(TestCase):
         )
 
         with self.assertRaises(NotFound):
-            self.test_client.get('/evaluation/test/')
+            self.test_client.get('/value/test/')
 
     def test_evaluation_after_change(self):
         self.test_client.set(
             '/schema/test/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
         )
-        self.test_client.set('/expression/test/',  {'a': 900})
+        self.test_client.set('/value/test/',  {'a': 900})
 
         new_schema = {
             'type': 'object',
@@ -37,6 +37,6 @@ class TestGetStructEvaluation(TestCase):
 
         self.test_client.set('/schema/test/', new_schema)
 
-        response = self.test_client.get('/evaluation/test')
+        response = self.test_client.get('/value/test')
 
         self.assertDictEqual(response, {'a': 900})

@@ -26,10 +26,6 @@ class TestGeneralErrors(TestCase):
         except BadRequest:
             self.fail()
 
-    def test_set_evaluation(self):
-        with self.assertRaises(MethodNotAllowed):
-            self.test_client.set('/evaluation/test', {})
-
     def test_delete_evaluation(self):
         with self.assertRaises(MethodNotAllowed):
-            self.test_client.delete('/evaluation/test')
+            self.test_client.delete('/value/test')

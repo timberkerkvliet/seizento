@@ -16,7 +16,7 @@ class TestSetNullSchema(TestCase):
 
     def test_set_null_schema_if_null_is_set(self):
         self.test_client.set('/schema/test/', {'type': ['null', 'string']})
-        self.test_client.set('/expression/test/', None)
+        self.test_client.set('/value/test/', None)
 
         try:
             self.test_client.get('/schema/test/')
@@ -25,21 +25,21 @@ class TestSetNullSchema(TestCase):
 
     def test_set_null_schema_if_literal_string_is_set(self):
         self.test_client.set('/schema/test/', {'type': ['null', 'string']})
-        self.test_client.set('/expression/test/', 'a string')
+        self.test_client.set('/value/test/', 'a string')
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema/test/', {'type': 'null'})
 
     def test_set_null_schema_if_object_schema_is_set(self):
         self.test_client.set('/schema/test/', {'type': 'object'})
-        self.test_client.set('/expression/test/', {})
+        self.test_client.set('/value/test/', {})
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema/test/', {'type': 'null'})
 
     def test_set_null_schema_if_array_schema_is_set(self):
         self.test_client.set('/schema/test/', {'type': 'array', 'items': {'type': 'string'}})
-        self.test_client.set('/expression/test/', [])
+        self.test_client.set('/value/test/', [])
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema/test/', {'type': 'null'})

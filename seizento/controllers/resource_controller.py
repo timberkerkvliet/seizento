@@ -7,13 +7,12 @@ from seizento.controllers.exceptions import BadRequest, Unauthorized
 from seizento.controllers.expression_controller import ExpressionController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
-from seizento.identifier import Identifier
 from seizento.path import Path
 from seizento.repository import Repository
 from seizento.application_data import ApplicationData
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
-from seizento.user import AccessRights, User
+from seizento.user import AccessRights
 
 
 class ResourceController:
@@ -34,16 +33,11 @@ class ResourceController:
                 path=resource_path.remove_first(),
                 root=self._application_data
             )
-        if resource_type == 'expression':
+        if resource_type == 'value':
             return ExpressionController(
                 repository=repository,
                 path=resource_path.remove_first(),
                 root=self._application_data
-            )
-        if resource_type == 'evaluation':
-            return EvaluationController(
-                repository=repository,
-                path=resource_path.remove_first()
             )
         if resource_type == 'user':
             return UserController(

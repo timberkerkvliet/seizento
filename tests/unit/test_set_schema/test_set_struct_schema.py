@@ -83,7 +83,7 @@ class TestStruct(TestCase):
             '/schema/test/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}, 'additionalProperties': False}
         )
-        self.test_client.set('/expression/test/',  {'a': 900})
+        self.test_client.set('/value/test/',  {'a': 900})
 
         new_schema = {
             'type': 'object',
@@ -111,7 +111,7 @@ class TestStruct(TestCase):
 
     def test_set_struct_from_dict(self):
         self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/expression/test', {'a': 'a'})
+        self.test_client.set('/value/test', {'a': 'a'})
 
         try:
             self.test_client.set(
@@ -140,7 +140,7 @@ class TestStruct(TestCase):
                 }
             }
         )
-        self.test_client.set('/expression/test', {'Ti': {'a': 'string'}})
+        self.test_client.set('/value/test', {'Ti': {'a': 'string'}})
 
         try:
             self.test_client.set(
@@ -175,7 +175,7 @@ class TestStruct(TestCase):
                 }
             }
         )
-        self.test_client.set('/expression/test', {'Ti': {'a': 'string'}})
+        self.test_client.set('/value/test', {'Ti': {'a': 'string'}})
 
         with self.assertRaises(Forbidden):
             self.test_client.set(
@@ -195,7 +195,7 @@ class TestStruct(TestCase):
 
     def test_set_struct_from_dict_if_empty_is_set(self):
         self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/expression/test', {})
+        self.test_client.set('/value/test', {})
 
         try:
             self.test_client.set(
@@ -207,7 +207,7 @@ class TestStruct(TestCase):
 
     def test_set_struct_from_non_matching_dict(self):
         self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/expression/test', {'b': 'b'})
+        self.test_client.set('/value/test', {'b': 'b'})
 
         with self.assertRaises(Forbidden):
             self.test_client.set(

@@ -22,7 +22,7 @@ class TestSetStringSchema(TestCase):
 
     def test_set_optional_string_after_string_literal_has_been_set(self):
         self.test_client.set('/schema/test/', {'type': 'string'})
-        self.test_client.set('/expression/test', 'my string')
+        self.test_client.set('/value/test', 'my string')
 
         try:
             self.test_client.set('/schema/test', {'type': ['string', 'null']})
@@ -31,14 +31,14 @@ class TestSetStringSchema(TestCase):
 
     def test_set_string_after_null_has_been_set(self):
         self.test_client.set('/schema/test/', {'type': ['null', 'string']})
-        self.test_client.set('/expression/test', None)
+        self.test_client.set('/value/test', None)
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema/test', {'type': 'string'})
 
     def test_set_string_after_string_literal_has_been_set(self):
         self.test_client.set('/schema/test/', {'type': ['null', 'string']})
-        self.test_client.set('/expression/test', 'a string')
+        self.test_client.set('/value/test', 'a string')
 
         try:
             self.test_client.set('/schema/test', {'type': 'string'})
@@ -70,8 +70,8 @@ class TestSetStringSchema(TestCase):
     def test_cannot_reset_type_if_it_is_referenced(self):
         self.test_client.set('/schema/a', {'type': 'string'})
         self.test_client.set('/schema/b', {'type': 'string'})
-        self.test_client.set('/expression/a', 'hey')
-        self.test_client.set('/expression/b', '{/a}')
+        self.test_client.set('/value/a', 'hey')
+        self.test_client.set('/value/b', '{/a}')
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema/a', {'type': 'integer'})
@@ -79,8 +79,8 @@ class TestSetStringSchema(TestCase):
     def test_can_reset_type_if_it_is_referenced(self):
         self.test_client.set('/schema/a', {'type': ['string', 'integer']})
         self.test_client.set('/schema/b', {'type': ['string', 'integer']})
-        self.test_client.set('/expression/a', 'hey')
-        self.test_client.set('/expression/b', '{/a}')
+        self.test_client.set('/value/a', 'hey')
+        self.test_client.set('/value/b', '{/a}')
 
         try:
             self.test_client.set('/schema/a', {'type': 'string'})

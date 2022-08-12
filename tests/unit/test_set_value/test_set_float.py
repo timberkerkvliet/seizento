@@ -12,13 +12,13 @@ class TestFloat(TestCase):
     def test_set_and_get_literal(self):
         self.test_client.set('/schema/test/', {'type': 'number'})
         self.test_client.set(
-            '/expression/test/',
+            '/value/test/',
             9.998
         )
-        response = self.test_client.get('/expression/test/')
+        response = self.test_client.get('/value/test/')
         self.assertTrue(math.isclose(response, 9.998))
 
     def test_set_wrong_literal(self):
         self.test_client.set('/schema/test/', {'type': 'number'})
         with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/test/', 'hey')
+            self.test_client.set('/value/test/', 'hey')

@@ -39,7 +39,7 @@ class TestDictionary(TestCase):
                 'additionalProperties': False
             }
         )
-        self.test_client.set('/expression/test', {'a': 'a'})
+        self.test_client.set('/value/test', {'a': 'a'})
 
         try:
             self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})

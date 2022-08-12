@@ -11,13 +11,13 @@ class TestInteger(TestCase):
     def test_set_and_get_literal(self):
         self.test_client.set('/schema/test/', {'type': 'integer'})
         self.test_client.set(
-            '/expression/test/',
+            '/value/test/',
             -7
         )
-        response = self.test_client.get('/expression/test/')
+        response = self.test_client.get('/value/test/')
         self.assertEqual(response, -7)
 
     def test_set_wrong_literal(self):
         self.test_client.set('/schema/test/', {'type': 'string'})
         with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/test/', 8.77)
+            self.test_client.set('/value/test/', 8.77)

@@ -10,20 +10,20 @@ class TestGetBoolEvaluation(TestCase):
 
     def test_set_true(self):
         self.test_client.set('/schema/test/', {'type': 'boolean'})
-        self.test_client.set('/expression/test/', True)
+        self.test_client.set('/value/test/', True)
 
-        response = self.test_client.get('/evaluation/test/')
+        response = self.test_client.get('/value/test/')
         self.assertEqual(response, True)
 
     def test_set_false(self):
         self.test_client.set('/schema/test/', {'type': 'boolean'})
-        self.test_client.set('/expression/test/', False)
+        self.test_client.set('/value/test/', False)
 
-        response = self.test_client.get('/evaluation/test/')
+        response = self.test_client.get('/value/test/')
         self.assertEqual(response, False)
 
     def test_not_set(self):
         self.test_client.set('/schema/test/', {'type': 'boolean'})
 
         with self.assertRaises(NotFound):
-            self.test_client.get('/evaluation/test')
+            self.test_client.get('/value/test')

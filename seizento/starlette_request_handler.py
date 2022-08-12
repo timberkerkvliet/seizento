@@ -3,8 +3,6 @@ from starlette.responses import JSONResponse
 
 from seizento.app import App
 from seizento.controllers.exceptions import NotFound, BadRequest, Forbidden, Unauthorized
-from seizento.controllers.login_controller import LoginController
-from seizento.controllers.resource_controller import ResourceController
 
 
 class StarletteRequestHandler:

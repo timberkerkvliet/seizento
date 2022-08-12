@@ -19,28 +19,28 @@ class TestSetReference(TestCase):
                 }
             }
         )
-        self.test_client.set('/expression/test', {'a': 5})
+        self.test_client.set('/value/test', {'a': 5})
 
         with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/test/b', '{/a}')
+            self.test_client.set('/value/test/b', '{/a}')
 
     def test_self_reference(self):
         self.test_client.set('/schema/test/', {'type': 'array', 'items': {'type': 'integer'}})
 
         with self.assertRaises(Forbidden):
-            self.test_client.set('/expression/test', ['{/0}'])
+            self.test_client.set('/value/test', ['{/0}'])
 
     def test_self_reference_did_not_change_anything(self):
         self.test_client.set('/schema/test/', {'type': 'array', 'items': {'type': 'integer'}})
 
-        self.test_client.set('/expression/test', [1])
+        self.test_client.set('/value/test', [1])
 
         try:
-            self.test_client.set('/expression/test', ['{/test/0}'])
+            self.test_client.set('/value/test', ['{/test/0}'])
         except Forbidden:
             pass
 
-        response = self.test_client.get('/expression/test')
+        response = self.test_client.get('/value/test')
 
         self.assertEqual(response, [1])
 
@@ -48,9 +48,9 @@ class TestSetReference(TestCase):
         self.test_client.set('/schema/test/', {'type': 'string'})
 
         try:
-            self.test_client.set('/expression/test', '{/test/}')
+            self.test_client.set('/value/test', '{/test/}')
         except Forbidden:
             pass
 
         with self.assertRaises(NotFound):
-            self.test_client.get('/expression/test')
+            self.test_client.get('/value/test')

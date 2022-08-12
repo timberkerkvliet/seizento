@@ -59,9 +59,9 @@ class TestSetIntegerSchema(TestCase):
         except Forbidden:
             self.fail()
 
-    def test_change_to_integer_after_string_expression_has_set(self):
+    def test_change_to_integer_after_string_value_has_set(self):
         self.test_client.set('/schema/test/', {'type': 'string'})
-        self.test_client.set('/expression/test/', 'hey')
+        self.test_client.set('/value/test/', 'hey')
 
         with self.assertRaises(Forbidden):
             self.test_client.set('/schema/test/', {'type': 'integer'})
