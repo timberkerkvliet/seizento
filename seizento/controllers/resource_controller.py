@@ -2,9 +2,8 @@ from typing import Dict, Any, Callable
 
 import jwt
 
-from seizento.controllers.evaluation_controller import EvaluationController
 from seizento.controllers.exceptions import BadRequest, Unauthorized
-from seizento.controllers.expression_controller import ExpressionController
+from seizento.controllers.value_controller import ValueController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
 from seizento.path import Path
@@ -34,7 +33,7 @@ class ResourceController:
                 root=self._application_data
             )
         if resource_type == 'value':
-            return ExpressionController(
+            return ValueController(
                 repository=repository,
                 path=resource_path.remove_first(),
                 root=self._application_data

@@ -9,7 +9,7 @@ from seizento.serializers.expression_serializer import serialize_expression, par
 from seizento.expression.path_evaluation import evaluate_expression_at_path
 
 
-class ExpressionController:
+class ValueController:
     def __init__(
         self,
         repository: Repository,
