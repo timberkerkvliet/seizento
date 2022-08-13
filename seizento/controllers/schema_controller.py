@@ -5,7 +5,7 @@ from jsonschema.exceptions import ValidationError
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.application_data import ApplicationData
 
-from seizento.schema import Schema
+from seizento.schema import Schema, InvalidSchema
 
 from seizento.path import Path
 
@@ -33,37 +33,31 @@ class SchemaController:
         if len(self._path) == 0:
             raise Forbidden
 
-        parent_schema = self._get_parent_schema()
         try:
             new_schema = Schema(data)
-        except Exception as e:
+        except InvalidSchema as e:
             raise BadRequest from e
 
         try:
-            current_schema = parent_schema.get_child(self._path.last_component)
+            parent_schema = self._root.schema.navigate_to(self._path.remove_last())
         except (KeyError, IndexError):
-            current_schema = None
+            raise NotFound
 
         try:
-            parent_schema.set_child(
-                component=self._path.last_component,
-                schema=new_schema
-            )
-        except Exception as e:
-            raise NotFound from e
+            parent_value = self._root.value.navigate_to(self._path.remove_last())
+        except (KeyError, IndexError):
+            parent_schema.set_child(component=self._path.last_component, schema=new_schema)
+            return
+
+        parent_schema_copy = Schema(parent_schema.schema)
+        parent_schema_copy.set_child(component=self._path.last_component, schema=new_schema)
 
         try:
-            self._root.schema.validate_value(self._root.value.value)
+            parent_schema.validate_value(parent_value.value)
         except ValidationError as e:
-            if current_schema is not None:
-                parent_schema.set_child(
-                    component=self._path.last_component,
-                    schema=current_schema
-                )
-            else:
-                parent_schema.delete_child(self._path.last_component)
-
             raise Forbidden(str(e))
+
+        parent_schema.set_child(component=self._path.last_component, schema=new_schema)
 
     def delete(self) -> None:
         if len(self._path) == 0:
