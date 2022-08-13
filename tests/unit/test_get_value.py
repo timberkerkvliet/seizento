@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from seizento.controllers.exceptions import NotFound
+from seizento.controllers.exceptions import NotFound, Unauthorized
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -48,7 +48,6 @@ class TestGetDictionaryEvaluation(TestCase):
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {})
 
-
     def test_not_found_before_set(self):
         self.test_client.set(
             '/schema/test/',
@@ -81,3 +80,24 @@ class TestGetDictionaryEvaluation(TestCase):
         response = self.test_client.get('/value/test')
 
         self.assertDictEqual(response, {'a': 900})
+
+    def test_can_get_authorized_value(self):
+        self.test_client.set(
+            '/user/timber',
+            {
+                'access_rights': {
+                    'read_access': ['value/my-thing'],
+                    'write_access': ['schema/my-thing']
+                },
+                'password': 'a'
+             }
+        )
+
+        self.test_client.set('schema/my-thing', {'type': 'string'})
+        self.test_client.set('value/my-thing', 'a string')
+        self.test_client.login({'user_id': 'timber', 'password': 'a'})
+
+        try:
+            self.test_client.get('value/my-thing')
+        except Unauthorized:
+            self.fail()

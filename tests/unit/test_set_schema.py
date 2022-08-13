@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from seizento.controllers.exceptions import BadRequest, Forbidden
+from seizento.controllers.exceptions import BadRequest, Forbidden, Unauthorized
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -37,7 +37,7 @@ class TestSetSchema(TestCase):
             {
                 'type': 'object',
                 'properties': {'b': {'type': 'integer'}},
-                'additionalProperties': False
+                'additionalProperties': True
             }
         )
 
@@ -49,7 +49,7 @@ class TestSetSchema(TestCase):
                 'properties': {
                     'b': {'type': 'integer'}
                 },
-                'additionalProperties': False
+                'additionalProperties': True
             }
         )
 
@@ -283,4 +283,22 @@ class TestSetSchema(TestCase):
         try:
             self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
         except Forbidden:
+            self.fail()
+
+    def test_can_set_authorized_schema(self):
+        self.test_client.set(
+            '/user/timber',
+            {
+                'access_rights': {
+                    'read_access': ['value/my-thing'],
+                    'write_access': ['schema/my-thing']
+                },
+                'password': 'a'
+             }
+        )
+        self.test_client.login({'user_id': 'timber', 'password': 'a'})
+
+        try:
+            self.test_client.set('schema/my-thing', {'type': 'string'})
+        except Unauthorized:
             self.fail()
