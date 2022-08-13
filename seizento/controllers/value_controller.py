@@ -6,7 +6,7 @@ from seizento.controllers.exceptions import Forbidden, NotFound, MethodNotAllowe
 
 from seizento.path import Path
 from seizento.application_data import ApplicationData
-from seizento.value.value import Value
+from seizento.value import Value
 from seizento.value_type import JsonValue
 
 

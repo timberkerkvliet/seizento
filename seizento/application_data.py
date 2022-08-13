@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import Dict
 
 from seizento.identifier import Identifier
-from seizento.schema.schema import Schema
+from seizento.schema import Schema
 from seizento.user import User, ADMIN_USER
-from seizento.value.value import Value
+from seizento.value import Value
 
 
 @dataclass

@@ -5,7 +5,7 @@ from jsonschema.exceptions import ValidationError
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.application_data import ApplicationData
 
-from seizento.schema.schema import Schema
+from seizento.schema import Schema
 
 from seizento.path import Path
 
