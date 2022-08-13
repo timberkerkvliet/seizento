@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from jsonschema.exceptions import ValidationError, SchemaError
 
 from seizento.path import PathComponent, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder, Path
-from seizento.schema.constraint import Constraint
 
 from jsonschema import validate
 
