@@ -29,12 +29,6 @@ class TestAccess(TestCase):
         )
         self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
 
-    def test_get_schema__has_read_access__no_authorization_error(self):
-        try:
-            self.test_client.get('schema/test/thing')
-        except Unauthorized:
-            self.fail()
-
     def test_set_schema__has_write_access__no_authorization_error(self):
         try:
             self.test_client.set('schema/test/thing', {'type': 'integer'})
@@ -46,10 +40,6 @@ class TestAccess(TestCase):
             self.test_client.delete('schema/test/thing')
         except Unauthorized:
             self.fail()
-
-    def test_get_schema__no_read_access__authorization_error(self):
-        with self.assertRaises(Unauthorized):
-            self.test_client.get('schema/test/other-thing')
 
     def test_set_schema__no_write_access__authorization_error(self):
         with self.assertRaises(Unauthorized):
