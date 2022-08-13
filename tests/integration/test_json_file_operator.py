@@ -1,9 +1,9 @@
 from unittest import TestCase
 
 from seizento.application_data import create_default, ApplicationData
-from seizento.expression.array_literal import ArrayLiteral
-from seizento.expression.primitive_literal import PrimitiveLiteral
-from seizento.expression.struct_literal import StructLiteral
+from seizento.value.array_literal import ArrayLiteral
+from seizento.value.primitive_literal import PrimitiveLiteral
+from seizento.value.struct_literal import StructLiteral
 from seizento.json_file_operator import JSONFileOperator
 from seizento.schema.schema import Schema
 from seizento.schema.types import DataType

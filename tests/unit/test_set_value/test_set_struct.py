@@ -96,28 +96,6 @@ class TestStruct(TestCase):
 
         self.assertEqual(response, 99)
 
-    def test_given_a_non_literal_parent_value_when_setting_value_then_raise_forbidden(self):
-        self.test_client.set(
-            '/schema/test/',
-            {
-                'type': 'object',
-                'properties': {
-                    'a': {'type': 'array', 'items': {'type': 'integer'}},
-                    'b': {'type': 'array', 'items': {'type': 'integer'}}
-                }
-            }
-        )
-        self.test_client.set(
-            '/value/test',
-            {
-                'a': [1, 2, 3, 4],
-                'b': '{/test/a}'
-            }
-        )
-
-        with self.assertRaises(Forbidden):
-            self.test_client.set('/value/test/b/0', 5)
-
     def test_when_setting_value_with_no_paren_then_raise_not_found(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
         with self.assertRaises(NotFound):

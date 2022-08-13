@@ -1,12 +1,12 @@
 from typing import Any, Union
 
-from seizento.expression.expression import Expression
-from seizento.expression.parameter_reference import ParameterReference
-from seizento.expression.parametrized_dictionary import ParametrizedDictionary
-from seizento.expression.primitive_literal import PrimitiveLiteral
-from seizento.expression.array_literal import ArrayLiteral
-from seizento.expression.struct_literal import StructLiteral
-from seizento.expression.path_reference import PathReference
+from seizento.value.value import Expression
+from seizento.value.parameter_reference import ParameterReference
+from seizento.value.parametrized_dictionary import ParametrizedDictionary
+from seizento.value.primitive_literal import PrimitiveLiteral
+from seizento.value.array_literal import ArrayLiteral
+from seizento.value.struct_literal import StructLiteral
+from seizento.value.path_reference import PathReference
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
 

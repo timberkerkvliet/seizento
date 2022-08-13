@@ -15,7 +15,7 @@ class TestDeleteSchema(TestCase):
         response = self.test_client.get('/schema/test/')
         self.assertDictEqual(
             response,
-            {'type': 'object'}
+            {'type': 'object', 'properties': {}}
         )
 
     def test_Given_an_empty_struct_schema_When_nonexisting_field_deleted_Then_get_same_schema_back(self):

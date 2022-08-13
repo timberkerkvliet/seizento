@@ -1,109 +1,63 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Set, Dict
+from dataclasses import dataclass
 
-from seizento.path import PathComponent, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder, PlaceHolder
-from seizento.schema.constraint import Constraint, EverythingAllowed, NotAllowed
-from seizento.schema.types import DataType, ALL_TYPES
+from jsonschema.exceptions import ValidationError, SchemaError
+
+from seizento.path import PathComponent, LiteralComponent, PropertyPlaceHolder, IndexPlaceHolder, Path
+from seizento.schema.constraint import Constraint
+
+from jsonschema import validate
+
+from seizento.value_type import JsonValue
+
+
+class InvalidSchema(Exception):
+    pass
 
 
 @dataclass
-class Schema(Constraint):
-    types: Set[DataType] = field(default_factory=lambda: ALL_TYPES)
-    properties: Dict[str, Constraint] = field(default_factory=dict)
-    additional_properties: Constraint = field(default_factory=EverythingAllowed)
-    items: Constraint = field(default_factory=EverythingAllowed)
+class Schema:
+    schema: JsonValue
 
-    def satisfies(self, other: Constraint) -> bool:
-        if other == EverythingAllowed():
-            return True
-        if other == NotAllowed():
-            return False
+    def __post_init__(self):
+        try:
+            validate(instance=None, schema=self.schema)
+        except ValidationError:
+            pass
+        except SchemaError as e:
+            raise InvalidSchema from e
 
-        assert isinstance(other, Schema)
+    def validate_value(self, value) -> None:
+        validate(instance=value, schema=self.schema)
 
-        return self.types <= other.types \
-            and self.items.satisfies(other.items) \
-            and self.additional_properties.satisfies(other.additional_properties) \
-            and all(
-                schema.satisfies(other.properties[prop])
-                if prop in other.properties else schema.satisfies(other.additional_properties)
-                for prop, schema in self.properties.items()
-            )
-
-    def union(self, other: Constraint) -> Constraint:
-        if other == EverythingAllowed():
-            return other
-        if other == NotAllowed():
-            return self
-
-        if isinstance(other, Schema):
-            return Schema(
-                types=self.types | other.types,
-                properties={
-                    prop: schema.union(other.properties[prop])
-                    for prop, schema in self.properties.items()
-                    if prop in other.properties
-                },
-                additional_properties=self.additional_properties.union(other.additional_properties),
-                items=self.items.union(other.items)
-            )
-
-    def intersection(self, other: Constraint) -> Constraint:
-        if other == EverythingAllowed():
-            return self
-        if other == NotAllowed():
-            return other
-
-        assert isinstance(other, Schema)
-
-        return Schema(
-            types=self.types & other.types,
-            properties={
-                prop: schema.intersection(other.properties[prop])
-                for prop, schema in self.properties.items()
-                if prop in other.properties
-            },
-            additional_properties=self.additional_properties.intersection(other.additional_properties),
-            items=self.items.intersection(other.items)
-        )
-
-    def is_empty(self) -> bool:
-        return len(self.types) == len(ALL_TYPES) \
-           and all(constraint.is_empty() for constraint in self.properties.values()) \
-           and self.additional_properties.is_empty() \
-           and self.items.is_empty()
-
-    def get_child(self, component: PathComponent) -> Constraint:
-        candidates = []
-        if isinstance(component, LiteralComponent) and component.value in self.properties:
-            candidates.append(self.properties[component.value])
-        if component == IndexPlaceHolder():
-            candidates.append(self.items)
-        if component == PropertyPlaceHolder():
-            candidates.append(self.additional_properties)
-        if isinstance(component, LiteralComponent) and component.value.isdigit():
-            candidates.append(self.items)
-        if isinstance(component, LiteralComponent) and component.value not in self.properties:
-            candidates.append(self.additional_properties)
-        if component == PlaceHolder():
-            candidates = list(self.properties.values()) + [self.items, self.additional_properties]
-
-        result = EverythingAllowed()
-        for x in candidates:
-            result = result.intersection(x)
+    def navigate_to(self, path: Path) -> Schema:
+        result = self
+        for component in path:
+            result = result.get_child(component)
 
         return result
 
-    def set_child(self, component: PathComponent, constraint: Constraint) -> None:
+    def get_child(self, component: PathComponent) -> Schema:
         if isinstance(component, LiteralComponent):
-            self.properties[component.value] = constraint
-        if component == PropertyPlaceHolder():
-            self.additional_properties = constraint
+            return Schema(self.schema['properties'][component.value])
         if component == IndexPlaceHolder():
-            self.items = constraint
+            return Schema(self.schema['items'])
+        if component == PropertyPlaceHolder():
+            return Schema(self.schema['additionalProperties'])
+
+        raise KeyError
+
+    def set_child(self, component: PathComponent, schema: Schema) -> None:
+        if isinstance(component, LiteralComponent):
+            if 'properties' not in self.schema:
+                self.schema['properties'] = {}
+            self.schema['properties'][component.value] = schema.schema
+        if component == PropertyPlaceHolder():
+            self.schema['additionalProperties'] = schema.schema
+        if component == IndexPlaceHolder():
+            self.schema['items'] = schema.schema
 
     def delete_child(self, component: PathComponent) -> None:
-        if isinstance(component, LiteralComponent):
-            self.properties.pop(component.value, None)
+        if isinstance(component, LiteralComponent) and 'properties' in self.schema:
+            self.schema['properties'].pop(component.value, None)

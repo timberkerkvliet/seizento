@@ -7,7 +7,6 @@ from seizento.controllers.value_controller import ValueController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
 from seizento.path import Path
-from seizento.repository import Repository
 from seizento.application_data import ApplicationData
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
@@ -25,7 +24,7 @@ class ResourceController:
         self._application_data = application_data
         self._app_data_saver = app_data_saver
 
-    def _get_controller(self, resource_path: Path, repository: Repository):
+    def _get_controller(self, resource_path: Path):
         resource_type = resource_path.first_component.value
         if resource_type == 'schema':
             return SchemaController(
@@ -34,14 +33,13 @@ class ResourceController:
             )
         if resource_type == 'value':
             return ValueController(
-                repository=repository,
                 path=resource_path.remove_first(),
                 root=self._application_data
             )
         if resource_type == 'user':
             return UserController(
-                repository=repository,
-                path=resource_path.remove_first()
+                path=resource_path.remove_first(),
+                root=self._application_data
             )
 
         raise BadRequest
@@ -68,11 +66,7 @@ class ResourceController:
         if not access_rights.can_read(resource_path):
             raise Unauthorized
 
-        repository = Repository(
-            application_data=self._application_data
-        )
-
-        controller = self._get_controller(resource_path=resource_path, repository=repository)
+        controller = self._get_controller(resource_path=resource_path)
         return controller.get()
 
     def set(self, resource: str, data: Any, token: str) -> None:
@@ -82,11 +76,7 @@ class ResourceController:
         if not access_rights.can_write(resource_path):
             raise Unauthorized
 
-        repository = Repository(
-            application_data=self._application_data
-        )
-
-        controller = self._get_controller(resource_path=resource_path, repository=repository)
+        controller = self._get_controller(resource_path=resource_path)
         controller.set(data)
 
         self._app_data_saver(self._application_data)
@@ -98,11 +88,7 @@ class ResourceController:
         if not access_rights.can_write(resource_path):
             raise Unauthorized
 
-        repository = Repository(
-            application_data=self._application_data
-        )
-
-        controller = self._get_controller(resource_path=resource_path, repository=repository)
+        controller = self._get_controller(resource_path=resource_path)
         controller.delete()
 
         self._app_data_saver(self._application_data)

@@ -1,14 +1,13 @@
 from typing import Dict
 
+from jsonschema.exceptions import ValidationError
+
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
 from seizento.application_data import ApplicationData
 
-from seizento.schema.constraint import Constraint
 from seizento.schema.schema import Schema
 
-from seizento.path import Path, EMPTY_PATH, LiteralComponent
-from seizento.repository import Repository
-from seizento.serializers.constraint_serializer import parse_constraint, serialize_constraint
+from seizento.path import Path
 
 
 class SchemaController:
@@ -22,9 +21,9 @@ class SchemaController:
         except KeyError as e:
             raise NotFound from e
 
-        return serialize_constraint(target_type)
+        return target_type.schema
 
-    def _get_parent_type(self) -> Schema:
+    def _get_parent_schema(self) -> Schema:
         try:
             return self._root.schema.navigate_to(self._path.remove_last())
         except KeyError as e:
@@ -34,41 +33,41 @@ class SchemaController:
         if len(self._path) == 0:
             raise Forbidden
 
-        parent_type = self._get_parent_type()
+        parent_schema = self._get_parent_schema()
         try:
-            new_schema = parse_constraint(data)
+            new_schema = Schema(data)
         except Exception as e:
             raise BadRequest from e
 
         try:
-            current_schema = parent_type.get_child(self._path.last_component)
-        except KeyError:
+            current_schema = parent_schema.get_child(self._path.last_component)
+        except (KeyError, IndexError):
             current_schema = None
 
         try:
-            parent_type.set_child(
+            parent_schema.set_child(
                 component=self._path.last_component,
-                constraint=new_schema
+                schema=new_schema
             )
         except Exception as e:
             raise NotFound from e
 
-        if self._root.expression.get_schema(self._root.schema).satisfies(self._root.schema):
-            return
+        try:
+            self._root.schema.validate_value(self._root.value.value)
+        except ValidationError as e:
+            if current_schema is not None:
+                parent_schema.set_child(
+                    component=self._path.last_component,
+                    schema=current_schema
+                )
+            else:
+                parent_schema.delete_child(self._path.last_component)
 
-        if current_schema is not None:
-            parent_type.set_child(
-                component=self._path.last_component,
-                constraint=current_schema
-            )
-        else:
-            parent_type.delete_child(self._path.last_component)
-
-        raise Forbidden
+            raise Forbidden(str(e))
 
     def delete(self) -> None:
         if len(self._path) == 0:
             raise Forbidden
 
-        parent_type = self._get_parent_type()
-        parent_type.delete_child(self._path.last_component)
+        parent_schema = self._get_parent_schema()
+        parent_schema.delete_child(self._path.last_component)

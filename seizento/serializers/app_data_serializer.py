@@ -8,7 +8,7 @@ from seizento.serializers.user_serializer import serialize_user, parse_user
 def serialize_app_data(data: ApplicationData):
     return {
         'schema': serialize_constraint(data.schema),
-        'expression': serialize_expression(data.expression),
+        'value': serialize_expression(data.expression),
         'users': [serialize_user(user) for user in data.users.values()]
     }
 
@@ -16,6 +16,6 @@ def serialize_app_data(data: ApplicationData):
 def parse_app_data(data):
     return ApplicationData(
         schema=parse_constraint(data['schema']),
-        expression=parse_expression(data['expression']),
+        expression=parse_expression(data['value']),
         users={parse_user(user).id: parse_user(user) for user in data['users']}
     )
