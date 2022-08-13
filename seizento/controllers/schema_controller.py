@@ -61,4 +61,19 @@ class SchemaController:
             raise Forbidden
 
         parent_schema = self._get_parent_schema()
-        parent_schema.delete_child(self._path.last_component)
+
+        try:
+            parent_value = self._app_data.value.navigate_to(self._path.remove_last())
+        except (KeyError, IndexError):
+            parent_schema.delete_child(component=self._path.last_component)
+            return
+
+        parent_schema_copy = Schema(parent_schema.schema)
+        parent_schema_copy.delete_child(component=self._path.last_component)
+
+        try:
+            parent_schema_copy.validate_value(parent_value.value)
+        except ValidationError as e:
+            raise Forbidden(str(e))
+
+        parent_schema.delete_child(component=self._path.last_component)

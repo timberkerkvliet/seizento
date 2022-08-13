@@ -290,8 +290,26 @@ class TestSetSchema(TestCase):
             '/user/timber',
             {
                 'access_rights': {
-                    'read_access': ['value/my-thing'],
+                    'read_access': [],
                     'write_access': ['schema/my-thing']
+                },
+                'password': 'a'
+             }
+        )
+        self.test_client.login({'user_id': 'timber', 'password': 'a'})
+
+        try:
+            self.test_client.set('schema/my-thing', {'type': 'string'})
+        except Unauthorized:
+            self.fail()
+
+    def test_can_set_from_twoauthorized_schemas(self):
+        self.test_client.set(
+            '/user/timber',
+            {
+                'access_rights': {
+                    'read_access': [],
+                    'write_access': ['schema/generic', 'schema/my-thing']
                 },
                 'password': 'a'
              }
