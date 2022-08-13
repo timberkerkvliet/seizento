@@ -4,7 +4,7 @@ from seizento.controllers.exceptions import BadRequest, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestStruct(TestCase):
+class TestSetSchema(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
@@ -218,3 +218,70 @@ class TestStruct(TestCase):
                     'additionalProperties': False
                 }
             )
+
+    def test_set_integer(self):
+        with self.assertRaises(Forbidden):
+            self.test_client.set(
+                '/schema/',
+                {'type': 'integer'}
+            )
+
+    def test_set_object(self):
+        with self.assertRaises(Forbidden):
+            self.test_client.set(
+                '/schema/',
+                {'type': 'object'}
+            )
+
+    def test_add_additional_field(self):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'a': {'type': 'string'},
+                'b': {'type': 'integer'}
+            }
+        }
+        self.test_client.set('schema/test', schema)
+        self.test_client.set('/schema/test/new-one', {'type': 'string'})
+
+        response = self.test_client.get('/schema/test/')
+        self.assertEqual(set(response['properties']), {'a', 'b', 'new-one'})
+
+
+    def test_set_dict(self):
+        self.test_client.set(
+            '/schema/test/',
+            {'type': 'object', 'additionalProperties': {'type': 'string'}}
+        )
+
+        response = self.test_client.get('/schema/test/')
+        self.assertDictEqual(response, {'type': 'object', 'additionalProperties': {'type': 'string'}})
+
+    def test_reset_value_type(self):
+        self.test_client.set(
+            '/schema/test/',
+            {'type': 'object', 'additionalProperties': {'type': 'string'}}
+        )
+        self.test_client.set(
+            '/schema/test/~properties',
+            {'type': 'integer'}
+        )
+
+        response = self.test_client.get('/schema/test/')
+        self.assertDictEqual(response,  {'type': 'object', 'additionalProperties': {'type': 'integer'}})
+
+    def test_set_dict_from_struct(self):
+        self.test_client.set(
+            '/schema/test',
+            {
+                'type': 'object',
+                'properties': {'a': {'type': 'string'}},
+                'additionalProperties': False
+            }
+        )
+        self.test_client.set('/value/test', {'a': 'a'})
+
+        try:
+            self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
+        except Forbidden:
+            self.fail()
