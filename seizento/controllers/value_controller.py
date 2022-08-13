@@ -2,7 +2,7 @@ from typing import Dict
 
 from jsonschema.exceptions import ValidationError
 
-from seizento.controllers.exceptions import Forbidden, NotFound, MethodNotAllowed
+from seizento.controllers.exceptions import Forbidden, NotFound
 
 from seizento.path import Path
 from seizento.application_data import ApplicationData
@@ -14,14 +14,14 @@ class ValueController:
     def __init__(
         self,
         path: Path,
-        root: ApplicationData
+        app_data: ApplicationData
     ):
         self._path = path
-        self._root = root
+        self._app_data = app_data
 
     def get(self) -> JsonValue:
         try:
-            return self._root.value.navigate_to(self._path).value
+            return self._app_data.value.navigate_to(self._path).value
         except (KeyError, IndexError):
             raise NotFound
 
@@ -30,7 +30,7 @@ class ValueController:
             raise Forbidden
 
         try:
-            parent_value = self._root.value.navigate_to(self._path.remove_last())
+            parent_value = self._app_data.value.navigate_to(self._path.remove_last())
         except (KeyError, IndexError):
             raise NotFound
 
@@ -41,8 +41,8 @@ class ValueController:
             raise Forbidden
 
         try:
-            parent_value = self._root.value.navigate_to(self._path.remove_last())
-            parent_schema = self._root.schema.navigate_to(self._path.remove_last())
+            parent_value = self._app_data.value.navigate_to(self._path.remove_last())
+            parent_schema = self._app_data.schema.navigate_to(self._path.remove_last())
         except (KeyError, IndexError):
             raise NotFound
 

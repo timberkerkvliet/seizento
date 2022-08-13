@@ -29,17 +29,17 @@ class ResourceController:
         if resource_type == 'schema':
             return SchemaController(
                 path=resource_path.remove_first(),
-                root=self._application_data
+                app_data=self._application_data
             )
         if resource_type == 'value':
             return ValueController(
                 path=resource_path.remove_first(),
-                root=self._application_data
+                app_data=self._application_data
             )
         if resource_type == 'user':
             return UserController(
                 path=resource_path.remove_first(),
-                root=self._application_data
+                app_data=self._application_data
             )
 
         raise BadRequest

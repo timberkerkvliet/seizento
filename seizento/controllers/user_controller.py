@@ -12,10 +12,10 @@ class UserController:
     def __init__(
         self,
         path: Path,
-        root: ApplicationData
+        app_data: ApplicationData
     ):
         self._path = path
-        self._root = root
+        self._app_data = app_data
 
     def _get_user_id(self) -> Identifier:
         component = self._path.first_component
@@ -27,7 +27,7 @@ class UserController:
         except Exception as e:
             raise BadRequest from e
 
-        user = self._root.users.get(user_id)
+        user = self._app_data.users.get(user_id)
 
         if len(self._path) == 1:
             raise NotFound
@@ -46,7 +46,7 @@ class UserController:
             raise BadRequest from e
 
         if len(self._path) == 1:
-            self._root.users[user_id] = \
+            self._app_data.users[user_id] = \
                 User(
                     id=user_id,
                     hashed_password=HashedPassword.from_password(data['password']),
@@ -55,9 +55,9 @@ class UserController:
 
             return
 
-        user = self._root.users.get(user_id)
+        user = self._app_data.users.get(user_id)
 
-        self._root.users[user_id] = user.with_new_password(HashedPassword.from_password(data))
+        self._app_data.users[user_id] = user.with_new_password(HashedPassword.from_password(data))
 
     def delete(self) -> None:
         try:
@@ -71,4 +71,4 @@ class UserController:
         if len(self._path) > 1:
             raise BadRequest
 
-        del self._root.users[user_id]
+        del self._app_data.users[user_id]

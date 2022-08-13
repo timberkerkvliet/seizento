@@ -11,13 +11,13 @@ from seizento.path import Path
 
 
 class SchemaController:
-    def __init__(self, path: Path, root: ApplicationData):
+    def __init__(self, path: Path, app_data: ApplicationData):
         self._path = path
-        self._root = root
+        self._app_data = app_data
 
     def get(self) -> Dict:
         try:
-            target_type = self._root.schema.navigate_to(self._path)
+            target_type = self._app_data.schema.navigate_to(self._path)
         except KeyError as e:
             raise NotFound from e
 
@@ -25,7 +25,7 @@ class SchemaController:
 
     def _get_parent_schema(self) -> Schema:
         try:
-            return self._root.schema.navigate_to(self._path.remove_last())
+            return self._app_data.schema.navigate_to(self._path.remove_last())
         except KeyError as e:
             raise NotFound from e
 
@@ -41,7 +41,7 @@ class SchemaController:
         parent_schema = self._get_parent_schema()
 
         try:
-            parent_value = self._root.value.navigate_to(self._path.remove_last())
+            parent_value = self._app_data.value.navigate_to(self._path.remove_last())
         except (KeyError, IndexError):
             parent_schema.set_child(component=self._path.last_component, schema=new_schema)
             return
