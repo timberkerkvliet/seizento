@@ -8,7 +8,7 @@ class TestSetSchema(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    def test_set_struct_schema_is_persisted(self):
+    def test_set(self):
         schema = {
             'type': 'object',
             'properties': {
@@ -22,7 +22,7 @@ class TestSetSchema(TestCase):
         response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response, schema)
 
-    def test_reset_struct_schema_is_persisted(self):
+    def test_reset(self):
         self.test_client.set(
             '/schema/test/',
             {
@@ -53,7 +53,7 @@ class TestSetSchema(TestCase):
             }
         )
 
-    def test_adding_fields(self):
+    def test_add_fields(self):
         self.test_client.set('schema/test', {'type': 'object', 'additionalProperties': False})
 
         self.test_client.set(
@@ -246,7 +246,6 @@ class TestSetSchema(TestCase):
 
         response = self.test_client.get('/schema/test/')
         self.assertEqual(set(response['properties']), {'a', 'b', 'new-one'})
-
 
     def test_set_dict(self):
         self.test_client.set(

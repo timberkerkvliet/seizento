@@ -47,3 +47,37 @@ class TestGetDictionaryEvaluation(TestCase):
         self.test_client.set('/value/test/', {})
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {})
+
+
+    def test_not_found_before_set(self):
+        self.test_client.set(
+            '/schema/test/',
+            {
+                'type': 'object',
+                'properties': {'a': {'type': 'integer'}}
+            }
+        )
+
+        with self.assertRaises(NotFound):
+            self.test_client.get('/value/test/')
+
+    def test_evaluation_after_change(self):
+        self.test_client.set(
+            '/schema/test/',
+            {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
+        )
+        self.test_client.set('/value/test/',  {'a': 900})
+
+        new_schema = {
+            'type': 'object',
+            'properties': {
+                'a': {'type': 'integer'},
+                'b': {'type': 'integer'}
+            }
+        }
+
+        self.test_client.set('/schema/test/', new_schema)
+
+        response = self.test_client.get('/value/test')
+
+        self.assertDictEqual(response, {'a': 900})
