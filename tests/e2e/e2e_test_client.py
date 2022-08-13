@@ -10,7 +10,7 @@ class E2ETestClient:
         self.token = None
 
     def __enter__(self):
-        self.process = Process(target=os.system, args=('python3 -m uvicorn starlette_app:starlette_app',))
+        self.process = Process(target=os.system, args=('python3 -m uvicorn --port 8003 starlette_app:starlette_app',))
         self.process.start()
         sleep(0.5)
 
@@ -21,7 +21,7 @@ class E2ETestClient:
         data = data or {'user_id': 'admin', 'password': 'admin'}
 
         self.token = requests.post(
-            url='http://localhost:8000/login',
+            url='http://localhost:8003/login',
             json=data
         ).json()
 
@@ -29,7 +29,7 @@ class E2ETestClient:
         if self.token is None:
             self.login()
         return requests.get(
-            url='http://localhost:8000' + resource,
+            url='http://localhost:8003' + resource,
             headers={'Authorization': f'Bearer {self.token}'}
         ).json()
 
@@ -37,7 +37,7 @@ class E2ETestClient:
         if self.token is None:
             self.login()
         requests.put(
-            url='http://localhost:8000' + resource,
+            url='http://localhost:8003' + resource,
             headers={'Authorization': f'Bearer {self.token}'},
             json=data
         )
@@ -46,6 +46,6 @@ class E2ETestClient:
         if self.token is None:
             self.login()
         requests.delete(
-            url='http://localhost:8000' + resource,
+            url='http://localhost:8003' + resource,
             headers={'Authorization': f'Bearer {self.token}'}
         )
