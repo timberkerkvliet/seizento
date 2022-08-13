@@ -25,7 +25,3 @@ class TestGeneralErrors(TestCase):
             self.test_client.set('/schema/test', {})
         except BadRequest:
             self.fail()
-
-    def test_delete_evaluation(self):
-        with self.assertRaises(MethodNotAllowed):
-            self.test_client.delete('/value/test')

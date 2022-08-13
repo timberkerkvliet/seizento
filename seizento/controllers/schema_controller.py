@@ -38,10 +38,7 @@ class SchemaController:
         except InvalidSchema as e:
             raise BadRequest from e
 
-        try:
-            parent_schema = self._root.schema.navigate_to(self._path.remove_last())
-        except (KeyError, IndexError):
-            raise NotFound
+        parent_schema = self._get_parent_schema()
 
         try:
             parent_value = self._root.value.navigate_to(self._path.remove_last())

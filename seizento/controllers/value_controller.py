@@ -26,7 +26,15 @@ class ValueController:
             raise NotFound
 
     def delete(self) -> None:
-        raise MethodNotAllowed
+        if len(self._path) == 0:
+            raise Forbidden
+
+        try:
+            parent_value = self._root.value.navigate_to(self._path.remove_last())
+        except (KeyError, IndexError):
+            raise NotFound
+
+        parent_value.delete_child(component=self._path.last_component)
 
     def set(self, data: Dict) -> None:
         if len(self._path) == 0:
@@ -35,7 +43,7 @@ class ValueController:
         try:
             parent_value = self._root.value.navigate_to(self._path.remove_last())
             parent_schema = self._root.schema.navigate_to(self._path.remove_last())
-        except KeyError:
+        except (KeyError, IndexError):
             raise NotFound
 
         parent_value_copy = Value(parent_value.value)
