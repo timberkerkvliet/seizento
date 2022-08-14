@@ -6,7 +6,7 @@ from jsonschema.exceptions import ValidationError
 from seizento.controllers.exceptions import Forbidden, NotFound
 
 from seizento.path import Path
-from seizento.application_data import ApplicationData
+from seizento.app_data import AppData
 from seizento.value import Value
 from seizento.value_type import JsonValue
 
@@ -15,7 +15,7 @@ class ValueController:
     def __init__(
         self,
         path: Path,
-        app_data: ApplicationData
+        app_data: AppData
     ):
         self._path = path
         self._app_data = app_data

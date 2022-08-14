@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from seizento.application_data import create_default, ApplicationData
+from seizento.app_data import create_default, AppData
 from seizento.value.array_literal import ArrayLiteral
 from seizento.value.primitive_literal import PrimitiveLiteral
 from seizento.value.struct_literal import StructLiteral
@@ -26,7 +26,7 @@ class TestJsonFileOperator(TestCase):
 
     def test_complex(self):
         operator = JSONFileOperator('data.json')
-        app_data = ApplicationData(
+        app_data = AppData(
             schema=Schema(
                 types={DataType.OBJECT},
                 properties={

@@ -7,7 +7,7 @@ from seizento.controllers.value_controller import ValueController
 from seizento.controllers.schema_controller import SchemaController
 from seizento.controllers.user_controller import UserController
 from seizento.path import Path
-from seizento.application_data import ApplicationData
+from seizento.app_data import AppData
 from seizento.serializers.path_serializer import parse_path
 from seizento.serializers.user_serializer import parse_access_rights
 from seizento.user import AccessRights
@@ -17,8 +17,8 @@ class ResourceController:
     def __init__(
         self,
         app_secret: str,
-        application_data: ApplicationData,
-        app_data_saver: Callable[[ApplicationData], None]
+        application_data: AppData,
+        app_data_saver: Callable[[AppData], None]
     ):
         self._app_secret = app_secret
         self._application_data = application_data

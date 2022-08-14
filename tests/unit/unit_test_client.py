@@ -1,14 +1,14 @@
 from typing import Optional
 
 from seizento.app import App, AppDataOperator
-from seizento.application_data import ApplicationData
+from seizento.app_data import AppData
 
 
 class FakeAppDataOperator(AppDataOperator):
     def load(self) -> None:
         return None
 
-    def save(self, app_data: ApplicationData) -> None:
+    def save(self, app_data: AppData) -> None:
         return
 
 

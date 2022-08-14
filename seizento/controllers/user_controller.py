@@ -1,6 +1,6 @@
 from typing import Dict
 
-from seizento.application_data import ApplicationData
+from seizento.app_data import AppData
 from seizento.controllers.exceptions import BadRequest, NotFound, Forbidden
 from seizento.identifier import Identifier
 from seizento.path import Path, LiteralComponent
@@ -12,7 +12,7 @@ class UserController:
     def __init__(
         self,
         path: Path,
-        app_data: ApplicationData
+        app_data: AppData
     ):
         self._path = path
         self._app_data = app_data

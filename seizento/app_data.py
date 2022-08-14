@@ -8,14 +8,14 @@ from seizento.value import Value
 
 
 @dataclass
-class ApplicationData:
+class AppData:
     schema: Schema
     value: Value
     users: Dict[Identifier, User]
 
 
-def create_default() -> ApplicationData:
-    return ApplicationData(
+def create_default() -> AppData:
+    return AppData(
         schema=Schema(schema={'type': 'object', 'additionalProperties': False}),
         value=Value({}),
         users={ADMIN_USER.id: ADMIN_USER}

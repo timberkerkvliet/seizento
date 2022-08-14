@@ -4,7 +4,7 @@ from typing import Dict
 from jsonschema.exceptions import ValidationError
 
 from seizento.controllers.exceptions import NotFound, Forbidden, BadRequest
-from seizento.application_data import ApplicationData
+from seizento.app_data import AppData
 
 from seizento.schema import Schema, InvalidSchema
 
@@ -12,7 +12,7 @@ from seizento.path import Path
 
 
 class SchemaController:
-    def __init__(self, path: Path, app_data: ApplicationData):
+    def __init__(self, path: Path, app_data: AppData):
         self._path = path
         self._app_data = app_data
 
