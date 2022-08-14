@@ -120,6 +120,19 @@ class TestSetSchema(TestCase):
         response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response, {'type': 'object', 'additionalProperties': {'type': 'string'}})
 
+    def test_set_properties(self):
+        self.test_client.set(
+            '/schema/test/',
+            {'type': 'object'}
+        )
+        self.test_client.set(
+            '/schema/test/~properties',
+            {'type': 'integer'}
+        )
+
+        response = self.test_client.get('/schema/test/')
+        self.assertDictEqual(response,  {'type': 'object', 'additionalProperties': {'type': 'integer'}})
+
     def test_reset_properties(self):
         self.test_client.set(
             '/schema/test/',
@@ -145,6 +158,16 @@ class TestSetSchema(TestCase):
 
         response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response,  {'type': 'object', 'items': {'type': 'integer'}})
+
+    def test_set_items(self):
+        self.test_client.set('/schema/test/', {'type': 'object', 'properties': {'items': {'type': 'string'}}})
+        self.test_client.set(
+            '/schema/test/~items',
+            {'type': 'integer'}
+        )
+
+        response = self.test_client.get('/schema/test/~items')
+        self.assertDictEqual(response,  {'type': 'integer'})
 
     def test_can_set_authorized_schema(self):
         self.test_client.set(
