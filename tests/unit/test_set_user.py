@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from seizento.controllers.exceptions import Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -21,3 +22,13 @@ class TestUser(TestCase):
             {'read_access': [''], 'write_access': ['']},
             response
         )
+
+    def test_cannot_reset_admin(self):
+        with self.assertRaises(Forbidden):
+            self.test_client.set(
+                '/user/admin',
+                {
+                    'password': 'my-password',
+                    'access_rights': {'read_access': [''], 'write_access': ['']}
+                }
+            )

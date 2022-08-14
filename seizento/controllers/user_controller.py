@@ -45,6 +45,9 @@ class UserController:
         except Exception as e:
             raise BadRequest from e
 
+        if user_id == ADMIN_USER.id:
+            raise Forbidden
+
         if len(self._path) == 1:
             self._app_data.users[user_id] = \
                 User(
