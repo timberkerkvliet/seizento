@@ -14,13 +14,26 @@ class TestGetDictionaryEvaluation(TestCase):
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {'a': 44, 'p': 99})
 
-    def test_item_evaluation(self):
+    def test_get_property(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'additionalProperties': {'type': 'integer'}})
         self.test_client.set('/value/test/', {'a': 44, 'p': 99})
         response = self.test_client.get('/value/test/p')
         self.assertEqual(response, 99)
 
-    def test_get_non_existing_item(self):
+    def test_get_index(self):
+        self.test_client.set('/schema/test/', {'type': 'array'})
+        self.test_client.set('/value/test/', [1, 2, 3])
+        response = self.test_client.get('/value/test/1')
+        self.assertEqual(response, 2)
+
+    def test_get_nonexistent_index(self):
+        self.test_client.set('/schema/test/', {'type': 'array'})
+        self.test_client.set('/value/test/', [1, 2, 3])
+
+        with self.assertRaises(NotFound):
+            self.test_client.get('/value/test/3')
+
+    def test_get_non_existing_property(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'additionalProperties': {'type': 'integer'}})
         self.test_client.set('/value/test/', {'a': 44, 'p': 99})
 
