@@ -26,6 +26,20 @@ class TestSetValue(TestCase):
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {'a': 1001, 'b': 'nachten', 'c': 'extra'})
 
+    def test_set_invalid_value(self):
+        self.test_client.set(
+            '/schema/test/',
+            {
+                'type': 'object',
+                'properties': {
+                    'a': {'type': 'integer'},
+                    'b': {'type': 'string'}
+                }
+            }
+        )
+        with self.assertRaises(Forbidden):
+            self.test_client.set('value/test', {'a': 19, 'b': 20})
+
     def test_set_partially(self):
         self.test_client.set(
             '/schema/test/',
@@ -95,6 +109,6 @@ class TestSetValue(TestCase):
 
         self.assertDictEqual({'a': 19, 'b': 'hallo'}, response)
 
-    def test_setting_value(self):
+    def test_setting_root_value(self):
         with self.assertRaises(Forbidden):
             self.test_client.set('/value', {})

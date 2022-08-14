@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-from seizento.controllers.exceptions import NotFound, Unauthorized, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
