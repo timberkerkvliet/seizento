@@ -39,6 +39,18 @@ class TestSetValue(TestCase):
 
         self.assertEqual([1, 'a', {'y': 'p'}], response)
 
+    def test_set_nonexistent_index_on_generic(self):
+        self.test_client.set(
+            'schema/test',
+            {}
+        )
+        self.test_client.set('value/test', {})
+        self.test_client.set('value/test/2', 'ay')
+
+        response = self.test_client.get('value/test')
+
+        self.assertEqual({'2': 'ay'}, response)
+
     def test_set_invalid_value(self):
         self.test_client.set(
             '/schema/test/',
