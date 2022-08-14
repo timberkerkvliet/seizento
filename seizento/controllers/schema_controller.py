@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict
 
 from jsonschema.exceptions import ValidationError
@@ -46,11 +47,11 @@ class SchemaController:
             parent_schema.set_child(component=self._path.last_component, schema=new_schema)
             return
 
-        parent_schema_copy = Schema(parent_schema.schema)
+        parent_schema_copy = deepcopy(parent_schema)
         parent_schema_copy.set_child(component=self._path.last_component, schema=new_schema)
 
         try:
-            parent_schema.validate_value(parent_value.value)
+            parent_schema_copy.validate_value(parent_value.value)
         except ValidationError as e:
             raise Forbidden(str(e))
 
@@ -68,7 +69,7 @@ class SchemaController:
             parent_schema.delete_child(component=self._path.last_component)
             return
 
-        parent_schema_copy = Schema(parent_schema.schema)
+        parent_schema_copy = deepcopy(parent_schema)
         parent_schema_copy.delete_child(component=self._path.last_component)
 
         try:

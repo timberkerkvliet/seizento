@@ -26,3 +26,16 @@ class TestDeleteValue(TestCase):
         self.test_client.delete('value/test/a')
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {'b': 'nachten'})
+
+    def test_delete_required_property(self):
+        self.test_client.set(
+            '/schema/test/',
+            {
+                'type': 'object',
+                'required': ['a']
+            }
+        )
+        self.test_client.set('value/test', {'a': 'some value'})
+
+        with self.assertRaises(Forbidden):
+            self.test_client.delete('value/test/a')

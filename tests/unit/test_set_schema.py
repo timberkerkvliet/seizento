@@ -175,7 +175,7 @@ class TestSetSchema(TestCase):
                 }
             }
         )
-        self.test_client.set('/value/test', {'Ti': {'a': 'string'}})
+        self.test_client.set('/value/test', {'Ti': {'b': 15}})
 
         with self.assertRaises(Forbidden):
             self.test_client.set(

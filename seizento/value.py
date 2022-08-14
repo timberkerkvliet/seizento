@@ -38,5 +38,5 @@ class Value(ABC):
                 raise IndexError
 
     def delete_child(self, component: PathComponent) -> None:
-        if isinstance(component, LiteralComponent):
+        if isinstance(component, LiteralComponent) and component.value in self.value:
             del self.value[component.value]
