@@ -8,26 +8,11 @@ class TestGetDictionaryEvaluation(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    def test_set_and_get_literal(self):
+    def test_basic_get(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'additionalProperties': {'type': 'integer'}})
         self.test_client.set('/value/test/', {'a': 44, 'p': 99})
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {'a': 44, 'p': 99})
-
-    def test_nested_dicts(self):
-        self.test_client.set(
-            '/schema/test/',
-            {
-                'type': 'object',
-                'additionalProperties': {
-                    'type': 'object',
-                    'additionalProperties': {'type': 'integer'}
-                }
-            }
-        )
-        self.test_client.set('/value/test/', {'a': {'hey': 5}, 'p': {'a': 1, 'b': 2}})
-        response = self.test_client.get('/value/test/')
-        self.assertEqual(response, {'a': {'hey': 5}, 'p': {'a': 1, 'b': 2}})
 
     def test_item_evaluation(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'additionalProperties': {'type': 'integer'}})
@@ -35,7 +20,7 @@ class TestGetDictionaryEvaluation(TestCase):
         response = self.test_client.get('/value/test/p')
         self.assertEqual(response, 99)
 
-    def test_non_existing_item(self):
+    def test_get_non_existing_item(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'additionalProperties': {'type': 'integer'}})
         self.test_client.set('/value/test/', {'a': 44, 'p': 99})
 
@@ -60,7 +45,7 @@ class TestGetDictionaryEvaluation(TestCase):
         with self.assertRaises(NotFound):
             self.test_client.get('/value/test/')
 
-    def test_evaluation_after_change(self):
+    def test_get_after_change(self):
         self.test_client.set(
             '/schema/test/',
             {'type': 'object', 'properties': {'a': {'type': 'integer'}}}
@@ -80,6 +65,25 @@ class TestGetDictionaryEvaluation(TestCase):
         response = self.test_client.get('/value/test')
 
         self.assertDictEqual(response, {'a': 900})
+
+    def test_cannot_get_unauthorized_value(self):
+        self.test_client.set(
+            '/user/timber',
+            {
+                'access_rights': {
+                    'read_access': ['value/my-thing'],
+                    'write_access': ['schema/my-thing']
+                },
+                'password': 'a'
+             }
+        )
+
+        self.test_client.set('schema/test', {'type': 'string'})
+        self.test_client.set('value/test', 'a string')
+        self.test_client.login({'user_id': 'timber', 'password': 'a'})
+
+        with self.assertRaises(Unauthorized):
+            self.test_client.get('value/test')
 
     def test_can_get_authorized_value(self):
         self.test_client.set(
