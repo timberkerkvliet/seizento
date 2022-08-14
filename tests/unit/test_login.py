@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from seizento.controllers.exceptions import NotFound, Unauthorized, Forbidden
+from seizento.controllers.exceptions import Unauthorized
 from tests.unit.unit_test_client import UnitTestClient
 
 
@@ -9,18 +9,32 @@ class TestUser(TestCase):
         self.test_client = UnitTestClient()
 
     def test_cannot_login_with_old_password_after_admin_password_reset(self):
-        self.test_client.login({'user_id': 'admin', 'password': 'admin'})
-        self.test_client.set('/user/admin/password', 'new-password')
+        self.test_client.set(
+            '/user/timber',
+            {
+                'password': 'my-password',
+                'access_rights': {'read_access': [''], 'write_access': ['']}
+            }
+        )
+        self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
+        self.test_client.set('/user/timber/password', 'new-password')
 
         with self.assertRaises(Unauthorized):
-            self.test_client.login({'user_id': 'admin', 'password': 'admin'})
+            self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
 
     def test_can_login_with_new_password_after_admin_password_reset(self):
-        self.test_client.login({'user_id': 'admin', 'password': 'admin'})
-        self.test_client.set('/user/admin/password', 'new-password')
+        self.test_client.set(
+            '/user/timber',
+            {
+                'password': 'my-password',
+                'access_rights': {'read_access': [''], 'write_access': ['']}
+            }
+        )
+        self.test_client.login({'user_id': 'timber', 'password': 'my-password'})
+        self.test_client.set('/user/timber/password', 'new-password')
 
         try:
-            self.test_client.login({'user_id': 'admin', 'password': 'new-password'})
+            self.test_client.login({'user_id': 'timber', 'password': 'new-password'})
         except Exception:
             self.fail()
 
