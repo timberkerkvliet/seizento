@@ -4,11 +4,11 @@ from seizento.controllers.exceptions import NotFound, Forbidden
 from tests.unit.unit_test_client import UnitTestClient
 
 
-class TestStruct(TestCase):
+class TestSetValue(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    def test_set_and_get_literal(self):
+    def test_set(self):
         self.test_client.set(
             '/schema/test/',
             {
@@ -21,10 +21,10 @@ class TestStruct(TestCase):
         )
         self.test_client.set(
             '/value/test/',
-            {'a': 1001, 'b': 'nachten'}
+            {'a': 1001, 'b': 'nachten', 'c': 'extra'}
         )
         response = self.test_client.get('/value/test/')
-        self.assertEqual(response, {'a': 1001, 'b': 'nachten'})
+        self.assertEqual(response, {'a': 1001, 'b': 'nachten', 'c': 'extra'})
 
     def test_set_partially(self):
         self.test_client.set(
@@ -44,7 +44,7 @@ class TestStruct(TestCase):
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {'a': 1001})
 
-    def test_empty(self):
+    def test_set_empty(self):
         self.test_client.set(
             '/schema/test/',
             {
@@ -59,23 +59,7 @@ class TestStruct(TestCase):
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {})
 
-    def test_get_field_value(self):
-        self.test_client.set(
-            '/schema/test/',
-            {
-                'type': 'object',
-                'properties': {
-                    'a': {'type': 'integer'}
-                }
-            }
-        )
-        self.test_client.set('/value/test/', {'a': 9})
-
-        response = self.test_client.get('value/test/a')
-
-        self.assertEqual(response, 9)
-
-    def test_nested_struct(self):
+    def test_nested_object(self):
         self.test_client.set(
             '/schema/test/',
             {
@@ -96,12 +80,12 @@ class TestStruct(TestCase):
 
         self.assertEqual(response, 99)
 
-    def test_when_setting_value_with_no_paren_then_raise_not_found(self):
+    def test_setting_property_with_parent_not_set(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
         with self.assertRaises(NotFound):
             self.test_client.set('/value/test/a', 99)
 
-    def test_add_field_after_value_has_been_set(self):
+    def test_set_property_type_after_value_has_been_set(self):
         self.test_client.set('/schema/test/', {'type': 'object', 'properties': {'a': {'type': 'integer'}}})
         self.test_client.set('/value/test', {'a': 19})
         self.test_client.set('/schema/test/b', {'type': 'string'})
@@ -110,10 +94,6 @@ class TestStruct(TestCase):
         response = self.test_client.get('value/test')
 
         self.assertDictEqual({'a': 19, 'b': 'hallo'}, response)
-
-    def test_adding_field_to_root_value(self):
-        with self.assertRaises(Forbidden):
-            self.test_client.set('/value/some-thing', 9)
 
     def test_setting_value(self):
         with self.assertRaises(Forbidden):
