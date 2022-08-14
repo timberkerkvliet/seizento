@@ -43,10 +43,6 @@ class Path:
         return iter(self.components)
 
     @property
-    def empty(self) -> bool:
-        return len(self) == 0
-
-    @property
     def first_component(self) -> PathComponent:
         return self.components[0]
 
@@ -54,40 +50,17 @@ class Path:
     def last_component(self) -> PathComponent:
         return self.components[-1]
 
-    def remove_from_start(self, n: int) -> Path:
-        return Path(components=self.components[n:])
-
     def remove_first(self) -> Path:
         return Path(components=self.components[1:])
 
     def remove_last(self) -> Path:
         return Path(components=self.components[:-1])
 
-    def insert_first(self, component: PathComponent) -> Path:
-        return Path(components=(component,) + self.components)
-
-    def append(self, component: PathComponent) -> Path:
-        return Path(components=self.components + (component,))
-
     def __ge__(self, other: Path) -> bool:
         if len(self) < len(other):
             return False
 
         return self.components[:len(other)] == other.components
-
-    @property
-    def path_sequence(self):
-        result = [EMPTY_PATH]
-        for component in self.components:
-            result.append(result[-1].append(component))
-
-        return result
-
-    def __add__(self, other):
-        if not isinstance(other, Path):
-            raise TypeError
-
-        return Path(components=self.components + other.components)
 
 
 EMPTY_PATH = Path(components=tuple())
