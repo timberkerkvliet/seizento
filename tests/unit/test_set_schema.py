@@ -27,35 +27,19 @@ class TestSetSchema(TestCase):
         self.assertDictEqual(response, schema)
 
     def test_reset(self):
-        self.test_client.set(
-            '/schema/test/',
-            {
-                'type': 'object',
-                'properties': {'a': {'type': 'number'}},
-                'additionalProperties': False
-            }
-        )
+        self.test_client.set('/schema/test/', {'type': 'string'})
 
-        self.test_client.set(
-            '/schema/test/',
-            {
-                'type': 'object',
-                'properties': {'b': {'type': 'integer'}},
-                'additionalProperties': True
-            }
-        )
+        try:
+            self.test_client.set('schema/test', {'type': 'integer'})
+        except Forbidden:
+            self.fail()
 
-        response = self.test_client.get('/schema/test/')
-        self.assertDictEqual(
-            response,
-            {
-                'type': 'object',
-                'properties': {
-                    'b': {'type': 'integer'}
-                },
-                'additionalProperties': True
-            }
-        )
+    def test_reset_with_value_not_valid_against_new_schema(self):
+        self.test_client.set('/schema/test/', {'type': 'string'})
+        self.test_client.set('/value/test', 'string')
+
+        with self.assertRaises(Forbidden):
+            self.test_client.set('schema/test', {'type': 'integer'})
 
     def test_add_fields(self):
         self.test_client.set('schema/test', {'type': 'object', 'additionalProperties': False})
@@ -113,90 +97,6 @@ class TestSetSchema(TestCase):
         except BadRequest:
             self.fail()
 
-    def test_set_struct_from_dict(self):
-        self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/value/test', {'a': 'a'})
-
-        try:
-            self.test_client.set(
-                '/schema/test',
-                {
-                    'type': 'object',
-                    'properties': {'a': {'type': 'string'}},
-                    'additionalProperties': False
-                }
-            )
-        except Forbidden:
-            self.fail()
-
-    def test_set_struct_from_dict_with_nested(self):
-        self.test_client.set(
-            '/schema/test',
-            {
-                'type': 'object',
-                'additionalProperties': {
-                    'type': 'object',
-                    'properties': {
-                        'a': {'type': 'string'},
-                        'b': {'type': 'integer'}
-                    },
-                    'additionalProperties': False
-                }
-            }
-        )
-        self.test_client.set('/value/test', {'Ti': {'a': 'string'}})
-
-        try:
-            self.test_client.set(
-                '/schema/test',
-                {
-                    'type': 'object',
-                    'additionalProperties': {
-                        'type': 'object',
-                        'properties': {
-                            'a': {'type': 'string'},
-                            'c': {'type': 'integer'}
-                        },
-                        'additionalProperties': False
-                    }
-                }
-            )
-        except Forbidden:
-            self.fail()
-
-    def test_cannot_set_struct_from_dict_with_nested(self):
-        self.test_client.set(
-            '/schema/test',
-            {
-                'type': 'object',
-                'additionalProperties': {
-                    'type': 'object',
-                    'properties': {
-                        'a': {'type': 'string'},
-                        'b': {'type': 'integer'}
-                    },
-                    'additionalProperties': False
-                }
-            }
-        )
-        self.test_client.set('/value/test', {'Ti': {'b': 15}})
-
-        with self.assertRaises(Forbidden):
-            self.test_client.set(
-                '/schema/test',
-                {
-                    'type': 'object',
-                    'additionalProperties': {
-                        'type': 'object',
-                        'properties': {
-                            'a': {'type': 'integer'},
-                            'c': {'type': 'integer'}
-                        },
-                        'additionalProperties': False
-                    }
-                }
-            )
-
     def test_add_additional_field(self):
         schema = {
             'type': 'object',
@@ -220,7 +120,7 @@ class TestSetSchema(TestCase):
         response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response, {'type': 'object', 'additionalProperties': {'type': 'string'}})
 
-    def test_reset_value_type(self):
+    def test_reset_properties(self):
         self.test_client.set(
             '/schema/test/',
             {'type': 'object', 'additionalProperties': {'type': 'string'}}
@@ -233,21 +133,18 @@ class TestSetSchema(TestCase):
         response = self.test_client.get('/schema/test/')
         self.assertDictEqual(response,  {'type': 'object', 'additionalProperties': {'type': 'integer'}})
 
-    def test_set_dict_from_struct(self):
+    def test_reset_items(self):
         self.test_client.set(
-            '/schema/test',
-            {
-                'type': 'object',
-                'properties': {'a': {'type': 'string'}},
-                'additionalProperties': False
-            }
+            '/schema/test/',
+            {'type': 'object', 'items': {'type': 'string'}}
         )
-        self.test_client.set('/value/test', {'a': 'a'})
+        self.test_client.set(
+            '/schema/test/~items',
+            {'type': 'integer'}
+        )
 
-        try:
-            self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        except Forbidden:
-            self.fail()
+        response = self.test_client.get('/schema/test/')
+        self.assertDictEqual(response,  {'type': 'object', 'items': {'type': 'integer'}})
 
     def test_can_set_authorized_schema(self):
         self.test_client.set(
