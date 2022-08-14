@@ -37,7 +37,7 @@ class SchemaController:
         try:
             new_schema = Schema(data)
         except InvalidSchema as e:
-            raise BadRequest from e
+            raise BadRequest('Invalid JSON schema') from e
 
         parent_schema = self._get_parent_schema()
 
@@ -53,7 +53,7 @@ class SchemaController:
         try:
             parent_schema_copy.validate_value(parent_value.value)
         except ValidationError as e:
-            raise Forbidden(str(e))
+            raise Forbidden('Requested schema is does not validate against current value') from e
 
         parent_schema.set_child(component=self._path.last_component, schema=new_schema)
 
@@ -75,6 +75,6 @@ class SchemaController:
         try:
             parent_schema_copy.validate_value(parent_value.value)
         except ValidationError as e:
-            raise Forbidden(str(e))
+            raise Forbidden('Delete would break validness of remaining schema') from e
 
         parent_schema.delete_child(component=self._path.last_component)
