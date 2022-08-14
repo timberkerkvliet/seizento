@@ -8,6 +8,10 @@ class TestSetSchema(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
+    def test_set_invalid_schema(self):
+        with self.assertRaises(BadRequest):
+            self.test_client.set('/schema/test', 'bloourh')
+
     def test_set(self):
         schema = {
             'type': 'object',

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from seizento.identifier import Identifier
 from seizento.serializers.path_serializer import serialize_path, parse_path
 from seizento.user import User, AccessRights, HashedPassword
