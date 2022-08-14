@@ -28,6 +28,13 @@ class TestGetSchema(TestCase):
         with self.assertRaises(NotFound):
             self.test_client.get('/schema/test/b')
 
+    def test_integer_property(self):
+        self.test_client.set('/schema/test', {'type': 'object', 'properties': {'0': {'type': 'string'}}})
+
+        response = self.test_client.get('/schema/test/0')
+
+        self.assertEqual({'type': 'string'}, response)
+
     def test_get_property_with_special_chars(self):
         self.test_client.set('/schema/test', {'type': 'object', 'properties': {'^&*(2 .$': {'type': 'string'}}})
 

@@ -26,6 +26,14 @@ class TestGetDictionaryEvaluation(TestCase):
         response = self.test_client.get('/value/test/1')
         self.assertEqual(response, 2)
 
+    def test_integer_property(self):
+        self.test_client.set('/schema/test', {'type': 'object', 'properties': {'0': {'type': 'string'}}})
+        self.test_client.set('/value/test', {'0': 'thingy'})
+
+        response = self.test_client.get('/value/test/0')
+
+        self.assertEqual('thingy', response)
+
     def test_get_nonexistent_index(self):
         self.test_client.set('/schema/test/', {'type': 'array'})
         self.test_client.set('/value/test/', [1, 2, 3])

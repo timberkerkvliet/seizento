@@ -42,7 +42,9 @@ class Schema:
             and 'properties' in self.schema \
                 and component.value in self.schema['properties']:
             return Schema(self.schema['properties'][component.value])
-        if isinstance(component, LiteralComponent) and isinstance(component.value, int):
+        if isinstance(component, LiteralComponent) \
+                and isinstance(component.value, int)\
+                and (len(self.schema.get('type', {})) == 0 or 'array' in self.schema.get('type')):
             return Schema(self.schema.get('items', {}))
         if component == IndexPlaceHolder():
             return Schema(self.schema.get('items', {}))
