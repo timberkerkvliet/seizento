@@ -1,13 +1,10 @@
 from unittest import TestCase
 
 from seizento.app_data import create_default, AppData
-from seizento.value.array_literal import ArrayLiteral
-from seizento.value.primitive_literal import PrimitiveLiteral
-from seizento.value.struct_literal import StructLiteral
 from seizento.json_file_operator import JSONFileOperator
 from seizento.schema import Schema
-from seizento.schema.types import DataType
 from seizento.user import ADMIN_USER
+from seizento.value import Value
 
 
 class TestJsonFileOperator(TestCase):
@@ -28,18 +25,14 @@ class TestJsonFileOperator(TestCase):
         operator = JSONFileOperator('data.json')
         app_data = AppData(
             schema=Schema(
-                types={DataType.OBJECT},
-                properties={
-                    'a': Schema(types={DataType.OBJECT, DataType.INTEGER}),
-                    'b': Schema(types={DataType.ARRAY}, items=Schema(types={DataType.INTEGER}))
+                schema={
+                    'type': 'object',
+                    'properties': {
+                        'a': {'type': 'string'}
+                    }
                 }
             ),
-            expression=StructLiteral(
-                values={
-                    'a': PrimitiveLiteral(900),
-                    'b': ArrayLiteral(values=[PrimitiveLiteral(1), PrimitiveLiteral(2)])
-                }
-            ),
+            value=Value({'a': 'some valuee'}),
             users={ADMIN_USER.id: ADMIN_USER}
         )
 
