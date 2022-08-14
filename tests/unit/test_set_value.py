@@ -8,7 +8,7 @@ class TestSetValue(TestCase):
     def setUp(self) -> None:
         self.test_client = UnitTestClient()
 
-    def test_set(self):
+    def test_basic_set(self):
         self.test_client.set(
             '/schema/test/',
             {
@@ -25,6 +25,26 @@ class TestSetValue(TestCase):
         )
         response = self.test_client.get('/value/test/')
         self.assertEqual(response, {'a': 1001, 'b': 'nachten', 'c': 'extra'})
+
+    def test_set_array(self):
+        self.test_client.set(
+            'schema/test',
+            {'type': 'array'}
+        )
+        self.test_client.set('value/test', [1, 'a', {'y': {'a': 'a'}}])
+
+        response = self.test_client.get('value/test')
+
+        self.assertEqual([1, 'a', {'y': {'a': 'a'}}], response)
+
+    def test_set_invalid_array(self):
+        self.test_client.set(
+            'schema/test',
+            {'type': 'array', 'items': {'enum': [1, 'a']}}
+        )
+
+        with self.assertRaises(Forbidden):
+            self.test_client.set('value/test', [1, 'a', {'y': {'a': 'a'}}])
 
     def test_set_invalid_value(self):
         self.test_client.set(
