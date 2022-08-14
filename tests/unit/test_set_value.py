@@ -33,18 +33,11 @@ class TestSetValue(TestCase):
         )
         self.test_client.set('value/test', [1, 'a', {'y': {'a': 'a'}}])
 
+        self.test_client.set('value/test/2/y', 'p')
+
         response = self.test_client.get('value/test')
 
-        self.assertEqual([1, 'a', {'y': {'a': 'a'}}], response)
-
-    def test_set_invalid_array(self):
-        self.test_client.set(
-            'schema/test',
-            {'type': 'array', 'items': {'enum': [1, 'a']}}
-        )
-
-        with self.assertRaises(Forbidden):
-            self.test_client.set('value/test', [1, 'a', {'y': {'a': 'a'}}])
+        self.assertEqual([1, 'a', {'y': 'p'}], response)
 
     def test_set_invalid_value(self):
         self.test_client.set(

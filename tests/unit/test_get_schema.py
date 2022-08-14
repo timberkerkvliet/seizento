@@ -16,7 +16,14 @@ class TestGetSchema(TestCase):
         self.assertEqual({'type': 'string'}, response)
 
     def test_get_nonexistent_property(self):
-        self.test_client.set('/schema/test', {'type': 'object', 'properties': {'a': {'type': 'string'}}})
+        self.test_client.set(
+            '/schema/test',
+            {
+                'type': 'object',
+                'properties': {'a': {'type': 'string'}},
+                'additionalProperties': False
+            }
+        )
 
         with self.assertRaises(NotFound):
             self.test_client.get('/schema/test/b')

@@ -38,14 +38,21 @@ class Schema:
         return result
 
     def get_child(self, component: PathComponent) -> Schema:
-        if isinstance(component, LiteralComponent):
+        if isinstance(component, LiteralComponent) \
+            and 'properties' in self.schema \
+                and component.value in self.schema['properties']:
             return Schema(self.schema['properties'][component.value])
+        if isinstance(component, LiteralComponent) and isinstance(component.value, int):
+            return Schema(self.schema.get('items', {}))
         if component == IndexPlaceHolder():
-            return Schema(self.schema['items'])
+            return Schema(self.schema.get('items', {}))
         if component == PropertyPlaceHolder():
-            return Schema(self.schema['additionalProperties'])
+            return Schema(self.schema.get('additionalProperties', {}))
 
-        raise KeyError
+        if 'additionalProperties' in self.schema and self.schema['additionalProperties'] is False:
+            raise KeyError
+
+        return Schema({})
 
     def set_child(self, component: PathComponent, schema: Schema) -> None:
         if isinstance(component, LiteralComponent):
