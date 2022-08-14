@@ -193,46 +193,6 @@ class TestSetSchema(TestCase):
                 }
             )
 
-    def test_set_struct_from_dict_if_empty_is_set(self):
-        self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/value/test', {})
-
-        try:
-            self.test_client.set(
-                '/schema/test',
-                {'type': 'object', 'properties': {'a': {'type': 'string'}}, 'additionalProperties': False}
-            )
-        except Forbidden:
-            self.fail()
-
-    def test_set_struct_from_non_matching_dict(self):
-        self.test_client.set('/schema/test', {'type': 'object', 'additionalProperties': {'type': 'string'}})
-        self.test_client.set('/value/test', {'b': 'b'})
-
-        with self.assertRaises(Forbidden):
-            self.test_client.set(
-                '/schema/test',
-                {
-                    'type': 'object',
-                    'properties': {'a': {'type': 'string'}},
-                    'additionalProperties': False
-                }
-            )
-
-    def test_set_integer(self):
-        with self.assertRaises(Forbidden):
-            self.test_client.set(
-                '/schema/',
-                {'type': 'integer'}
-            )
-
-    def test_set_object(self):
-        with self.assertRaises(Forbidden):
-            self.test_client.set(
-                '/schema/',
-                {'type': 'object'}
-            )
-
     def test_add_additional_field(self):
         schema = {
             'type': 'object',
@@ -303,7 +263,7 @@ class TestSetSchema(TestCase):
         except Unauthorized:
             self.fail()
 
-    def test_can_set_from_twoauthorized_schemas(self):
+    def test_can_set_from_two_authorized_schemas(self):
         self.test_client.set(
             '/user/timber',
             {
