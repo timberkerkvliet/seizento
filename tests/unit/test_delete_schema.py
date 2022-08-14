@@ -19,6 +19,16 @@ class TestDeleteSchema(TestCase):
             {'type': 'object', 'properties': {}}
         )
 
+    def test_delete_invalidating_value(self):
+        self.test_client.set(
+            'schema/test',
+            {'type': 'object', 'properties': {'a': {'type': 'string'}}, 'additionalProperties': False})
+
+        self.test_client.set('value/test', {'a': 'a'})
+
+        with self.assertRaises(Forbidden):
+            self.test_client.delete('/schema/test/a')
+
     def test_delete_nonexisting_property(self):
         self.test_client.set('/schema/test', {'type': 'object'})
         self.test_client.delete('/schema/test/a')
