@@ -42,6 +42,7 @@ class TestJsonFileOperator(TestCase):
         )
 
         operator.save(app_data)
-        result = operator.load()
+
+        result = JSONFileOperator().load()
 
         self.assertEqual(app_data, result)
