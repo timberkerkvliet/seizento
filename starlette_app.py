@@ -9,7 +9,7 @@ from seizento.starlette_request_handler import StarletteRequestHandler
 
 app = App(
     app_secret=secrets.token_hex(512),
-    app_data_operator=JSONFileOperator('/app-data/data.json')
+    app_data_operator=JSONFileOperator()
 )
 
 handler = StarletteRequestHandler(app)

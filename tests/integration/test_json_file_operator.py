@@ -9,11 +9,11 @@ from seizento.value import Value
 
 class TestJsonFileOperator(TestCase):
     def test_non_existing_file(self):
-        operator = JSONFileOperator('some-non-existing-file.json')
+        operator = JSONFileOperator()
         self.assertIsNone(operator.load())
 
     def test_default(self):
-        operator = JSONFileOperator('data.json')
+        operator = JSONFileOperator()
         app_data = create_default()
 
         operator.save(app_data)
@@ -22,7 +22,7 @@ class TestJsonFileOperator(TestCase):
         self.assertEqual(app_data, result)
 
     def test_complex(self):
-        operator = JSONFileOperator('data.json')
+        operator = JSONFileOperator()
         app_data = AppData(
             schema=Schema(
                 schema={
