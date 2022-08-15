@@ -13,7 +13,6 @@ class JSONFileOperator(AppDataOperator):
 
     def __init__(self):
         if not os.path.exists(self.DATA_FOLDER):
-            # Create a new directory because it does not exist
             os.makedirs(self.DATA_FOLDER)
 
     def load(self) -> Optional[AppData]:
@@ -24,5 +23,5 @@ class JSONFileOperator(AppDataOperator):
             return parse_app_data(json.load(f))
 
     def save(self, app_data: AppData) -> None:
-        with open(self.DATA_FILE) as f:
+        with open(self.DATA_FILE, 'w') as f:
             json.dump(serialize_app_data(app_data), f, check_circular=False, indent=4)

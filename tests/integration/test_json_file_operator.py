@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from seizento.app_data import create_default, AppData
@@ -8,6 +9,10 @@ from seizento.value import Value
 
 
 class TestJsonFileOperator(TestCase):
+    def tearDown(self) -> None:
+        if os.path.exists(JSONFileOperator.DATA_FILE):
+            os.remove(JSONFileOperator.DATA_FILE)
+
     def test_non_existing_file(self):
         operator = JSONFileOperator()
         self.assertIsNone(operator.load())
