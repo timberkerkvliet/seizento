@@ -1,4 +1,4 @@
-import secrets
+import os
 
 from starlette.applications import Starlette
 
@@ -8,7 +8,7 @@ from seizento.starlette_request_handler import StarletteRequestHandler
 
 
 app = App(
-    app_secret=secrets.token_hex(512),
+    app_secret=os.getenv('APP_SECRET', default='default-secret'),
     app_data_operator=JSONFileOperator()
 )
 
